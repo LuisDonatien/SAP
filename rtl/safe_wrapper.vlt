@@ -1,0 +1,44 @@
+// Copyright 2022 OpenHW Group
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+`verilator_config
+lint_off -rule UNUSED -file "*/safe_cpu_wrapper.sv" -match "*"
+lint_off -rule DECLFILENAME -file "*/safe_wrapper_ctrl_reg_top.sv"
+lint_off -rule WIDTH -file "*/safe_wrapper_ctrl_reg_top.sv" -match "Operator ASSIGNW expects *"
+
+lint_off -rule UNUSED -file "*/safe_cpu_wrapper.sv" -match "*"
+
+lint_off -rule UNUSED -file "*/safe_cpu_wrapper.sv" -match "Signal is not driven: 'intc_core0'*"
+lint_off -rule UNUSED -file "*/safe_cpu_wrapper.sv" -match "Signal is not driven: 'intc_core1'*"
+lint_off -rule SELRANGE -file "*/safe_cpu_wrapper.sv" -match "*"
+
+lint_off -rule SELRANGE -file "*/obi_pipelined_delay.sv" -match "*"
+
+lint_off -rule UNUSED -file "*/cpu_system.sv" -match "Bits of signal are not used: 'intc_core0'[15:0]*"
+lint_off -rule UNUSED -file "*/cpu_system.sv" -match "Bits of signal are not used: 'intc_core1'[15:0]*"
+lint_off -rule UNUSED -file "*/cpu_system.sv" -match "Bits of signal are not used: 'intc_core2'[15:0]*"
+
+lint_off -rule DECLFILENAME -file "*/cb_heep_ctrl_reg_top.sv"
+lint_off -rule WIDTH -file "*/cb_heep_ctrl_reg_top.sv" -match "Operator ASSIGNW expects *"
+
+lint_off -rule UNUSED -file "*/periph_system.sv" -match "*"
+lint_off -rule UNDRIVEN -file "*/periph_system.sv" -match "*"
+lint_off -rule WIDTH -file "*/periph_system.sv" -match "Input port connection 'reg_req_i' expects 70 bits on the pin connection, but pin connection's SEL generates 34 bits.*"
+
+lint_off -rule DECLFILENAME -file "*/cpu_private_reg_top.sv"
+lint_off -rule WIDTH -file "*/cpu_private_reg_top.sv" -match "Operator ASSIGNW expects *"
+
+lint_off -rule UNUSED -file "*/safe_FSM.sv" -match "Signal is not driven: 'fsm_dmr_mode_s'*"
+lint_off -rule UNUSED -file "*/safe_FSM.sv" -match "*"
+lint_off -rule UNUSED -file "*/hw/vendor/cei_mochila/sim/memory_wrapper.sv" -match "*"
+
+//lint_off -rule WIDTH -file "*/tmr_voter.sv" -match "*"
+
+lint_off -rule PINNOCONNECT -file "*/safe_FSM.sv" -match "*"
+
+lint_off -rule UNUSED -file "*/hw/vendor/cei_mochila/sim/memory_wrapper.sv" -match "*"
+lint_off -rule UNDRIVEN -file "*/hw/vendor/cei_mochila/sim/memory_wrapper.sv" -match "*"
+
+lint_off -rule UNUSED -file  "*/reg_mux.sv" -match "*"
+

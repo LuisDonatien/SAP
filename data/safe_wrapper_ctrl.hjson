@@ -1,0 +1,153 @@
+// Copyright lowRISC contributors.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{ name: "safe_wrapper_ctrl",
+  clock_primary: "clk_i",
+  bus_interfaces: [
+    { protocol: "reg_iface", direction: "device" }
+  ],
+  regwidth: "32",
+  registers: [
+    { name:     "Safe_configuration",
+      desc:     "Configure Single, TMR, DMR or Lockstep",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "1:0", name: "Safe_configuration", desc: "Safe_configuration" }
+      ]
+    },
+    { name:     "DMR_Mask",
+      desc:     "Select DMR_Mask *011* *110* *101*",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "2:0", name: "DMR_Mask", desc: "DMR_Mask" }
+      ]
+    },
+    { name:     "Master_core",
+      desc:     "Master Core Configuration",
+      swaccess: "rw",
+      resval:   "0x1", //Core 0 0'b001
+      hwaccess: "hro",
+      fields: [
+        { bits: "2:0", name: "Master_core", desc: "MASTER CORE" }
+      ]
+    },
+    { name:     "critical_section",
+      desc:     "critical_section",
+      resval:   "0x0",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "0", name: "critical_section", desc: "critical_section" }
+      ]
+    },
+    { name:     "START",
+      desc:     "INIT IP based on configuration",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0", name: "Start", desc: "Start" }
+      ]
+    },    
+    { name:     "boot_address",
+      desc:     "boot_address",
+      resval:   "0x00"
+      swaccess: "rw",
+      hwaccess: "none",
+      fields: [
+        { bits: "31:0", name: "BOOT_ADDR", desc: "BOOT_ADDR" }
+      ]
+    },
+    { name:     "External_Debug_Req",
+      desc:     "External Debug Request Signal",
+      resval:   "0x0",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "1:0", name: "External_Debug_Req", desc: "External_Debug_Req" }
+      ]
+    },
+    { name:     "Initial_Sync_Master",
+      desc:     "Starting Sync Process as Master",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "0", name: "Initial_Sync_Master", desc: "Initial_Sync_Master" }
+      ]
+    },
+    { name:     "End_SW_Routine",
+      desc:     "End_SW_Routine",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0", name: "End_SW_Routine", desc: "End_SW_Routine" }
+      ]
+    },
+    { name:     "Entry_Address",
+      desc:     "Entry_Address",
+      swaccess: "rw",
+      resval:   "0x0",
+      hwaccess: "none",
+      fields: [
+        { bits: "31:0", name: "Entry_Address", desc: "Entry_Address" }
+      ]
+    },
+    { name:     "Safe_Copy_Address",
+      desc:     "Safe_Copy_Address",
+      swaccess: "rw",
+      resval:   "0xF0029000",
+      hwaccess: "none",
+      fields: [
+        { bits: "31:0", name: "Safe_Copy_Address", desc: "Safe_Copy_Address" }
+      ]
+    },
+    { name:     "Interrupt_Controler",
+      desc:     "Interrupt_Controler",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0", name: "ENABLE_INTERRUPT", resval: "0",
+          desc: "Enable IP Interrupt output"
+        }
+        { bits: "1", name: "STATUS_INTERRUPT", resval: "0",
+          desc: "Status of Interrupt, write '0' to clear current interrupt"
+        }
+      ]
+    },     
+    { name:     "CB_HEEP_STATUS",
+      desc:     "CB_HEEP_STATUS",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "2:0", name: "CORES_SLEEP", resval: "0",
+          desc: "Status of run or sleeping cores"
+        }
+        { bits: "5:3", name: "CORES_DEBUG_MODE", resval: "0",
+          desc: "Status of halted cores"
+        }
+      ]
+    },
+    { name:     "DMR_REC",
+      desc:     "DMR_REC",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "0", name: "DMR_REC", resval: "0",
+          desc: "Status DMR_REC"
+        }
+      ]
+    }
+    { name:     "Initial_Stack_Addr",
+      desc:     "DMR_REC",
+      swaccess: "rw",
+      hwaccess: "none",
+      fields: [
+        { bits: "31:0", name: "DMR_REC", resval: "0",
+          desc: "Initial_Stack_Addr"
+        }
+      ]
+    }
+
+  ]
+}

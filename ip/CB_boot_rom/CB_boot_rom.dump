@@ -1,0 +1,181 @@
+
+CB_boot_rom.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <entry>:
+   0:	00000013          	nop
+   4:	00000013          	nop
+
+00000008 <wfi_entry>:
+   8:	00000013          	nop
+   c:	00000013          	nop
+  10:	10500073          	wfi
+  14:	ff5ff06f          	j	8 <wfi_entry>
+  18:	00000013          	nop
+  1c:	00000013          	nop
+
+00000020 <single_boot>:
+  20:	f0012537          	lui	a0,0xf0012
+  24:	02452503          	lw	a0,36(a0) # f0012024 <restore_sp+0xf0011e8c>
+  28:	7b151073          	csrw	dpc,a0
+  2c:	7b200073          	dret
+  30:	0000                	unimp
+  32:	1300                	addi	s0,sp,416
+  34:	0000                	unimp
+  36:	1300                	addi	s0,sp,416
+  38:	0000                	unimp
+  3a:	1300                	addi	s0,sp,416
+  3c:	0000                	unimp
+  3e:	1300                	addi	s0,sp,416
+  40:	0000                	unimp
+  42:	1300                	addi	s0,sp,416
+  44:	0000                	unimp
+  46:	1300                	addi	s0,sp,416
+  48:	0000                	unimp
+  4a:	1300                	addi	s0,sp,416
+  4c:	0000                	unimp
+  4e:	1300                	addi	s0,sp,416
+
+00000050 <debug_entry>:
+  50:	7b351073          	csrw	dscratch1,a0
+  54:	7b241073          	csrw	dscratch0,s0
+  58:	f0012537          	lui	a0,0xf0012
+  5c:	01852503          	lw	a0,24(a0) # f0012018 <restore_sp+0xf0011e80>
+  60:	02050463          	beqz	a0,88 <halt_boot>
+  64:	00254513          	xori	a0,a0,2
+  68:	00051463          	bnez	a0,70 <debug_entry+0x20>
+  6c:	fb5ff06f          	j	20 <single_boot>
+  70:	0ff0000f          	fence
+  74:	10000537          	lui	a0,0x10000
+  78:	10001437          	lui	s0,0x10001
+  7c:	83040413          	addi	s0,s0,-2000 # 10000830 <restore_sp+0x10000698>
+  80:	00040067          	jr	s0
+  84:	00000013          	nop
+
+00000088 <halt_boot>:
+  88:	f0012f37          	lui	t5,0xf0012
+  8c:	028f2f03          	lw	t5,40(t5) # f0012028 <restore_sp+0xf0011e90>
+  90:	000f2f83          	lw	t6,0(t5)
+  94:	300f9073          	csrw	mstatus,t6
+  98:	004f2f83          	lw	t6,4(t5)
+  9c:	304f9073          	csrw	mie,t6
+  a0:	008f2f83          	lw	t6,8(t5)
+  a4:	305f9073          	csrw	mtvec,t6
+  a8:	00cf2f83          	lw	t6,12(t5)
+  ac:	341f9073          	csrw	mepc,t6
+  b0:	010f2f83          	lw	t6,16(t5)
+  b4:	343f9073          	csrw	mtval,t6
+  b8:	014f2083          	lw	ra,20(t5)
+  bc:	018f2103          	lw	sp,24(t5)
+  c0:	01cf2183          	lw	gp,28(t5)
+  c4:	020f2203          	lw	tp,32(t5)
+  c8:	f00122b7          	lui	t0,0xf0012
+  cc:	0342a303          	lw	t1,52(t0) # f0012034 <restore_sp+0xf0011e9c>
+  d0:	0ff0000f          	fence
+  d4:	08031a63          	bnez	t1,168 <store_stack>
+
+000000d8 <load_register>:
+  d8:	024f2283          	lw	t0,36(t5)
+  dc:	028f2303          	lw	t1,40(t5)
+  e0:	02cf2383          	lw	t2,44(t5)
+  e4:	030f2403          	lw	s0,48(t5)
+  e8:	034f2483          	lw	s1,52(t5)
+  ec:	038f2503          	lw	a0,56(t5)
+  f0:	03cf2583          	lw	a1,60(t5)
+  f4:	040f2603          	lw	a2,64(t5)
+  f8:	044f2683          	lw	a3,68(t5)
+  fc:	048f2703          	lw	a4,72(t5)
+ 100:	04cf2783          	lw	a5,76(t5)
+ 104:	050f2803          	lw	a6,80(t5)
+ 108:	054f2883          	lw	a7,84(t5)
+ 10c:	058f2903          	lw	s2,88(t5)
+ 110:	05cf2983          	lw	s3,92(t5)
+ 114:	060f2a03          	lw	s4,96(t5)
+ 118:	064f2a83          	lw	s5,100(t5)
+ 11c:	068f2b03          	lw	s6,104(t5)
+ 120:	06cf2b83          	lw	s7,108(t5)
+ 124:	070f2c03          	lw	s8,112(t5)
+ 128:	074f2c83          	lw	s9,116(t5)
+ 12c:	078f2d03          	lw	s10,120(t5)
+ 130:	07cf2d83          	lw	s11,124(t5)
+ 134:	080f2e03          	lw	t3,128(t5)
+ 138:	084f2e83          	lw	t4,132(t5)
+ 13c:	090f2f83          	lw	t6,144(t5)
+ 140:	0ff0000f          	fence
+ 144:	7b1f9073          	csrw	dpc,t6
+ 148:	08cf2f83          	lw	t6,140(t5)
+ 14c:	088f2f03          	lw	t5,136(t5)
+ 150:	7b200073          	dret
+ 154:	00000013          	nop
+ 158:	00000013          	nop
+ 15c:	00000013          	nop
+ 160:	00000013          	nop
+ 164:	f25ff06f          	j	88 <halt_boot>
+
+00000168 <store_stack>:
+ 168:	0382a303          	lw	t1,56(t0)
+ 16c:	0ff0000f          	fence
+ 170:	f66104e3          	beq	sp,t1,d8 <load_register>
+ 174:	094f0393          	addi	t2,t5,148
+
+00000178 <load_stack>:
+ 178:	0003ae83          	lw	t4,0(t2)
+ 17c:	01d12023          	sw	t4,0(sp)
+ 180:	00610c63          	beq	sp,t1,198 <restore_sp>
+ 184:	00438393          	addi	t2,t2,4
+ 188:	00410113          	addi	sp,sp,4
+ 18c:	fedff06f          	j	178 <load_stack>
+ 190:	00000013          	nop
+ 194:	00000013          	nop
+
+00000198 <restore_sp>:
+ 198:	018f2103          	lw	sp,24(t5)
+ 19c:	f3dff06f          	j	d8 <load_register>
+ 1a0:	00000013          	nop
+ 1a4:	00000013          	nop
+ 1a8:	0000                	unimp
+ 1aa:	1300                	addi	s0,sp,416
+ 1ac:	0000                	unimp
+ 1ae:	1300                	addi	s0,sp,416
+ 1b0:	0000                	unimp
+ 1b2:	1300                	addi	s0,sp,416
+ 1b4:	0000                	unimp
+ 1b6:	1300                	addi	s0,sp,416
+ 1b8:	0000                	unimp
+ 1ba:	1300                	addi	s0,sp,416
+ 1bc:	0000                	unimp
+ 1be:	1300                	addi	s0,sp,416
+ 1c0:	0000                	unimp
+ 1c2:	1300                	addi	s0,sp,416
+ 1c4:	0000                	unimp
+ 1c6:	1300                	addi	s0,sp,416
+ 1c8:	0000                	unimp
+ 1ca:	1300                	addi	s0,sp,416
+ 1cc:	0000                	unimp
+ 1ce:	1300                	addi	s0,sp,416
+ 1d0:	0000                	unimp
+ 1d2:	1300                	addi	s0,sp,416
+ 1d4:	0000                	unimp
+ 1d6:	1300                	addi	s0,sp,416
+ 1d8:	0000                	unimp
+ 1da:	1300                	addi	s0,sp,416
+ 1dc:	0000                	unimp
+ 1de:	1300                	addi	s0,sp,416
+ 1e0:	0000                	unimp
+ 1e2:	1300                	addi	s0,sp,416
+ 1e4:	0000                	unimp
+ 1e6:	1300                	addi	s0,sp,416
+ 1e8:	0000                	unimp
+ 1ea:	1300                	addi	s0,sp,416
+ 1ec:	0000                	unimp
+ 1ee:	1300                	addi	s0,sp,416
+ 1f0:	0000                	unimp
+ 1f2:	1300                	addi	s0,sp,416
+ 1f4:	0000                	unimp
+ 1f6:	1300                	addi	s0,sp,416
+ 1f8:	0000                	unimp
+ 1fa:	1300                	addi	s0,sp,416
+ 1fc:	0000                	unimp
+ 1fe:	1300                	addi	s0,sp,416
