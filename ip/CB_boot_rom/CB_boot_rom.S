@@ -1,11 +1,9 @@
-/*
- *
- *
- *
- *
- *
- *
- */
+// Copyright 2025 CEI UPM
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
+
+
  #include "encoding.h"
 #define SND_SCRATCH 1   
 // The debugger can assume as second scratch register.

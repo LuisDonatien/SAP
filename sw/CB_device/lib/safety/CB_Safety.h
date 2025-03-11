@@ -1,4 +1,7 @@
-// Copyright 2024 CEI
+// Copyright 2025 CEI UPM
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 #ifndef _CB_SAFETY_H_
 #define _CB_SAFETY_H_

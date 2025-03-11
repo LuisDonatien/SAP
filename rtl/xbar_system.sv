@@ -2,6 +2,9 @@
 // Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
+// Derivated from project x-heep system xbar
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
+
 module xbar_system
   import obi_pkg::*;
   import addr_map_rule_pkg::*;

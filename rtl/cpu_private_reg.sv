@@ -1,6 +1,7 @@
-// Copyright 2022 OpenHW Group
+// Copyright 2025 CEI UPM
 // Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 `include "common_cells/assertions.svh"
 

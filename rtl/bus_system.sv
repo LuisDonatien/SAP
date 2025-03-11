@@ -15,6 +15,9 @@
 //              Simone Machetti <simone.machetti@epfl.ch>
 //              Michele Caon <michele.caon@epfl.ch>
 
+// Derivated from project x-heep system bus
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
+
 module bus_system
   import obi_pkg::*;
   import reg_pkg::*;

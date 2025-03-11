@@ -1,3 +1,7 @@
+// Copyright 2025 CEI UPM
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module memory_wrapper #(
     parameter int unsigned NumWords = 32'd1024,  // Number of Words in data array

@@ -1,7 +1,7 @@
-//External CPU_System
-// Copyright 2022 OpenHW Group
+// Copyright 2025 CEI UPM
 // Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module safe_cpu_wrapper
   import obi_pkg::*;
@@ -58,6 +58,7 @@ localparam NRCOMPARATORS = NHARTS == 3 ? 3 : 1 ;
     logic [NHARTS-1:0] Interrupt_DMSH_Sync_s;
     logic [NHARTS-1:0][0:0] Select_wfi_core_s;
     logic [NHARTS-1:0] master_core_s;
+    logic [NHARTS-1:0] master_core_ff_S;
     logic [2:0] safe_mode_s;
     logic [1:0] safe_configuration_s;
     logic critical_section_s;
@@ -213,8 +214,8 @@ safe_FSM safe_FSM_i (
     .Interrupt_Halt_o(intc_halt_s),
     .Interrupt_CpyResync_o(Interrupt_CpyResync_s),
     .Interrupt_DMSH_Sync_o(Interrupt_DMSH_Sync_s),
-    .tmr_error(tmr_error_s),
-    .voter_id_error(tmr_errorid_s),
+    .tmr_error(tmr_error_s[0] || tmr_error_s[1] || tmr_error_s[2]),
+    .voter_id_error(tmr_errorid_s[0] || tmr_errorid_s[1] || tmr_errorid_s[2]),
     .Single_Bus_o(bus_config_s),
     .Tmr_voter_enable_o(tmr_voter_enable_s),
     .Dmr_comparator_enable_o(),
@@ -281,11 +282,11 @@ safe_FSM safe_FSM_i (
 //            if (tmr_voter_enable_s == 1'b1) begin
                 if(tmr_voter_enable_s == 1'b1 && dual_mode_s == 1'b0) begin
                     //Instruction
-                    if (master_core_s == 3'b001) begin
+                    if (master_core_ff_s == 3'b001) begin
                         core_instr_req_o[0] = voted_core_instr_req_o[0];
                         core_instr_req_o[1] = '0;
                         core_instr_req_o[2] = '0;
-                    end else if (master_core_s == 3'b010) begin
+                    end else if (master_core_ff_s == 3'b010) begin
                         core_instr_req_o[0] = '0;
                         core_instr_req_o[1] = voted_core_instr_req_o[1];
                         core_instr_req_o[2] = '0;                    
@@ -296,11 +297,11 @@ safe_FSM safe_FSM_i (
                     end
 
 
-                    if (master_core_s == 3'b001) begin                    
+                    if (master_core_ff_s == 3'b001) begin                    
                         mux_core_instr_resp_i[0] = core_instr_resp_i[0];
                         mux_core_instr_resp_i[1] = core_instr_resp_i[0];
                         mux_core_instr_resp_i[2] = core_instr_resp_i[0]; 
-                    end else if (master_core_s == 3'b010) begin
+                    end else if (master_core_ff_s == 3'b010) begin
                         mux_core_instr_resp_i[0] = core_instr_resp_i[1];
                         mux_core_instr_resp_i[1] = core_instr_resp_i[1];
                         mux_core_instr_resp_i[2] = core_instr_resp_i[1];
@@ -345,14 +346,14 @@ safe_FSM safe_FSM_i (
                     end
                     */
                     //Data
-                    if (master_core_s == 3'b001) begin
+                    if (master_core_ff_s == 3'b001) begin
                         core_data_req_o[0] = voted_core_data_req_o[0];
                         core_data_req_o[1] = '0;
                         core_data_req_o[2] = '0;
                         mux_core_data_resp_i[0] = core_data_resp_i[0]; 
                         mux_core_data_resp_i[1] = core_data_resp_i[0]; 
                         mux_core_data_resp_i[2] = core_data_resp_i[0];     
-                    end else if (master_core_s == 3'b010) begin
+                    end else if (master_core_ff_s == 3'b010) begin
                         core_data_req_o[0] = '0;
                         core_data_req_o[1] = voted_core_data_req_o[1];
                         core_data_req_o[2] = '0;
@@ -688,6 +689,16 @@ end
 
 /*********************************************************/
 //*********************Safety Voter***********************//
+// Todo: Temporal solution
+// Gated outpout to avoid changing master until switch to single mode
+always_ff @(posedge clk_i or negedge rst_ni) begin
+    if(~rst_ni) begin
+        master_core_ff_S <= '0;
+    end else begin
+    if (sleep_s == 1'b111)
+        master_core_ff_S <= master_core_s;
+    end
+end
 
     tmr_voter #(
 
@@ -695,7 +706,7 @@ end
         // Instruction Bus
         .core_instr_req_i(mux_core_instr_req_o),
         .voted_core_instr_req_o(voted_core_instr_req_o[0]),
-        .enable_i(tmr_voter_enable_s),
+        .enable_i(tmr_voter_enable_s && master_core_ff_S[0]),
         // Data Bus
         .core_data_req_i(mux_core_data_req_o),
         .voted_core_data_req_o(voted_core_data_req_o[0]),
@@ -709,7 +720,7 @@ end
         // Instruction Bus
         .core_instr_req_i(mux_core_instr_req_o),
         .voted_core_instr_req_o(voted_core_instr_req_o[1]),
-        .enable_i(tmr_voter_enable_s),
+        .enable_i(tmr_voter_enable_s && master_core_ff_S[1]),
         // Data Bus
         .core_data_req_i(mux_core_data_req_o),
         .voted_core_data_req_o(voted_core_data_req_o[1]),
@@ -723,7 +734,7 @@ end
         // Instruction Bus
         .core_instr_req_i(mux_core_instr_req_o),
         .voted_core_instr_req_o(voted_core_instr_req_o[2]),
-        .enable_i(tmr_voter_enable_s),
+        .enable_i(tmr_voter_enable_s && master_core_ff_S[2]),
         // Data Bus
         .core_data_req_i(mux_core_data_req_o),
         .voted_core_data_req_o(voted_core_data_req_o[2]),

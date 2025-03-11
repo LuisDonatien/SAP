@@ -1,9 +1,7 @@
-/*
- * Copyright 2024 CEI Politécnica Madrid
- *
-
- * Author: Luis Waucquez <luis.waucquez.jimenez@upm.es>
- */
+// Copyright 2025 CEI UPM
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Luis Waucquez (luis.waucquez.jimenez@upm.es)
   
 #include <stdio.h>
 #include <stdlib.h>
