@@ -42,3 +42,6 @@ lint_off -rule UNDRIVEN -file "*/hw/vendor/cei_mochila/sim/memory_wrapper.sv" -m
 
 lint_off -rule UNUSED -file  "*/reg_mux.sv" -match "*"
 
+lint_off -rule SELRANGE -file "*/lockstep_reg.sv" -match "*"
+
+

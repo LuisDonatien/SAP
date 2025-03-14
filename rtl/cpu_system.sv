@@ -11,7 +11,7 @@ module cpu_system
     parameter BOOT_ADDR = cei_mochila_pkg::DEBUG_BOOTROM_START_ADDRESS,
     parameter NHARTS = 3,
     parameter HARTID = 32'h01,
-    parameter CPU = 2,
+    parameter CPU = 10,
     parameter COPROCESSOR = 0,
     parameter DM_HALTADDRESS = cei_mochila_pkg::DEBUG_BOOTROM_START_ADDRESS + 32'h50
 ) (
@@ -621,8 +621,8 @@ end else begin
   
   // instantiate the core 0
     cve2_top #(
-        .DmHaltAddr(DM_HALTADDRESS),
-        .DmExceptionAddr('0)
+//        .DmHaltAddr(DM_HALTADDRESS),
+//        .DmExceptionAddr('0)
     ) cv32e20_core0 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -659,6 +659,8 @@ end else begin
         .debug_req_i (debug_req_i[0]),
         .crash_dump_o(),
         .debug_mode_o(debug_mode_o[0]),
+        .dm_halt_addr_i(DM_HALTADDRESS),
+        .dm_exception_addr_i('0),
 
         .fetch_enable_i(fetch_enable),
         .core_sleep_o(sleep_o[0])
@@ -667,8 +669,8 @@ end else begin
   
   // instantiate the core 1
     cve2_top #(
-        .DmHaltAddr(DM_HALTADDRESS),
-        .DmExceptionAddr('0)
+//        .DmHaltAddr(DM_HALTADDRESS),
+//        .DmExceptionAddr('0)
     ) cv32e20_core1 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -676,7 +678,7 @@ end else begin
         .test_en_i(1'b0),
         .ram_cfg_i('0),
 
-        .hart_id_i  (32'h05),
+        .hart_id_i  (HARTID),
         .boot_addr_i(BOOT_ADDR),
 
         .instr_addr_o  (core_instr_req_o[1].addr),
@@ -705,6 +707,8 @@ end else begin
         .debug_req_i (debug_req_i[1]),
         .crash_dump_o(),
         .debug_mode_o(debug_mode_o[1]),
+        .dm_halt_addr_i(DM_HALTADDRESS),
+        .dm_exception_addr_i('0),
 
         .fetch_enable_i(fetch_enable),
         .core_sleep_o(sleep_o[1])
@@ -712,8 +716,8 @@ end else begin
 
   // instantiate the core 2
     cve2_top #(
-        .DmHaltAddr(DM_HALTADDRESS),
-        .DmExceptionAddr('0)
+//        .DmHaltAddr(DM_HALTADDRESS),
+//        .DmExceptionAddr('0)
     ) cv32e20_core2 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -721,7 +725,7 @@ end else begin
         .test_en_i(1'b0),
         .ram_cfg_i('0),
 
-        .hart_id_i  (32'h12),
+        .hart_id_i  (HARTID),
         .boot_addr_i(BOOT_ADDR),
 
         .instr_addr_o  (core_instr_req_o[2].addr),
@@ -750,6 +754,8 @@ end else begin
         .debug_req_i (debug_req_i[2]),
         .crash_dump_o(),
         .debug_mode_o(debug_mode_o[2]),
+        .dm_halt_addr_i(DM_HALTADDRESS),
+        .dm_exception_addr_i('0),
 
         .fetch_enable_i(fetch_enable),
         .core_sleep_o(sleep_o[2])

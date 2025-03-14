@@ -15,4 +15,3 @@ printf("[IP_CEI]: Hello world!\n");
 
     return 0;
 }
-

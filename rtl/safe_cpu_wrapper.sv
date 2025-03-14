@@ -9,7 +9,7 @@ module safe_cpu_wrapper
   import cei_mochila_pkg::*;
 #(
     parameter NHARTS = 3,
-    parameter NCYCLES = 1
+    parameter NCYCLES = 2
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -58,7 +58,7 @@ localparam NRCOMPARATORS = NHARTS == 3 ? 3 : 1 ;
     logic [NHARTS-1:0] Interrupt_DMSH_Sync_s;
     logic [NHARTS-1:0][0:0] Select_wfi_core_s;
     logic [NHARTS-1:0] master_core_s;
-    logic [NHARTS-1:0] master_core_ff_S;
+    logic [NHARTS-1:0] master_core_ff_s;
     logic [2:0] safe_mode_s;
     logic [1:0] safe_configuration_s;
     logic critical_section_s;
@@ -214,8 +214,8 @@ safe_FSM safe_FSM_i (
     .Interrupt_Halt_o(intc_halt_s),
     .Interrupt_CpyResync_o(Interrupt_CpyResync_s),
     .Interrupt_DMSH_Sync_o(Interrupt_DMSH_Sync_s),
-    .tmr_error(tmr_error_s[0] || tmr_error_s[1] || tmr_error_s[2]),
-    .voter_id_error(tmr_errorid_s[0] || tmr_errorid_s[1] || tmr_errorid_s[2]),
+    .tmr_error(tmr_error_s[0] | tmr_error_s[1] | tmr_error_s[2]),
+    .voter_id_error(tmr_errorid_s[0] | tmr_errorid_s[1] | tmr_errorid_s[2]),
     .Single_Bus_o(bus_config_s),
     .Tmr_voter_enable_o(tmr_voter_enable_s),
     .Dmr_comparator_enable_o(),
@@ -370,12 +370,19 @@ safe_FSM safe_FSM_i (
                     end 
                 end
                 else if (dual_mode_s == 1'b1) begin
-                    if (dmr_config_s == 3'b011) begin   //Comparator cpu0_cpu1
+                    if (dmr_config_s == 3'b011) begin   //Comparator 0
                         
                         //Instruction
-                        core_instr_req_o[0] = compared_core_instr_req_o[0];
-                        core_instr_req_o[1] = mux_core_instr_req_o[2];
-                        core_instr_req_o[2] = '0;
+                        if (master_core_ff_s == 3'b001) begin
+                            core_instr_req_o[0] = compared_core_instr_req_o[0];
+                            core_instr_req_o[1] = '0;
+                            core_instr_req_o[2] = mux_core_instr_req_o[2];
+                        end else begin
+                            core_instr_req_o[0] = '0;
+                            core_instr_req_o[1] = compared_core_instr_req_o[1];
+                            core_instr_req_o[2] = mux_core_instr_req_o[2];                            
+                        end
+
                     if (dmr_wfi_s == 3'b011) begin
                         core_instr_req_o[0] = '0;
                         core_instr_req_o[1] = '0;
@@ -384,14 +391,25 @@ safe_FSM safe_FSM_i (
                         mux_core_instr_resp_i[0] = isolate_core_instr_resp[0];
                         mux_core_instr_resp_i[1] = isolate_core_instr_resp[1];
                     end else begin
-                        mux_core_instr_resp_i[0] = core_instr_resp_i[0];
-                        mux_core_instr_resp_i[1] = core_instr_resp_i[0];
-                        mux_core_instr_resp_i[2] = core_instr_resp_i[1];
+                                mux_core_instr_resp_i[2] = core_instr_resp_i[2];
+                            if (master_core_ff_s == 3'b001) begin                        
+                                mux_core_instr_resp_i[0] = core_instr_resp_i[0];
+                                mux_core_instr_resp_i[1] = core_instr_resp_i[0];
+                            end else begin
+                                mux_core_instr_resp_i[0] = core_instr_resp_i[1];
+                                mux_core_instr_resp_i[1] = core_instr_resp_i[1];
+                            end
                     end
                         //Data
-                        core_data_req_o[0] = compared_core_data_req_o[0];
-                        core_data_req_o[1] = mux_core_data_req_o[2];
-                        core_data_req_o[2] = '0;
+                        if (master_core_ff_s == 3'b001) begin
+                            core_data_req_o[0] = compared_core_data_req_o[0];
+                            core_data_req_o[1] = '0;
+                            core_data_req_o[2] = mux_core_instr_req_o[2];
+                        end else begin
+                            core_data_req_o[0] = '0;
+                            core_data_req_o[1] = compared_core_data_req_o[1];
+                            core_data_req_o[2] = mux_core_data_req_o[2];                            
+                        end
 
                     if (dmr_wfi_s == 3'b011) begin   
                         core_data_req_o[0] = '0;
@@ -402,18 +420,29 @@ safe_FSM safe_FSM_i (
                         mux_core_data_resp_i[1] = isolate_core_data_resp[1]; 
                         mux_core_data_resp_i[2] = core_data_resp_i[1];                          
                     end else begin
-                        mux_core_data_resp_i[0] = core_data_resp_i[0]; 
-                        mux_core_data_resp_i[1] = core_data_resp_i[0]; 
-                        mux_core_data_resp_i[2] = core_data_resp_i[1];     
+                                mux_core_data_resp_i[2] = core_data_resp_i[2];
+                            if (master_core_ff_s == 3'b001) begin                        
+                                mux_core_data_resp_i[0] = core_data_resp_i[0];
+                                mux_core_data_resp_i[1] = core_data_resp_i[0];
+                            end else begin
+                                mux_core_data_resp_i[0] = core_data_resp_i[1];
+                                mux_core_data_resp_i[1] = core_data_resp_i[1];
+                            end    
                     end
 
                     end
-                    else if (dmr_config_s == 3'b110) begin   //Comparator cpu1_cpu2
+                    else if (dmr_config_s == 3'b110) begin   //Comparator 1
                     
                         //Instruction
-                        core_instr_req_o[0] = compared_core_instr_req_o[1];
-                        core_instr_req_o[1] = mux_core_instr_req_o[0];
-                        core_instr_req_o[2] = '0;
+                        if (master_core_ff_s == 3'b010) begin
+                            core_instr_req_o[0] = mux_core_instr_req_o[0];
+                            core_instr_req_o[1] = compared_core_instr_req_o[1];
+                            core_instr_req_o[2] = '0;
+                        end else begin
+                            core_instr_req_o[0] = mux_core_instr_req_o[0];
+                            core_instr_req_o[1] = '0;
+                            core_instr_req_o[2] = compared_core_instr_req_o[2];                            
+                        end
 
                     if (dmr_wfi_s == 3'b110) begin
                         core_instr_req_o[0] = '0;
@@ -423,15 +452,26 @@ safe_FSM safe_FSM_i (
                         mux_core_instr_resp_i[1] = isolate_core_instr_resp[1];
                         mux_core_instr_resp_i[2] = isolate_core_instr_resp[2];
                     end else begin
-                        mux_core_instr_resp_i[0] = core_instr_resp_i[1];
-                        mux_core_instr_resp_i[1] = core_instr_resp_i[0];
-                        mux_core_instr_resp_i[2] = core_instr_resp_i[0];
-                    end;
+                            mux_core_instr_resp_i[0] = core_instr_resp_i[0];
+                            if (master_core_ff_s == 3'b010) begin                        
+                                mux_core_instr_resp_i[1] = core_instr_resp_i[1];
+                                mux_core_instr_resp_i[2] = core_instr_resp_i[1];
+                            end else begin
+                                mux_core_instr_resp_i[1] = core_instr_resp_i[2];
+                                mux_core_instr_resp_i[2] = core_instr_resp_i[2];
+                            end
+                    end
 
                         //Data
-                        core_data_req_o[0] = compared_core_data_req_o[1];
-                        core_data_req_o[1] = mux_core_data_req_o[0];
-                        core_data_req_o[2] = '0;
+                        if (master_core_ff_s == 3'b010) begin
+                            core_data_req_o[0] = mux_core_data_req_o[0];
+                            core_data_req_o[1] = compared_core_data_req_o[1];
+                            core_data_req_o[2] = '0;
+                        end else begin
+                            core_data_req_o[0] = mux_core_data_req_o[0];
+                            core_data_req_o[1] = '0;
+                            core_data_req_o[2] = compared_core_data_req_o[2];                            
+                        end
                     if (dmr_wfi_s == 3'b110) begin
                         core_data_req_o[0] = '0;
                         core_data_req_o[1] = '0;
@@ -441,17 +481,28 @@ safe_FSM safe_FSM_i (
                         mux_core_data_resp_i[1] = isolate_core_data_resp[1]; 
                         mux_core_data_resp_i[2] = isolate_core_data_resp[2];
                     end else begin  
-                        mux_core_data_resp_i[0] = core_data_resp_i[1];
-                        mux_core_data_resp_i[1] = core_data_resp_i[0]; 
-                        mux_core_data_resp_i[2] = core_data_resp_i[0];     
+                            mux_core_data_resp_i[0] = core_data_resp_i[0];
+                            if (master_core_ff_s == 3'b010) begin                        
+                                mux_core_data_resp_i[1] = core_data_resp_i[1];
+                                mux_core_data_resp_i[2] = core_data_resp_i[1];
+                            end else begin
+                                mux_core_data_resp_i[1] = core_data_resp_i[2];
+                                mux_core_data_resp_i[2] = core_data_resp_i[2];
+                            end    
                     end
-                    end else begin                              //Comparator cpu0_cpu2
+                    end else begin                              //Comparator 2
                         //Instruction
-                        core_instr_req_o[0] = compared_core_instr_req_o[2];
-                        core_instr_req_o[1] = mux_core_instr_req_o[1];
-                        core_instr_req_o[2] = '0;
+                        if (master_core_ff_s == 3'b100) begin
+                            core_instr_req_o[0] = '0;
+                            core_instr_req_o[1] = mux_core_instr_req_o[1];
+                            core_instr_req_o[2] = compared_core_instr_req_o[2];
+                        end else begin
+                            core_instr_req_o[0] = compared_core_instr_req_o[0];
+                            core_instr_req_o[1] = mux_core_instr_req_o[1];
+                            core_instr_req_o[2] = '0;                            
+                        end
 
-                    if (dmr_wfi_s == 3'b101) begin
+                    if (dmr_wfi_s == 3'b101) begin 
                         core_instr_req_o[0] = '0;
                         core_instr_req_o[1] = '0;
                         core_instr_req_o[2] = '0;
@@ -459,22 +510,38 @@ safe_FSM safe_FSM_i (
                         mux_core_instr_resp_i[0] = isolate_core_instr_resp[0];
                         mux_core_instr_resp_i[2] = isolate_core_instr_resp[2];
                     end else begin
-                        mux_core_instr_resp_i[0] = core_instr_resp_i[0];
-                        mux_core_instr_resp_i[1] = core_instr_resp_i[1];
-                        mux_core_instr_resp_i[2] = core_instr_resp_i[0];
-                    end;
+                            mux_core_instr_resp_i[1] = core_instr_resp_i[1];
+                            if (master_core_ff_s == 3'b100) begin                        
+                                mux_core_instr_resp_i[0] = core_instr_resp_i[2];
+                                mux_core_instr_resp_i[2] = core_instr_resp_i[2];
+                            end else begin
+                                mux_core_instr_resp_i[0] = core_instr_resp_i[0];
+                                mux_core_instr_resp_i[2] = core_instr_resp_i[0];
+                            end
+                    end
                         //Data
-                        core_data_req_o[0] = compared_core_data_req_o[2];
-                        core_data_req_o[1] = mux_core_data_req_o[1];
-                        core_data_req_o[2] = '0;
+                        if (master_core_ff_s == 3'b100) begin
+                            core_data_req_o[0] = '0;
+                            core_data_req_o[1] = mux_core_data_req_o[1];
+                            core_data_req_o[2] = compared_core_data_req_o[2];
+                        end else begin
+                            core_data_req_o[0] = compared_core_data_req_o[0];
+                            core_data_req_o[1] = mux_core_data_req_o[1];
+                            core_data_req_o[2] = '0;                            
+                        end
                     if (dmr_wfi_s == 3'b101) begin
                         mux_core_data_resp_i[0] = isolate_core_data_resp[0]; 
                         mux_core_data_resp_i[1] = core_data_resp_i[1]; 
                         mux_core_data_resp_i[2] = isolate_core_data_resp[2];                         
                     end else begin
-                        mux_core_data_resp_i[0] = core_data_resp_i[0]; 
-                        mux_core_data_resp_i[1] = core_data_resp_i[1]; 
-                        mux_core_data_resp_i[2] = core_data_resp_i[0]; 
+                            mux_core_data_resp_i[1] = core_data_resp_i[1];
+                            if (master_core_ff_s == 3'b100) begin                        
+                                mux_core_data_resp_i[0] = core_data_resp_i[2];
+                                mux_core_data_resp_i[2] = core_data_resp_i[2];
+                            end else begin
+                                mux_core_data_resp_i[0] = core_data_resp_i[0];
+                                mux_core_data_resp_i[2] = core_data_resp_i[0];
+                            end
                     end
                 end       
             end    
@@ -484,21 +551,25 @@ safe_FSM safe_FSM_i (
 
 /*********************************************************************/
 /*********************Lockstep-Bypass Mux Reg*************************/ 
+
     assign mux_core_instr_req_i = core_instr_req; 
     assign core_instr_resp = mux_core_instr_resp_o;
-
     assign mux_intr_i = intr;
-    assign mux_debug_req_i = debug_req;
+    assign mux_debug_req_i = debug_req;        
 
-    logic Delay_en;
-    assign Delay_en = 1'b1;
+    assign mux_core_data_req_i[0] = xbar_core_data_req[0][0];
+    assign mux_core_data_req_i[1] = xbar_core_data_req[1][0];
+    assign mux_core_data_req_i[2] = xbar_core_data_req[2][0];
+    assign xbar_core_data_resp[0][0] = mux_core_data_resp_o[0]; 
+    assign xbar_core_data_resp[1][0] = mux_core_data_resp_o[1];
+    assign xbar_core_data_resp[2][0] = mux_core_data_resp_o[2];
 /*
     obi_req_t   [NHARTS-1:0] core_instr_req_ff;
     obi_resp_t  [NHARTS-1:0] core_instr_resp_ff;
 
     obi_req_t   [NHARTS-1:0] core_data_req_ff;
     obi_resp_t  [NHARTS-1:0] core_data_resp_ff; 
-*/
+*//*
     logic pipe_data_gnt, pipe_instr_gnt;
     logic reg_data_gnt, reg_instr_gnt;
     //Todo remove gnt that is not used for returned resp delayed
@@ -508,10 +579,10 @@ safe_FSM safe_FSM_i (
     obi_req_t    [1:0] core_data_req_ff;
     obi_resp_t   [NCYCLES-1:0] core_data_resp_ff; 
 
-for(genvar i=0; i<NHARTS; i++) begin : Nharts_delayed_mux
-
     logic       [NCYCLES-1:0] debug_req_ff;
-    logic       [NCYCLES-1:0][31:0] intr_ff;
+    logic       [NCYCLES-1:0][31:0] intr_ff; 
+
+for(genvar i=0; i<NHARTS; i++) begin : Nharts_delayed_mux
     
     assign mux_core_data_req_i[i] = xbar_core_data_req[i][0];
     assign xbar_core_data_resp[i][0] = mux_core_data_resp_o[i];   
@@ -527,7 +598,6 @@ if (i==0) begin
           .core_instr_req_o     (core_instr_req_ff[0]),
           .core_instr_resp_gnt_i(mux_core_instr_resp_i[0].gnt),
           .core_instr_resp_gnt_o(pipe_instr_gnt)
-        //  .core_instr_resp_rvalid_i(mux_core_instr_resp_i[0].rvalid)
         );
     
       // Data
@@ -539,7 +609,6 @@ if (i==0) begin
           .core_instr_req_o     (core_data_req_ff[0]),
           .core_instr_resp_gnt_i(mux_core_data_resp_i[0].gnt),
           .core_instr_resp_gnt_o(pipe_data_gnt)
-        //  .core_instr_resp_rvalid_i(mux_core_data_resp_i[0].rvalid)
         );  
     
     end else begin
@@ -602,12 +671,13 @@ always @(*) begin
              mux_core_data_req_o[1].req    = mux_core_data_req_i[1].req;
              mux_core_data_req_o[1].be    = mux_core_data_req_i[1].be;
              mux_core_data_req_o[1].wdata    = mux_core_data_req_i[1].wdata;
-             mux_core_data_req_o[1].we    = mux_core_data_req_i[1].we & mux_core_data_req_i[1].req; 
-                                                            
+            // when the buffered [0] req is granted the we is put to '0' in the output, while the output of [1] still one
+             mux_core_data_req_o[1].we    = mux_core_data_req_i[1].we & mux_core_data_req_i[1].req;
+                
              mux_core_data_resp_o[1].rdata   = core_data_resp_ff[NCYCLES-1].rdata;
              mux_core_data_resp_o[1].rvalid   = core_data_resp_ff[NCYCLES-1].rvalid;
              mux_core_data_resp_o[1].gnt   = mux_core_data_resp_i[1].gnt;
-            /**/
+
              mux_intr_o[1]       = intr_ff[NCYCLES-1];
              mux_debug_req_o[1]  = debug_req_ff[NCYCLES-1];
         end else begin
@@ -617,43 +687,67 @@ always @(*) begin
              mux_core_data_req_o[i]    =   mux_core_data_req_i[i];
              mux_core_data_resp_o[i]   =   mux_core_data_resp_i[i];
         
-            
              mux_intr_o[i]       = mux_intr_i[i];
              mux_debug_req_o[i]  = mux_debug_req_i[i];    
 
         end
     end
 end
+end
     for(genvar j=0; j<NCYCLES; j++) begin : N_Cycles_ff
     // Delayed Signals CPU ports
         always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
             if(~rst_ni) begin
-                intr_ff[i]          <= '0;
+                intr_ff             <= '0;
                 debug_req_ff        <= '0;
-                if (i==1) begin
                 core_instr_resp_ff  <= '0;
                 core_data_resp_ff   <= '0;
-                end
             end else begin
                 if (j == 0) begin
-                    intr_ff[0]      <= mux_intr_i[i];
-                    debug_req_ff[0] <= mux_debug_req_i[i];
-                    if(i==1) begin
+                    intr_ff[0]      <= mux_intr_i[1];
+                    debug_req_ff[0] <= mux_debug_req_i[1];
+                    
                     core_instr_resp_ff[0]  <= mux_core_instr_resp_i[1];
-                    core_data_resp_ff[0]   <= mux_core_data_resp_i[1];
-                    end
+                    core_data_resp_ff[0]   <= mux_core_data_resp_i[1];    
                 end else begin                    
                     debug_req_ff[j] <= debug_req_ff[j-1];
                     intr_ff[j]      <= intr_ff[j-1];
-                    if (i==1) begin
+                    
                     core_instr_resp_ff[j]  <= core_instr_resp_ff[j-1];
                     core_data_resp_ff[j]   <= core_data_resp_ff[j-1];                        
-                    end
+                    
                 end
             end
         end
     end
-end
+*/
+    lockstep_reg #(
+        .NHARTS(NHARTS),
+        .NCYCLES(NCYCLES)
+    ) lockstep_reg_i(
+        .clk_i,
+        .rst_ni,
+        .core_instr_req_i(mux_core_instr_req_i),
+        .core_instr_req_o (mux_core_instr_req_o),
+        .core_instr_resp_i(mux_core_instr_resp_i),
+        .core_instr_resp_o(mux_core_instr_resp_o),
+        
+        .core_data_req_i  (mux_core_data_req_i),
+        .core_data_req_o  (mux_core_data_req_o),
+        .core_data_resp_i (mux_core_data_resp_i),
+        .core_data_resp_o (mux_core_data_resp_o),
+        
+        .enable_i (delayed_s & dual_mode_s),
+        .mask(dmr_config_s),
+        .intr_i(mux_intr_i),
+        .intr_o(mux_intr_o),
+        .debug_i(mux_debug_req_i),
+        .debug_o(mux_debug_req_o)
+    
+    );        
+
+
+
 
 /************************Isolate BUS***************************/
 
@@ -693,10 +787,10 @@ end
 // Gated outpout to avoid changing master until switch to single mode
 always_ff @(posedge clk_i or negedge rst_ni) begin
     if(~rst_ni) begin
-        master_core_ff_S <= '0;
+        master_core_ff_s <= '0;
     end else begin
-    if (sleep_s == 1'b111)
-        master_core_ff_S <= master_core_s;
+    if (sleep_s == 3'b111)
+        master_core_ff_s <= master_core_s;
     end
 end
 
@@ -706,7 +800,7 @@ end
         // Instruction Bus
         .core_instr_req_i(mux_core_instr_req_o),
         .voted_core_instr_req_o(voted_core_instr_req_o[0]),
-        .enable_i(tmr_voter_enable_s && master_core_ff_S[0]),
+        .enable_i(tmr_voter_enable_s && master_core_ff_s[0]),
         // Data Bus
         .core_data_req_i(mux_core_data_req_o),
         .voted_core_data_req_o(voted_core_data_req_o[0]),
@@ -720,7 +814,7 @@ end
         // Instruction Bus
         .core_instr_req_i(mux_core_instr_req_o),
         .voted_core_instr_req_o(voted_core_instr_req_o[1]),
-        .enable_i(tmr_voter_enable_s && master_core_ff_S[1]),
+        .enable_i(tmr_voter_enable_s && master_core_ff_s[1]),
         // Data Bus
         .core_data_req_i(mux_core_data_req_o),
         .voted_core_data_req_o(voted_core_data_req_o[1]),
@@ -734,7 +828,7 @@ end
         // Instruction Bus
         .core_instr_req_i(mux_core_instr_req_o),
         .voted_core_instr_req_o(voted_core_instr_req_o[2]),
-        .enable_i(tmr_voter_enable_s && master_core_ff_S[2]),
+        .enable_i(tmr_voter_enable_s && master_core_ff_s[2]),
         // Data Bus
         .core_data_req_i(mux_core_data_req_o),
         .voted_core_data_req_o(voted_core_data_req_o[2]),
@@ -744,51 +838,62 @@ end
     );
 
 //******************Safety Comparator********************//
-
+obi_req_t  [NHARTS-1:0][1:0] dmr_core_instr_req_i;
+obi_req_t  [NHARTS-1:0][1:0] dmr_core_data_req_i;
 for(genvar i=0; i<NRCOMPARATORS; i++) begin :dmr_comparator
 
-obi_req_t  [1 : 0] dmr_core_instr_req_i;
-obi_req_t  [1 : 0] dmr_core_data_req_i;
-
-if (NHARTS == 3) begin
-    if(i == 0) begin : core0_core1
-        assign dmr_core_instr_req_i[0] = mux_core_instr_req_o[0];   
-        assign dmr_core_instr_req_i[1] = mux_core_instr_req_o[1];     
-        assign dmr_core_data_req_i[0] = mux_core_data_req_o[0];   
-        assign dmr_core_data_req_i[1] = mux_core_data_req_o[1]; 
-    end
-    else if(i == 1) begin : core1_core2
-        assign dmr_core_instr_req_i[0] = mux_core_instr_req_o[1];   
-        assign dmr_core_instr_req_i[1] = mux_core_instr_req_o[2];     
-        assign dmr_core_data_req_i[0] = mux_core_data_req_o[1];   
-        assign dmr_core_data_req_i[1] = mux_core_data_req_o[2];    
-    end
-    else begin : core0_core2    
-        assign dmr_core_instr_req_i[0] = mux_core_instr_req_o[0];   
-        assign dmr_core_instr_req_i[1] = mux_core_instr_req_o[2];
-        assign dmr_core_data_req_i[0] = mux_core_data_req_o[0];   
-        assign dmr_core_data_req_i[1] = mux_core_data_req_o[2];  
-    end
-end
-else begin : core0_core1
-    assign dmr_core_instr_req_i[0] = mux_core_instr_req_o[0];   
-    assign dmr_core_instr_req_i[1] = mux_core_instr_req_o[1];
-    assign dmr_core_data_req_i[0] = mux_core_data_req_o[0];   
-    assign dmr_core_data_req_i[1] = mux_core_data_req_o[1];          
-end
-
-    dmr_comparator #(    
-                        
+    dmr_comparator #(   
     ) dmr_comparator_i (
-    .core_instr_req_i(dmr_core_instr_req_i),
+    .core_instr_req_i(dmr_core_instr_req_i[i]),
     .compared_core_instr_req_o(compared_core_instr_req_o[i]),
-    .core_data_req_i(dmr_core_data_req_i),
+    .core_data_req_i(dmr_core_data_req_i[i]),
     .compared_core_data_req_o(compared_core_data_req_o[i]),
     .error_o(dmr_error_s[i])
     );
 end
 
-
+always_comb begin   //Mux Comparador 0
+        dmr_core_instr_req_i[0][0] = mux_core_instr_req_o[0];      
+        dmr_core_data_req_i[0][0] = mux_core_data_req_o[0];
+        if (dmr_config_s == 3'b011) begin
+            dmr_core_instr_req_i[0][1] = mux_core_instr_req_o[1];   
+            dmr_core_data_req_i[0][1] = mux_core_data_req_o[1];  
+        end else if (dmr_config_s == 3'b101) begin
+            dmr_core_instr_req_i[0][1] = mux_core_instr_req_o[2];   
+            dmr_core_data_req_i[0][1] = mux_core_data_req_o[2]; 
+        end else begin
+            dmr_core_instr_req_i[0][1] = mux_core_instr_req_o[1];   
+            dmr_core_data_req_i[0][1] = mux_core_data_req_o[1];     
+        end
+end
+always_comb begin   //Mux Comparador 1
+        dmr_core_instr_req_i[1][0] = mux_core_instr_req_o[1];      
+        dmr_core_data_req_i[1][0] = mux_core_data_req_o[1];
+        if (dmr_config_s == 3'b011) begin
+            dmr_core_instr_req_i[1][1] = mux_core_instr_req_o[0];   
+            dmr_core_data_req_i[1][1] = mux_core_data_req_o[0];  
+        end else if (dmr_config_s == 3'b110) begin
+            dmr_core_instr_req_i[1][1] = mux_core_instr_req_o[2];   
+            dmr_core_data_req_i[1][1] = mux_core_data_req_o[2]; 
+        end else begin
+            dmr_core_instr_req_i[1][1] = mux_core_instr_req_o[0];   
+            dmr_core_data_req_i[1][1] = mux_core_data_req_o[0];     
+        end
+end 
+always_comb begin   //Mux Comparador 2   
+        dmr_core_instr_req_i[2][0] = mux_core_instr_req_o[2];      
+        dmr_core_data_req_i[2][0] = mux_core_data_req_o[2];
+        if (dmr_config_s == 3'b110) begin
+            dmr_core_instr_req_i[2][1] = mux_core_instr_req_o[1];   
+            dmr_core_data_req_i[2][1] = mux_core_data_req_o[1];  
+        end else if (dmr_config_s == 3'b101) begin
+            dmr_core_instr_req_i[2][1] = mux_core_instr_req_o[0];   
+            dmr_core_data_req_i[2][1] = mux_core_data_req_o[0]; 
+        end else begin
+            dmr_core_instr_req_i[2][1] = mux_core_instr_req_o[0];   
+            dmr_core_data_req_i[2][1] = mux_core_data_req_o[0];     
+        end  
+end
 
 //*******************************************************//
 

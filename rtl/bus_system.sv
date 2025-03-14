@@ -63,7 +63,7 @@ module bus_system
 );
 
   import cei_mochila_pkg::*;
-
+/*
     obi_req_t  core_instr_req_s; 
     obi_req_t  core_data_req_s; 
 
@@ -90,7 +90,7 @@ obi_sngreg obi_sngreg_1i (
     .core_instr_resp_gnt_o(core_data_resp_o[0].gnt)
 );
 
-
+*/
   // Safe CPU reg port
   reg_pkg::reg_req_t  int_safe_cpu_wrapper_reg_req;
   reg_pkg::reg_rsp_t  int_safe_cpu_wrapper_reg_rsp;   
@@ -111,11 +111,11 @@ obi_sngreg obi_sngreg_1i (
 
   // Internal master requests
 
-  assign int_master_req[cei_mochila_pkg::CORE0_INSTR_IDX] = core_instr_req_s;
-  assign int_master_req[cei_mochila_pkg::CORE0_DATA_IDX] = core_data_req_s;
+//  assign int_master_req[cei_mochila_pkg::CORE0_INSTR_IDX] = core_instr_req_s;
+//  assign int_master_req[cei_mochila_pkg::CORE0_DATA_IDX] = core_data_req_s;
 
-//  assign int_master_req[cei_mochila_pkg::CORE0_INSTR_IDX] = core_instr_req_i[0];
-//  assign int_master_req[cei_mochila_pkg::CORE0_DATA_IDX] = core_data_req_i[0];
+  assign int_master_req[cei_mochila_pkg::CORE0_INSTR_IDX] = core_instr_req_i[0];
+  assign int_master_req[cei_mochila_pkg::CORE0_DATA_IDX] = core_data_req_i[0];
   assign int_master_req[cei_mochila_pkg::CORE1_INSTR_IDX] = core_instr_req_i[1];
   assign int_master_req[cei_mochila_pkg::CORE1_DATA_IDX] = core_data_req_i[1];
   assign int_master_req[cei_mochila_pkg::CORE2_INSTR_IDX] = core_instr_req_i[2];
@@ -127,11 +127,11 @@ obi_sngreg obi_sngreg_1i (
   assign core_instr_resp_o[0].rvalid = int_master_resp[cei_mochila_pkg::CORE0_INSTR_IDX].rvalid;
   assign core_instr_resp_o[0].rdata = int_master_resp[cei_mochila_pkg::CORE0_INSTR_IDX].rdata;
 
-  assign core_data_resp_o[0].rvalid = int_master_resp[cei_mochila_pkg::CORE0_DATA_IDX].rvalid;
-  assign core_data_resp_o[0].rdata = int_master_resp[cei_mochila_pkg::CORE0_DATA_IDX].rdata;
+//  assign core_data_resp_o[0].rvalid = int_master_resp[cei_mochila_pkg::CORE0_DATA_IDX].rvalid;
+//  assign core_data_resp_o[0].rdata = int_master_resp[cei_mochila_pkg::CORE0_DATA_IDX].rdata;
 
-//  assign core_instr_resp_o[0] = int_master_resp[cei_mochila_pkg::CORE0_INSTR_IDX];
-//  assign core_data_resp_o[0] = int_master_resp[cei_mochila_pkg::CORE0_DATA_IDX];
+  assign core_instr_resp_o[0] = int_master_resp[cei_mochila_pkg::CORE0_INSTR_IDX];
+  assign core_data_resp_o[0] = int_master_resp[cei_mochila_pkg::CORE0_DATA_IDX];
   assign core_instr_resp_o[1] = int_master_resp[cei_mochila_pkg::CORE1_INSTR_IDX];
   assign core_data_resp_o[1] = int_master_resp[cei_mochila_pkg::CORE1_DATA_IDX];
   assign core_instr_resp_o[2] = int_master_resp[cei_mochila_pkg::CORE2_INSTR_IDX];
