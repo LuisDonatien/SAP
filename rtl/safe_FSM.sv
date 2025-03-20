@@ -38,7 +38,7 @@ module safe_FSM
     output logic Dmr_comparator_enable_o,
     output logic [NHARTS-1:0]wfi_dmr_o,
     input logic [NHARTS-1:0] voter_id_error,
-    input logic tmr_error,
+    input logic tmr_error_i,
     input logic [NHARTS-1:0] dmr_error_i,
     input logic Start_i,
     output logic Start_Boot_o,
@@ -453,7 +453,7 @@ module safe_FSM
               ctrl_tmr_fsm_ns[i] = TMR_IDLE;
             else if ((Hart_wfi_i[0] == 1'b1 && Hart_wfi_i[1] == 1'b1 && Hart_wfi_i[2]) == 1'b1 && Safe_configuration_i!=2'b01)
               ctrl_tmr_fsm_ns[i] = TMR_END_SYNC;
-            else if (tmr_error == 1'b1) 
+            else if (tmr_error_s == 1'b1) 
               ctrl_tmr_fsm_ns[i] = TMR_SYNCINTC;
             else
               ctrl_tmr_fsm_ns[i] = TMR_SYNC;
@@ -602,7 +602,7 @@ module safe_FSM
 
           TMR_REC_IDLE:
           begin
-            if( tmr_error == 1'b1 && ctrl_tmr_fsm_cs[i] == TMR_SYNC && End_sw_routine_i == 1'b1) begin //Todo Patch End_sw_routine_i '0'->'1'
+            if( tmr_error_i == 1'b1 && ctrl_tmr_fsm_cs[i] == TMR_SYNC && End_sw_routine_i == 1'b1) begin //Todo Patch End_sw_routine_i '0'->'1'
               if (tmr_critical_section_i == 1'b0)
                 ctrl_tmr_rec_fsm_ns[i] = TMR_REC_SYNCINTC;                
               else begin
@@ -1122,6 +1122,29 @@ assign Dmr_config_o = tmr_dmr_config_s | dmr_dmr_config_s;
 assign DMR_Rec_o = DMR_Rec_s[0] | DMR_Rec_s[1] | DMR_Rec_s[2];
 
 assign Interrupt_swResync_o = Interrupt_swResync_s | Interrupt_sw_TMR_Resync_s;
+
+
+
+//###Critical Section###//
+
+logic [1:0] tmr_error_ff;
+logic tmr_error_s;
+always_ff @(posedge clk_i or negedge rst_ni) begin
+  if(~rst_ni) begin
+    tmr_error_ff <= '0;
+  end else begin
+    tmr_error_ff[0] <= tmr_error_i;
+    if ((ctrl_tmr_fsm_cs[0] == TMR_SYNC || ctrl_tmr_fsm_cs[1] == TMR_SYNC || ctrl_tmr_fsm_cs[2] == TMR_SYNC)&& 
+                                      (tmr_error_i) && (~tmr_error_ff[0]))
+      tmr_error_ff[1] <= ~tmr_error_ff[1];
+    else if (ctrl_tmr_fsm_cs[0] != TMR_SYNC || ctrl_tmr_fsm_cs[1] != TMR_SYNC || ctrl_tmr_fsm_cs[2] != TMR_SYNC)
+      tmr_error_ff <= '0;
+  end
+end
+
+assign tmr_error_s = (~tmr_critical_section_i & (tmr_error_i | tmr_error_ff[1])) | (tmr_critical_section_i & 
+                                                                    (~tmr_error_ff[0]) & tmr_error_ff[1] & tmr_error_i);
+//####################//
 endmodule
 
 

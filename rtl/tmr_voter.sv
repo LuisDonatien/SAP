@@ -115,7 +115,7 @@ end
 
 
 assign error_id_o = instr_error_s | data_error_s;
-assign error_o = error_s[0] | error_s[1] | error_s[2] | error_s[3] | error_s[4] | error_s[5];
+assign error_o = ((error_s[0] | error_s[1] | error_s[2]) & voted_core_instr_req_s.req) | ((error_s[3] | error_s[4] | error_s[5]) & voted_core_data_req_s.req);
 
 assign voted_core_instr_req_o = voted_core_instr_req_s;
 assign voted_core_data_req_o = voted_core_data_req_s;

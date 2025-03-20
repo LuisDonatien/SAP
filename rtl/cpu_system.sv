@@ -5,13 +5,14 @@
 
 module cpu_system
   import obi_pkg::*;
+  import cei_mochila_pkg::*;
   import core_v_mini_mcu_pkg::*;
   import fpu_ss_pkg::*;
 #(
     parameter BOOT_ADDR = cei_mochila_pkg::DEBUG_BOOTROM_START_ADDRESS,
     parameter NHARTS = 3,
     parameter HARTID = 32'h01,
-    parameter CPU = 10,
+    parameter cei_mochila_pkg::cpu_type_e CPU = cei_mochila_pkg::CPU_type,
     parameter COPROCESSOR = 0,
     parameter DM_HALTADDRESS = cei_mochila_pkg::DEBUG_BOOTROM_START_ADDRESS + 32'h50
 ) (
@@ -62,7 +63,7 @@ module cpu_system
   assign core_instr_req_o[2].we    = '0;
   assign core_instr_req_o[2].be    = 4'b1111;  
 
-if (CPU==1) begin
+if (CPU == CV32E40P) begin : gen_eros_cv32e40p
     cv32e40p_top #(
         .COREV_PULP      (0),
         .COREV_CLUSTER   (0),
@@ -204,7 +205,7 @@ if (CPU==1) begin
         .core_sleep_o(sleep_o[2])
     );
 
-end else if (CPU==2) begin : gen_cv32e40px
+end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
 
 //    import cv32e40px_core_v_xif_pkg::*;
   localparam ZFINX = 0;
@@ -617,7 +618,7 @@ end else if (CPU==2) begin : gen_cv32e40px
 
   end
 
-end else begin
+end else begin : gen_eros_cv32e20
   
   // instantiate the core 0
     cve2_top #(
@@ -725,7 +726,7 @@ end else begin
         .test_en_i(1'b0),
         .ram_cfg_i('0),
 
-        .hart_id_i  (HARTID),
+        .hart_id_i  (32'h15),
         .boot_addr_i(BOOT_ADDR),
 
         .instr_addr_o  (core_instr_req_o[2].addr),

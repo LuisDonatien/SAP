@@ -30,6 +30,7 @@ module mochila_top
 
     // Debug Interface
     input logic         debug_req_i,
+    output logic   [NHARTS-1:0] sleep_o,
 
     // power manager signals that goes to the ASIC macros
     input  logic [N_BANKS-1:0] pwrgate_ni,
@@ -83,7 +84,7 @@ safe_cpu_wrapper safe_cpu_wrapper_i(
 
     // Debug Interface
     .debug_req_i,
-
+    .sleep_o,
     // Interrupt Interface
     .interrupt_o
 );

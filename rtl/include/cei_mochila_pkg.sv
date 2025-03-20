@@ -19,8 +19,17 @@ package cei_mochila_pkg;
     EDGE,
     LEVEL
   } interrupt_type_e;
-  
+
   localparam interrupt_type_e Intc_Iype = EDGE;
+
+  //CPU TYPE
+  typedef enum logic [1:0] {
+    CV32E20,
+    CV32E40P,
+    CV32E40PX
+  } cpu_type_e;
+  
+  localparam cpu_type_e CPU_type = CV32E20;
 
 //System Bus
   typedef enum logic {
