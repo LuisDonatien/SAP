@@ -55,9 +55,7 @@ localparam NRCOMPARATORS = NHARTS == 3 ? 3 : 1 ;
     logic [NHARTS-1:0] Hart_wfi_s;
     logic [NHARTS-1:0] Hart_intc_ack_s;
     logic [NHARTS-1:0] Interrupt_swResync_s;
-    logic [NHARTS-1:0] Interrupt_CpyResync_s;
     logic [NHARTS-1:0] Interrupt_DMSH_Sync_s;
-    logic [NHARTS-1:0][0:0] Select_wfi_core_s;
     logic [NHARTS-1:0] master_core_s;
     logic [NHARTS-1:0] master_core_ff_s;
     logic [2:0] safe_mode_s;
@@ -204,43 +202,39 @@ safe_FSM safe_FSM_i (
     .clk_i,
     .rst_ni,
     .tmr_critical_section_i (critical_section_s),
-    .DMR_Mask_i          (safe_mode_s),
+    .DMR_Mask_i(safe_mode_s),
     .Safe_configuration_i (safe_configuration_s),
-    .Initial_Sync_Master_i(Initial_Sync_Master_s), 
+    .Initial_Sync_Master_i(Initial_Sync_Master_s),
     .Halt_ack_i(debug_mode_s), 
     .Hart_wfi_i(sleep_s),
     .Hart_intc_ack_i(Hart_intc_ack_s),
-    .Select_wfi_core_o      (Select_wfi_core_s),
-    .Master_Core_i(master_core_s),      
-    .Interrupt_Sync_o(intc_sync_s),   
-    .Interrupt_swResync_o(Interrupt_swResync_s),  
+    .Master_Core_i(master_core_s),
+    .Interrupt_Sync_o(intc_sync_s),
+    .Interrupt_swResync_o(Interrupt_swResync_s),
     .Interrupt_Halt_o(intc_halt_s),
-    .Interrupt_CpyResync_o(Interrupt_CpyResync_s),
-    .Interrupt_DMSH_Sync_o(Interrupt_DMSH_Sync_s),
     .tmr_error_i(tmr_error_s[0] | tmr_error_s[1] | tmr_error_s[2]),
     .voter_id_error(tmr_errorid_s[0] | tmr_errorid_s[1] | tmr_errorid_s[2]),
     .Single_Bus_o(bus_config_s),
     .Tmr_voter_enable_o(tmr_voter_enable_s),
-    .Dmr_comparator_enable_o(),
+    .Dmr_comparator_enable_o(dual_mode_s),
     .Dmr_config_o(dmr_config_s),
     .dmr_error_i(dmr_error_s),
     .wfi_dmr_o(dmr_wfi_s),
-    .Dual_mode_o(dual_mode_s),
     .Delayed_o(delayed_s),
     .Start_Boot_o(Start_Boot_s),
     .Start_i(Start_s),
     .End_sw_routine_i(End_sw_routine_s),
-    .DMR_Rec_o              (DMR_Rec_s),
+    .DMR_Rec_o(DMR_Rec_s),
     .en_ext_debug_req_o(en_ext_debug_s)
 );
       assign intr[0] = {
-    12'b0, Interrupt_DMSH_Sync_s[0], Interrupt_CpyResync_s[0], intc_sync_s[0], Interrupt_swResync_s[0], 16'b0 
+    12'b0, 1'b0, 1'b0, intc_sync_s[0], 1'b0, 16'b0 
   };
       assign intr[1] = {
-    12'b0, Interrupt_DMSH_Sync_s[1], Interrupt_CpyResync_s[1], intc_sync_s[1], Interrupt_swResync_s[1], 16'b0 
+    12'b0, 1'b0, 1'b0, intc_sync_s[1], 1'b0, 16'b0 
   };
       assign intr[2] = {
-    12'b0, Interrupt_DMSH_Sync_s[2], Interrupt_CpyResync_s[2], intc_sync_s[2], Interrupt_swResync_s[2], 16'b0 
+    12'b0, 1'b0, 1'b0, intc_sync_s[2], 1'b0, 16'b0 
   };
 
   //Todo: future posibility to debug during TMR_SYNC or DMR_SYNC
