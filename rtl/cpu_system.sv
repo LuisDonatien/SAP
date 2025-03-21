@@ -659,7 +659,7 @@ end else begin : gen_eros_cv32e20
 
         .debug_req_i (debug_req_i[0]),
         .crash_dump_o(),
-        .debug_mode_o(debug_mode_o[0]),
+        .debug_halted_o(debug_mode_o[0]),
         .dm_halt_addr_i(DM_HALTADDRESS),
         .dm_exception_addr_i('0),
 
@@ -707,7 +707,7 @@ end else begin : gen_eros_cv32e20
 
         .debug_req_i (debug_req_i[1]),
         .crash_dump_o(),
-        .debug_mode_o(debug_mode_o[1]),
+        .debug_halted_o(debug_mode_o[1]),
         .dm_halt_addr_i(DM_HALTADDRESS),
         .dm_exception_addr_i('0),
 
@@ -754,7 +754,7 @@ end else begin : gen_eros_cv32e20
 
         .debug_req_i (debug_req_i[2]),
         .crash_dump_o(),
-        .debug_mode_o(debug_mode_o[2]),
+        .debug_halted_o(debug_mode_o[2]),
         .dm_halt_addr_i(DM_HALTADDRESS),
         .dm_exception_addr_i('0),
 
