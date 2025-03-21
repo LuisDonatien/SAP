@@ -13,29 +13,27 @@ package cpu_private_reg_pkg;
   // Typedefs for registers //
   ////////////////////////////
 
-  typedef struct packed {
-    logic        q;
-  } cpu_private_reg2hw_hart_intc_ack_reg_t;
+  typedef struct packed {logic q;} cpu_private_reg2hw_hart_intc_ack_reg_t;
 
   typedef struct packed {
-    logic [2:0]  d;
-    logic        de;
+    logic [2:0] d;
+    logic       de;
   } cpu_private_hw2reg_core_id_reg_t;
 
   // Register -> HW type
   typedef struct packed {
-    cpu_private_reg2hw_hart_intc_ack_reg_t hart_intc_ack; // [0:0]
+    cpu_private_reg2hw_hart_intc_ack_reg_t hart_intc_ack;  // [0:0]
   } cpu_private_reg2hw_t;
 
   // HW -> register type
   typedef struct packed {
-    cpu_private_hw2reg_core_id_reg_t core_id; // [3:0]
+    cpu_private_hw2reg_core_id_reg_t core_id;  // [3:0]
   } cpu_private_hw2reg_t;
 
   // Register offsets
-  parameter logic [BlockAw-1:0] CPU_PRIVATE_CORE_ID_OFFSET = 4'h 0;
-  parameter logic [BlockAw-1:0] CPU_PRIVATE_HART_INTC_ACK_OFFSET = 4'h 4;
-  parameter logic [BlockAw-1:0] CPU_PRIVATE_BREAKPOINT_SIM_OFFSET = 4'h 8;
+  parameter logic [BlockAw-1:0] CPU_PRIVATE_CORE_ID_OFFSET = 4'h0;
+  parameter logic [BlockAw-1:0] CPU_PRIVATE_HART_INTC_ACK_OFFSET = 4'h4;
+  parameter logic [BlockAw-1:0] CPU_PRIVATE_BREAKPOINT_SIM_OFFSET = 4'h8;
 
   // Register index
   typedef enum int {
@@ -45,10 +43,10 @@ package cpu_private_reg_pkg;
   } cpu_private_id_e;
 
   // Register width information to check illegal writes
-  parameter logic [3:0] CPU_PRIVATE_PERMIT [3] = '{
-    4'b 0001, // index[0] CPU_PRIVATE_CORE_ID
-    4'b 0001, // index[1] CPU_PRIVATE_HART_INTC_ACK
-    4'b 0001  // index[2] CPU_PRIVATE_BREAKPOINT_SIM
+  parameter logic [3:0] CPU_PRIVATE_PERMIT[3] = '{
+      4'b0001,  // index[0] CPU_PRIVATE_CORE_ID
+      4'b0001,  // index[1] CPU_PRIVATE_HART_INTC_ACK
+      4'b0001  // index[2] CPU_PRIVATE_BREAKPOINT_SIM
   };
 
 endpackage

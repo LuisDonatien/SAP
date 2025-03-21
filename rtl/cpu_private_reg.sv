@@ -22,7 +22,7 @@ module cpu_private_reg #(
 
 );
 
-  import cpu_private_reg_pkg::* ;
+  import cpu_private_reg_pkg::*;
 
   cpu_private_reg2hw_t reg2hw;
   cpu_private_hw2reg_t hw2reg;
@@ -41,10 +41,10 @@ module cpu_private_reg #(
   );
 
   //Reg2Hw read
-  assign Hart_intc_ack_o = reg2hw.hart_intc_ack.q;
-  
+  assign Hart_intc_ack_o   = reg2hw.hart_intc_ack.q;
+
   //Hw2Reg always write
-  assign hw2reg.core_id.d = Core_id_i;
+  assign hw2reg.core_id.d  = Core_id_i;
   assign hw2reg.core_id.de = 1'b1;
 
 

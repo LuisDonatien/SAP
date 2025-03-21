@@ -28,13 +28,13 @@ package cei_mochila_pkg;
     CV32E40P,
     CV32E40PX
   } cpu_type_e;
-  
+
   localparam cpu_type_e CPU_type = CV32E20;
 
-//System Bus
+  //System Bus
   typedef enum logic {
     NtoM
-  //  onetoM //Not implemented
+    //  onetoM //Not implemented
   } bus_type_e;
 
   localparam bus_type_e BusType = NtoM;
@@ -53,10 +53,10 @@ package cei_mochila_pkg;
 
   localparam GLOBAL_BASE_ADDRESS = 32'hF0000000;
 
-  
+
   localparam int unsigned MEM_SIZE = 32'h00010000;
   localparam int unsigned NUM_BANKS = 2;
-  
+
 
   //Internal Memory Map and Index
   //--------------------
@@ -97,10 +97,10 @@ package cei_mochila_pkg;
   localparam logic [31:0] SAFE_CPU_REGISTER_END_ADDRESS = SAFE_CPU_REGISTER_START_ADDRESS + SAFE_CPU_REGISTER_SIZE;
   localparam logic [31:0] SAFE_CPU_REGISTER_IDX = 32'd5;
 
- 
+
 
   localparam addr_map_rule_t [SYSTEM_XBAR_NSLAVE-1:0] XBAR_ADDR_RULES = '{
-      '{  idx: ERROR_IDX, start_addr: ERROR_START_ADDRESS, end_addr: ERROR_END_ADDRESS}, 
+      '{idx: ERROR_IDX, start_addr: ERROR_START_ADDRESS, end_addr: ERROR_END_ADDRESS},
       '{
           idx: PERIPHERAL_IDX,
           start_addr: PERIPHERAL_START_ADDRESS,
@@ -128,8 +128,8 @@ package cei_mochila_pkg;
       }
   };
 
-//Peripherals
-//-----------
+  //Peripherals
+  //-----------
 
   localparam PERIPHERALS = 1;
 
@@ -138,9 +138,10 @@ package cei_mochila_pkg;
   localparam logic [31:0] DEBUG_BOOTROM_END_ADDRESS = DEBUG_BOOTROM_START_ADDRESS + DEBUG_BOOTROM_SIZE;
   localparam logic [31:0] DEBUG_BOOTROM_IDX = 32'd0;
 
-  localparam addr_map_rule_t [PERIPHERALS-1:0] PERIPHERALS_ADDR_RULES ='{
-      '{  idx: DEBUG_BOOTROM_IDX, 
-          start_addr: DEBUG_BOOTROM_START_ADDRESS, 
+  localparam addr_map_rule_t [PERIPHERALS-1:0] PERIPHERALS_ADDR_RULES = '{
+      '{
+          idx: DEBUG_BOOTROM_IDX,
+          start_addr: DEBUG_BOOTROM_START_ADDRESS,
           end_addr: DEBUG_BOOTROM_END_ADDRESS
       }
   };
@@ -152,7 +153,7 @@ package cei_mochila_pkg;
 
   //Private Memory CPU
   localparam CPU_XBAR_SLAVE = 2;
-  localparam CPU_XBAR_NRULES = 3; //Depending on the external address.
+  localparam CPU_XBAR_NRULES = 3;  //Depending on the external address.
 
   localparam logic [31:0] BUS_SYSTEM_START_ADDRESS = PERIPHERAL_START_ADDRESS;
   localparam logic [31:0] BUS_SYSTEM_SIZE = 32'h00FEFFFF;
@@ -171,23 +172,22 @@ package cei_mochila_pkg;
 
 
 
-  localparam addr_map_rule_t [CPU_XBAR_NRULES-1:0] CPU_XBAR_ADDR_RULES ='{
-      '{  idx: BUS_SYSTEM_IDX, 
-          start_addr: BUS_SYSTEM_START_ADDRESS, 
+  localparam addr_map_rule_t [CPU_XBAR_NRULES-1:0] CPU_XBAR_ADDR_RULES = '{
+      '{
+          idx: BUS_SYSTEM_IDX,
+          start_addr: BUS_SYSTEM_START_ADDRESS,
           end_addr: BUS_SYSTEM_END_ADDRESS
       },
-      '{  idx: EXT_BUS_SYSTEM_IDX, 
-          start_addr: EXT_BUS_SYSTEM_START_ADDRESS, 
+      '{
+          idx: EXT_BUS_SYSTEM_IDX,
+          start_addr: EXT_BUS_SYSTEM_START_ADDRESS,
           end_addr: EXT_BUS_SYSTEM_END_ADDRESS
       },
-      '{  idx: CPU_REG_IDX, 
-          start_addr: CPU_REG_START_ADDRESS, 
-          end_addr: CPU_REG_END_ADDRESS
-      }
+      '{idx: CPU_REG_IDX, start_addr: CPU_REG_START_ADDRESS, end_addr: CPU_REG_END_ADDRESS}
   };
 
   //External Peripherals MM Base Address
-  
+
   //DEBUG SYSTEM
   localparam int unsigned DEBUG_SYSTEM_START_START_ADDRESS = 32'h10000000;
 

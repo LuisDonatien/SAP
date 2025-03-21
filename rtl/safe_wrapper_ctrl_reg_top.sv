@@ -8,44 +8,44 @@
 `include "common_cells/assertions.svh"
 
 module safe_wrapper_ctrl_reg_top #(
-  parameter type reg_req_t = logic,
-  parameter type reg_rsp_t = logic,
-  parameter int AW = 6
+    parameter type reg_req_t = logic,
+    parameter type reg_rsp_t = logic,
+    parameter int AW = 6
 ) (
-  input logic clk_i,
-  input logic rst_ni,
-  input  reg_req_t reg_req_i,
-  output reg_rsp_t reg_rsp_o,
-  // To HW
-  output safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_reg2hw_t reg2hw, // Write
-  input  safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_hw2reg_t hw2reg, // Read
+    input logic clk_i,
+    input logic rst_ni,
+    input reg_req_t reg_req_i,
+    output reg_rsp_t reg_rsp_o,
+    // To HW
+    output safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_reg2hw_t reg2hw,  // Write
+    input safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_hw2reg_t hw2reg,  // Read
 
 
-  // Config
-  input devmode_i // If 1, explicit error return for unmapped register access
+    // Config
+    input devmode_i  // If 1, explicit error return for unmapped register access
 );
 
-  import safe_wrapper_ctrl_reg_pkg::* ;
+  import safe_wrapper_ctrl_reg_pkg::*;
 
   localparam int DW = 32;
-  localparam int DBW = DW/8;                    // Byte Width
+  localparam int DBW = DW / 8;  // Byte Width
 
   // register signals
   logic           reg_we;
   logic           reg_re;
-  logic [AW-1:0]  reg_addr;
-  logic [DW-1:0]  reg_wdata;
+  logic [ AW-1:0] reg_addr;
+  logic [ DW-1:0] reg_wdata;
   logic [DBW-1:0] reg_be;
-  logic [DW-1:0]  reg_rdata;
+  logic [ DW-1:0] reg_rdata;
   logic           reg_error;
 
-  logic          addrmiss, wr_err;
+  logic addrmiss, wr_err;
 
   logic [DW-1:0] reg_rdata_next;
 
   // Below register interface can be changed
-  reg_req_t  reg_intf_req;
-  reg_rsp_t  reg_intf_rsp;
+  reg_req_t reg_intf_req;
+  reg_rsp_t reg_intf_rsp;
 
 
   assign reg_intf_req = reg_req_i;
@@ -61,7 +61,7 @@ module safe_wrapper_ctrl_reg_top #(
   assign reg_intf_rsp.error = reg_error;
   assign reg_intf_rsp.ready = 1'b1;
 
-  assign reg_rdata = reg_rdata_next ;
+  assign reg_rdata = reg_rdata_next;
   assign reg_error = (devmode_i & addrmiss) | wr_err;
 
 
@@ -116,296 +116,296 @@ module safe_wrapper_ctrl_reg_top #(
   // R[safe_configuration]: V(False)
 
   prim_subreg #(
-    .DW      (2),
-    .SWACCESS("RW"),
-    .RESVAL  (2'h0)
+      .DW      (2),
+      .SWACCESS("RW"),
+      .RESVAL  (2'h0)
   ) u_safe_configuration (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (safe_configuration_we),
-    .wd     (safe_configuration_wd),
+      // from register interface
+      .we(safe_configuration_we),
+      .wd(safe_configuration_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.safe_configuration.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.safe_configuration.q),
 
-    // to register interface (read)
-    .qs     (safe_configuration_qs)
+      // to register interface (read)
+      .qs(safe_configuration_qs)
   );
 
 
   // R[dmr_mask]: V(False)
 
   prim_subreg #(
-    .DW      (3),
-    .SWACCESS("RW"),
-    .RESVAL  (3'h0)
+      .DW      (3),
+      .SWACCESS("RW"),
+      .RESVAL  (3'h0)
   ) u_dmr_mask (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (dmr_mask_we),
-    .wd     (dmr_mask_wd),
+      // from register interface
+      .we(dmr_mask_we),
+      .wd(dmr_mask_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.dmr_mask.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.dmr_mask.q),
 
-    // to register interface (read)
-    .qs     (dmr_mask_qs)
+      // to register interface (read)
+      .qs(dmr_mask_qs)
   );
 
 
   // R[master_core]: V(False)
 
   prim_subreg #(
-    .DW      (3),
-    .SWACCESS("RW"),
-    .RESVAL  (3'h1)
+      .DW      (3),
+      .SWACCESS("RW"),
+      .RESVAL  (3'h1)
   ) u_master_core (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (master_core_we),
-    .wd     (master_core_wd),
+      // from register interface
+      .we(master_core_we),
+      .wd(master_core_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.master_core.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.master_core.q),
 
-    // to register interface (read)
-    .qs     (master_core_qs)
+      // to register interface (read)
+      .qs(master_core_qs)
   );
 
 
   // R[critical_section]: V(False)
 
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RW"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RW"),
+      .RESVAL  (1'h0)
   ) u_critical_section (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (critical_section_we),
-    .wd     (critical_section_wd),
+      // from register interface
+      .we(critical_section_we),
+      .wd(critical_section_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.critical_section.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.critical_section.q),
 
-    // to register interface (read)
-    .qs     (critical_section_qs)
+      // to register interface (read)
+      .qs(critical_section_qs)
   );
 
 
   // R[start]: V(False)
 
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RW"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RW"),
+      .RESVAL  (1'h0)
   ) u_start (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (start_we),
-    .wd     (start_wd),
+      // from register interface
+      .we(start_we),
+      .wd(start_wd),
 
-    // from internal hardware
-    .de     (hw2reg.start.de),
-    .d      (hw2reg.start.d ),
+      // from internal hardware
+      .de(hw2reg.start.de),
+      .d (hw2reg.start.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.start.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.start.q),
 
-    // to register interface (read)
-    .qs     (start_qs)
+      // to register interface (read)
+      .qs(start_qs)
   );
 
 
   // R[boot_address]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_boot_address (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (boot_address_we),
-    .wd     (boot_address_wd),
+      // from register interface
+      .we(boot_address_we),
+      .wd(boot_address_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (boot_address_qs)
+      // to register interface (read)
+      .qs(boot_address_qs)
   );
 
 
   // R[external_debug_req]: V(False)
 
   prim_subreg #(
-    .DW      (2),
-    .SWACCESS("RO"),
-    .RESVAL  (2'h0)
+      .DW      (2),
+      .SWACCESS("RO"),
+      .RESVAL  (2'h0)
   ) u_external_debug_req (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.external_debug_req.de),
-    .d      (hw2reg.external_debug_req.d ),
+      // from internal hardware
+      .de(hw2reg.external_debug_req.de),
+      .d (hw2reg.external_debug_req.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (external_debug_req_qs)
+      // to register interface (read)
+      .qs(external_debug_req_qs)
   );
 
 
   // R[initial_sync_master]: V(False)
 
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RW"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RW"),
+      .RESVAL  (1'h0)
   ) u_initial_sync_master (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (initial_sync_master_we),
-    .wd     (initial_sync_master_wd),
+      // from register interface
+      .we(initial_sync_master_we),
+      .wd(initial_sync_master_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.initial_sync_master.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.initial_sync_master.q),
 
-    // to register interface (read)
-    .qs     (initial_sync_master_qs)
+      // to register interface (read)
+      .qs(initial_sync_master_qs)
   );
 
 
   // R[end_sw_routine]: V(False)
 
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RW"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RW"),
+      .RESVAL  (1'h0)
   ) u_end_sw_routine (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (end_sw_routine_we),
-    .wd     (end_sw_routine_wd),
+      // from register interface
+      .we(end_sw_routine_we),
+      .wd(end_sw_routine_wd),
 
-    // from internal hardware
-    .de     (hw2reg.end_sw_routine.de),
-    .d      (hw2reg.end_sw_routine.d ),
+      // from internal hardware
+      .de(hw2reg.end_sw_routine.de),
+      .d (hw2reg.end_sw_routine.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.end_sw_routine.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.end_sw_routine.q),
 
-    // to register interface (read)
-    .qs     (end_sw_routine_qs)
+      // to register interface (read)
+      .qs(end_sw_routine_qs)
   );
 
 
   // R[entry_address]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_entry_address (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (entry_address_we),
-    .wd     (entry_address_wd),
+      // from register interface
+      .we(entry_address_we),
+      .wd(entry_address_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (entry_address_qs)
+      // to register interface (read)
+      .qs(entry_address_qs)
   );
 
 
   // R[safe_copy_address]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'hf0029000)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'hf0029000)
   ) u_safe_copy_address (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (safe_copy_address_we),
-    .wd     (safe_copy_address_wd),
+      // from register interface
+      .we(safe_copy_address_we),
+      .wd(safe_copy_address_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (safe_copy_address_qs)
+      // to register interface (read)
+      .qs(safe_copy_address_qs)
   );
 
 
@@ -413,53 +413,53 @@ module safe_wrapper_ctrl_reg_top #(
 
   //   F[enable_interrupt]: 0:0
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RW"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RW"),
+      .RESVAL  (1'h0)
   ) u_interrupt_controler_enable_interrupt (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (interrupt_controler_enable_interrupt_we),
-    .wd     (interrupt_controler_enable_interrupt_wd),
+      // from register interface
+      .we(interrupt_controler_enable_interrupt_we),
+      .wd(interrupt_controler_enable_interrupt_wd),
 
-    // from internal hardware
-    .de     (hw2reg.interrupt_controler.enable_interrupt.de),
-    .d      (hw2reg.interrupt_controler.enable_interrupt.d ),
+      // from internal hardware
+      .de(hw2reg.interrupt_controler.enable_interrupt.de),
+      .d (hw2reg.interrupt_controler.enable_interrupt.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.interrupt_controler.enable_interrupt.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.interrupt_controler.enable_interrupt.q),
 
-    // to register interface (read)
-    .qs     (interrupt_controler_enable_interrupt_qs)
+      // to register interface (read)
+      .qs(interrupt_controler_enable_interrupt_qs)
   );
 
 
   //   F[status_interrupt]: 1:1
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RW"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RW"),
+      .RESVAL  (1'h0)
   ) u_interrupt_controler_status_interrupt (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (interrupt_controler_status_interrupt_we),
-    .wd     (interrupt_controler_status_interrupt_wd),
+      // from register interface
+      .we(interrupt_controler_status_interrupt_we),
+      .wd(interrupt_controler_status_interrupt_wd),
 
-    // from internal hardware
-    .de     (hw2reg.interrupt_controler.status_interrupt.de),
-    .d      (hw2reg.interrupt_controler.status_interrupt.d ),
+      // from internal hardware
+      .de(hw2reg.interrupt_controler.status_interrupt.de),
+      .d (hw2reg.interrupt_controler.status_interrupt.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.interrupt_controler.status_interrupt.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.interrupt_controler.status_interrupt.q),
 
-    // to register interface (read)
-    .qs     (interrupt_controler_status_interrupt_qs)
+      // to register interface (read)
+      .qs(interrupt_controler_status_interrupt_qs)
   );
 
 
@@ -467,104 +467,104 @@ module safe_wrapper_ctrl_reg_top #(
 
   //   F[cores_sleep]: 2:0
   prim_subreg #(
-    .DW      (3),
-    .SWACCESS("RO"),
-    .RESVAL  (3'h0)
+      .DW      (3),
+      .SWACCESS("RO"),
+      .RESVAL  (3'h0)
   ) u_cb_heep_status_cores_sleep (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.cb_heep_status.cores_sleep.de),
-    .d      (hw2reg.cb_heep_status.cores_sleep.d ),
+      // from internal hardware
+      .de(hw2reg.cb_heep_status.cores_sleep.de),
+      .d (hw2reg.cb_heep_status.cores_sleep.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (cb_heep_status_cores_sleep_qs)
+      // to register interface (read)
+      .qs(cb_heep_status_cores_sleep_qs)
   );
 
 
   //   F[cores_debug_mode]: 5:3
   prim_subreg #(
-    .DW      (3),
-    .SWACCESS("RO"),
-    .RESVAL  (3'h0)
+      .DW      (3),
+      .SWACCESS("RO"),
+      .RESVAL  (3'h0)
   ) u_cb_heep_status_cores_debug_mode (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.cb_heep_status.cores_debug_mode.de),
-    .d      (hw2reg.cb_heep_status.cores_debug_mode.d ),
+      // from internal hardware
+      .de(hw2reg.cb_heep_status.cores_debug_mode.de),
+      .d (hw2reg.cb_heep_status.cores_debug_mode.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (cb_heep_status_cores_debug_mode_qs)
+      // to register interface (read)
+      .qs(cb_heep_status_cores_debug_mode_qs)
   );
 
 
   // R[dmr_rec]: V(False)
 
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RO"),
+      .RESVAL  (1'h0)
   ) u_dmr_rec (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.dmr_rec.de),
-    .d      (hw2reg.dmr_rec.d ),
+      // from internal hardware
+      .de(hw2reg.dmr_rec.de),
+      .d (hw2reg.dmr_rec.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (dmr_rec_qs)
+      // to register interface (read)
+      .qs(dmr_rec_qs)
   );
 
 
   // R[initial_stack_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_initial_stack_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (initial_stack_addr_we),
-    .wd     (initial_stack_addr_wd),
+      // from register interface
+      .we(initial_stack_addr_we),
+      .wd(initial_stack_addr_wd),
 
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+      // from internal hardware
+      .de(1'b0),
+      .d ('0),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (initial_stack_addr_qs)
+      // to register interface (read)
+      .qs(initial_stack_addr_qs)
   );
 
 
@@ -573,16 +573,16 @@ module safe_wrapper_ctrl_reg_top #(
   logic [14:0] addr_hit;
   always_comb begin
     addr_hit = '0;
-    addr_hit[ 0] = (reg_addr == SAFE_WRAPPER_CTRL_SAFE_CONFIGURATION_OFFSET);
-    addr_hit[ 1] = (reg_addr == SAFE_WRAPPER_CTRL_DMR_MASK_OFFSET);
-    addr_hit[ 2] = (reg_addr == SAFE_WRAPPER_CTRL_MASTER_CORE_OFFSET);
-    addr_hit[ 3] = (reg_addr == SAFE_WRAPPER_CTRL_CRITICAL_SECTION_OFFSET);
-    addr_hit[ 4] = (reg_addr == SAFE_WRAPPER_CTRL_START_OFFSET);
-    addr_hit[ 5] = (reg_addr == SAFE_WRAPPER_CTRL_BOOT_ADDRESS_OFFSET);
-    addr_hit[ 6] = (reg_addr == SAFE_WRAPPER_CTRL_EXTERNAL_DEBUG_REQ_OFFSET);
-    addr_hit[ 7] = (reg_addr == SAFE_WRAPPER_CTRL_INITIAL_SYNC_MASTER_OFFSET);
-    addr_hit[ 8] = (reg_addr == SAFE_WRAPPER_CTRL_END_SW_ROUTINE_OFFSET);
-    addr_hit[ 9] = (reg_addr == SAFE_WRAPPER_CTRL_ENTRY_ADDRESS_OFFSET);
+    addr_hit[0] = (reg_addr == SAFE_WRAPPER_CTRL_SAFE_CONFIGURATION_OFFSET);
+    addr_hit[1] = (reg_addr == SAFE_WRAPPER_CTRL_DMR_MASK_OFFSET);
+    addr_hit[2] = (reg_addr == SAFE_WRAPPER_CTRL_MASTER_CORE_OFFSET);
+    addr_hit[3] = (reg_addr == SAFE_WRAPPER_CTRL_CRITICAL_SECTION_OFFSET);
+    addr_hit[4] = (reg_addr == SAFE_WRAPPER_CTRL_START_OFFSET);
+    addr_hit[5] = (reg_addr == SAFE_WRAPPER_CTRL_BOOT_ADDRESS_OFFSET);
+    addr_hit[6] = (reg_addr == SAFE_WRAPPER_CTRL_EXTERNAL_DEBUG_REQ_OFFSET);
+    addr_hit[7] = (reg_addr == SAFE_WRAPPER_CTRL_INITIAL_SYNC_MASTER_OFFSET);
+    addr_hit[8] = (reg_addr == SAFE_WRAPPER_CTRL_END_SW_ROUTINE_OFFSET);
+    addr_hit[9] = (reg_addr == SAFE_WRAPPER_CTRL_ENTRY_ADDRESS_OFFSET);
     addr_hit[10] = (reg_addr == SAFE_WRAPPER_CTRL_SAFE_COPY_ADDRESS_OFFSET);
     addr_hit[11] = (reg_addr == SAFE_WRAPPER_CTRL_INTERRUPT_CONTROLER_OFFSET);
     addr_hit[12] = (reg_addr == SAFE_WRAPPER_CTRL_CB_HEEP_STATUS_OFFSET);
@@ -590,7 +590,7 @@ module safe_wrapper_ctrl_reg_top #(
     addr_hit[14] = (reg_addr == SAFE_WRAPPER_CTRL_INITIAL_STACK_ADDR_OFFSET);
   end
 
-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
+  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
 
   // Check sub-word write is permitted
   always_comb begin
@@ -737,24 +737,23 @@ module safe_wrapper_ctrl_reg_top #(
 
 endmodule
 
-module safe_wrapper_ctrl_reg_top_intf
-#(
-  parameter int AW = 6,
-  localparam int DW = 32
+module safe_wrapper_ctrl_reg_top_intf #(
+    parameter  int AW = 6,
+    localparam int DW = 32
 ) (
-  input logic clk_i,
-  input logic rst_ni,
-  REG_BUS.in  regbus_slave,
-  // To HW
-  output safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_reg2hw_t reg2hw, // Write
-  input  safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_hw2reg_t hw2reg, // Read
-  // Config
-  input devmode_i // If 1, explicit error return for unmapped register access
+    input logic clk_i,
+    input logic rst_ni,
+    REG_BUS.in regbus_slave,
+    // To HW
+    output safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_reg2hw_t reg2hw,  // Write
+    input safe_wrapper_ctrl_reg_pkg::safe_wrapper_ctrl_hw2reg_t hw2reg,  // Read
+    // Config
+    input devmode_i  // If 1, explicit error return for unmapped register access
 );
- localparam int unsigned STRB_WIDTH = DW/8;
+  localparam int unsigned STRB_WIDTH = DW / 8;
 
-`include "register_interface/typedef.svh"
-`include "register_interface/assign.svh"
+  `include "register_interface/typedef.svh"
+  `include "register_interface/assign.svh"
 
   // Define structs for reg_bus
   typedef logic [AW-1:0] addr_t;
@@ -764,27 +763,27 @@ module safe_wrapper_ctrl_reg_top_intf
 
   reg_bus_req_t s_reg_req;
   reg_bus_rsp_t s_reg_rsp;
-  
+
   // Assign SV interface to structs
   `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
   `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
 
-  
+
 
   safe_wrapper_ctrl_reg_top #(
-    .reg_req_t(reg_bus_req_t),
-    .reg_rsp_t(reg_bus_rsp_t),
-    .AW(AW)
+      .reg_req_t(reg_bus_req_t),
+      .reg_rsp_t(reg_bus_rsp_t),
+      .AW(AW)
   ) i_regs (
-    .clk_i,
-    .rst_ni,
-    .reg_req_i(s_reg_req),
-    .reg_rsp_o(s_reg_rsp),
-    .reg2hw, // Write
-    .hw2reg, // Read
-    .devmode_i
+      .clk_i,
+      .rst_ni,
+      .reg_req_i(s_reg_req),
+      .reg_rsp_o(s_reg_rsp),
+      .reg2hw,  // Write
+      .hw2reg,  // Read
+      .devmode_i
   );
-  
+
 endmodule
 
 

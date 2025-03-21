@@ -55,6 +55,10 @@ app-cbcore: app-restore
 	$(MAKE) -C sw PROJECT=$(PROJECT) TARGET=$(TARGET) LINKER=$(LINKER) COMPILER=$(COMPILER) COMPILER_PREFIX=$(COMPILER_PREFIX) ARCH=$(ARCH)
 
 
+verible:
+	util/format-verible;
+
+
 ## Clean the CMake build folder
 app-clean:
 	if [ -f "sw/build/Makefile" ]; then\

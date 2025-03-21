@@ -20,8 +20,8 @@ module cpu_system
     input logic clk_i,
     input logic rst_ni,
     // Instruction memory interface 
-    output obi_req_t  [NHARTS-1 : 0] core_instr_req_o,
-    input  obi_resp_t [NHARTS-1 : 0] core_instr_resp_i,
+    output obi_req_t [NHARTS-1 : 0] core_instr_req_o,
+    input obi_resp_t [NHARTS-1 : 0] core_instr_resp_i,
 
     // Data memory interface 
     output obi_req_t  [NHARTS-1 : 0] core_data_req_o,
@@ -35,24 +35,24 @@ module cpu_system
     //Core 2
     input logic [31:0] intc_core2,
 
-    output logic     [NHARTS-1:0]   sleep_o,
+    output logic [NHARTS-1:0] sleep_o,
 
     // Debug Interface
-    input logic [NHARTS-1 : 0] debug_req_i,
+    input  logic [NHARTS-1 : 0] debug_req_i,
     output logic [NHARTS-1 : 0] debug_mode_o
 );
 
-  logic fetch_enable; 
+  logic fetch_enable;
   // CPU Control Signals
 
 
   assign fetch_enable = 1'b1;
-  
+
   //Core 0 
   assign core_instr_req_o[0].wdata = '0;
   assign core_instr_req_o[0].we    = '0;
   assign core_instr_req_o[0].be    = 4'b1111;
-  
+
   // Core 1
   assign core_instr_req_o[1].wdata = '0;
   assign core_instr_req_o[1].we    = '0;
@@ -61,9 +61,9 @@ module cpu_system
   // Core 2
   assign core_instr_req_o[2].wdata = '0;
   assign core_instr_req_o[2].we    = '0;
-  assign core_instr_req_o[2].be    = 4'b1111;  
+  assign core_instr_req_o[2].be    = 4'b1111;
 
-if (CPU == CV32E40P) begin : gen_eros_cv32e40p
+  if (CPU == CV32E40P) begin : gen_eros_cv32e40p
     cv32e40p_top #(
         .COREV_PULP      (0),
         .COREV_CLUSTER   (0),
@@ -108,7 +108,7 @@ if (CPU == CV32E40P) begin : gen_eros_cv32e40p
         .debug_halted_o   (debug_mode_o[0]),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[0])
+        .core_sleep_o  (sleep_o[0])
     );
 
     cv32e40p_top #(
@@ -155,7 +155,7 @@ if (CPU == CV32E40P) begin : gen_eros_cv32e40p
         .debug_halted_o   (debug_mode_o[1]),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[1])
+        .core_sleep_o  (sleep_o[1])
     );
 
     cv32e40p_top #(
@@ -202,13 +202,13 @@ if (CPU == CV32E40P) begin : gen_eros_cv32e40p
         .debug_halted_o   (debug_mode_o[2]),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[2])
+        .core_sleep_o  (sleep_o[2])
     );
 
-end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
+  end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
 
-//    import cv32e40px_core_v_xif_pkg::*;
-  localparam ZFINX = 0;
+    //    import cv32e40px_core_v_xif_pkg::*;
+    localparam ZFINX = 0;
     // instantiate the core 0
     cv32e40px_top #(
         .COREV_X_IF      (1),
@@ -287,63 +287,63 @@ end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
         .debug_halted_o   (debug_mode_o[0]),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[0])
+        .core_sleep_o  (sleep_o[0])
     );
 
-  // eXtension Interface
-  if_xif #(
-    .X_NUM_RS(fpu_ss_pkg::X_NUM_RS),
-    .X_ID_WIDTH(fpu_ss_pkg::X_ID_WIDTH),
-    .X_MEM_WIDTH(fpu_ss_pkg::X_MEM_WIDTH),
-    .X_RFR_WIDTH(fpu_ss_pkg::X_RFR_WIDTH),
-    .X_RFW_WIDTH(fpu_ss_pkg::X_RFW_WIDTH),
-    .X_MISA(fpu_ss_pkg::X_MISA)
-  ) ext_if_core0 ();
-
-  if (COPROCESSOR == 1) begin
-  fpu_ss_wrapper #(
-    .PULP_ZFINX(ZFINX),
-    .INPUT_BUFFER_DEPTH(1),
-    .OUT_OF_ORDER(0),
-    .FORWARDING(1),
-    .FPU_FEATURES(fpu_ss_pkg::FPU_FEATURES),
-    .FPU_IMPLEMENTATION(fpu_ss_pkg::FPU_IMPLEMENTATION)
-  ) fpu_ss_wrapper_core0_i (
-    // Clock and reset
-    .clk_i,
-    .rst_ni,
     // eXtension Interface
-    .xif_compressed_if(ext_if_core0),
-    .xif_issue_if(ext_if_core0),
-    .xif_commit_if(ext_if_core0),
-    .xif_mem_if(ext_if_core0),
-    .xif_mem_result_if(ext_if_core0),
-    .xif_result_if(ext_if_core0)
-  );
-  end else begin
+    if_xif #(
+        .X_NUM_RS(fpu_ss_pkg::X_NUM_RS),
+        .X_ID_WIDTH(fpu_ss_pkg::X_ID_WIDTH),
+        .X_MEM_WIDTH(fpu_ss_pkg::X_MEM_WIDTH),
+        .X_RFR_WIDTH(fpu_ss_pkg::X_RFR_WIDTH),
+        .X_RFW_WIDTH(fpu_ss_pkg::X_RFW_WIDTH),
+        .X_MISA(fpu_ss_pkg::X_MISA)
+    ) ext_if_core0 ();
 
-        // CORE-V-XIF
-        // Compressed interface
-        assign ext_if_core0.compressed_ready = '0;
-        assign ext_if_core0.compressed_resp = '0;
+    if (COPROCESSOR == 1) begin
+      fpu_ss_wrapper #(
+          .PULP_ZFINX(ZFINX),
+          .INPUT_BUFFER_DEPTH(1),
+          .OUT_OF_ORDER(0),
+          .FORWARDING(1),
+          .FPU_FEATURES(fpu_ss_pkg::FPU_FEATURES),
+          .FPU_IMPLEMENTATION(fpu_ss_pkg::FPU_IMPLEMENTATION)
+      ) fpu_ss_wrapper_core0_i (
+          // Clock and reset
+          .clk_i,
+          .rst_ni,
+          // eXtension Interface
+          .xif_compressed_if(ext_if_core0),
+          .xif_issue_if(ext_if_core0),
+          .xif_commit_if(ext_if_core0),
+          .xif_mem_if(ext_if_core0),
+          .xif_mem_result_if(ext_if_core0),
+          .xif_result_if(ext_if_core0)
+      );
+    end else begin
 
-        // Issue Interface
-        assign ext_if_core0.issue_ready = '0;
-        assign ext_if_core0.issue_resp = '0;
+      // CORE-V-XIF
+      // Compressed interface
+      assign ext_if_core0.compressed_ready = '0;
+      assign ext_if_core0.compressed_resp = '0;
 
-        // Commit Interface
+      // Issue Interface
+      assign ext_if_core0.issue_ready = '0;
+      assign ext_if_core0.issue_resp = '0;
 
-        // Memory Request/Response Interface
-        assign ext_if_core0.mem_valid = '0;
-        assign ext_if_core0.mem_req = '0;
+      // Commit Interface
 
-        // Memory Result Interface
+      // Memory Request/Response Interface
+      assign ext_if_core0.mem_valid = '0;
+      assign ext_if_core0.mem_req = '0;
 
-        // Result Interface
-        assign ext_if_core0.result_valid = '0;
-        assign ext_if_core0.result = '0;
+      // Memory Result Interface
 
-  end
+      // Result Interface
+      assign ext_if_core0.result_valid = '0;
+      assign ext_if_core0.result = '0;
+
+    end
 
 
     // instantiate the core 1
@@ -424,63 +424,63 @@ end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
         .debug_halted_o   (debug_mode_o[1]),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[1])
-    ); 
+        .core_sleep_o  (sleep_o[1])
+    );
 
-  // eXtension Interface
-  if_xif #(
-    .X_NUM_RS(fpu_ss_pkg::X_NUM_RS),
-    .X_ID_WIDTH(fpu_ss_pkg::X_ID_WIDTH),
-    .X_MEM_WIDTH(fpu_ss_pkg::X_MEM_WIDTH),
-    .X_RFR_WIDTH(fpu_ss_pkg::X_RFR_WIDTH),
-    .X_RFW_WIDTH(fpu_ss_pkg::X_RFW_WIDTH),
-    .X_MISA(fpu_ss_pkg::X_MISA)
-  ) ext_if_core1 ();
-
-  if (COPROCESSOR == 1) begin
-  fpu_ss_wrapper #(
-    .PULP_ZFINX(ZFINX),
-    .INPUT_BUFFER_DEPTH(1),
-    .OUT_OF_ORDER(0),
-    .FORWARDING(1),
-    .FPU_FEATURES(fpu_ss_pkg::FPU_FEATURES),
-    .FPU_IMPLEMENTATION(fpu_ss_pkg::FPU_IMPLEMENTATION)
-  ) fpu_ss_wrapper_core1_i (
-    // Clock and reset
-    .clk_i,
-    .rst_ni,
     // eXtension Interface
-    .xif_compressed_if(ext_if_core1),
-    .xif_issue_if(ext_if_core1),
-    .xif_commit_if(ext_if_core1),
-    .xif_mem_if(ext_if_core1),
-    .xif_mem_result_if(ext_if_core1),
-    .xif_result_if(ext_if_core1)
-  );
-  end else begin
+    if_xif #(
+        .X_NUM_RS(fpu_ss_pkg::X_NUM_RS),
+        .X_ID_WIDTH(fpu_ss_pkg::X_ID_WIDTH),
+        .X_MEM_WIDTH(fpu_ss_pkg::X_MEM_WIDTH),
+        .X_RFR_WIDTH(fpu_ss_pkg::X_RFR_WIDTH),
+        .X_RFW_WIDTH(fpu_ss_pkg::X_RFW_WIDTH),
+        .X_MISA(fpu_ss_pkg::X_MISA)
+    ) ext_if_core1 ();
 
-        // CORE-V-XIF
-        // Compressed interface
-        assign ext_if_core1.compressed_ready = '0;
-        assign ext_if_core1.compressed_resp = '0;
+    if (COPROCESSOR == 1) begin
+      fpu_ss_wrapper #(
+          .PULP_ZFINX(ZFINX),
+          .INPUT_BUFFER_DEPTH(1),
+          .OUT_OF_ORDER(0),
+          .FORWARDING(1),
+          .FPU_FEATURES(fpu_ss_pkg::FPU_FEATURES),
+          .FPU_IMPLEMENTATION(fpu_ss_pkg::FPU_IMPLEMENTATION)
+      ) fpu_ss_wrapper_core1_i (
+          // Clock and reset
+          .clk_i,
+          .rst_ni,
+          // eXtension Interface
+          .xif_compressed_if(ext_if_core1),
+          .xif_issue_if(ext_if_core1),
+          .xif_commit_if(ext_if_core1),
+          .xif_mem_if(ext_if_core1),
+          .xif_mem_result_if(ext_if_core1),
+          .xif_result_if(ext_if_core1)
+      );
+    end else begin
 
-        // Issue Interface
-        assign ext_if_core1.issue_ready = '0;
-        assign ext_if_core1.issue_resp = '0;
+      // CORE-V-XIF
+      // Compressed interface
+      assign ext_if_core1.compressed_ready = '0;
+      assign ext_if_core1.compressed_resp = '0;
 
-        // Commit Interface
+      // Issue Interface
+      assign ext_if_core1.issue_ready = '0;
+      assign ext_if_core1.issue_resp = '0;
 
-        // Memory Request/Response Interface
-        assign ext_if_core1.mem_valid = '0;
-        assign ext_if_core1.mem_req = '0;
+      // Commit Interface
 
-        // Memory Result Interface
+      // Memory Request/Response Interface
+      assign ext_if_core1.mem_valid = '0;
+      assign ext_if_core1.mem_req = '0;
 
-        // Result Interface
-        assign ext_if_core1.result_valid = '0;
-        assign ext_if_core1.result = '0;
+      // Memory Result Interface
 
-  end
+      // Result Interface
+      assign ext_if_core1.result_valid = '0;
+      assign ext_if_core1.result = '0;
+
+    end
 
     // instantiate the core 2
     cv32e40px_top #(
@@ -560,70 +560,70 @@ end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
         .debug_halted_o   (debug_mode_o[2]),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[2])
+        .core_sleep_o  (sleep_o[2])
     );
 
-  // eXtension Interface
-  if_xif #(
-    .X_NUM_RS(fpu_ss_pkg::X_NUM_RS),
-    .X_ID_WIDTH(fpu_ss_pkg::X_ID_WIDTH),
-    .X_MEM_WIDTH(fpu_ss_pkg::X_MEM_WIDTH),
-    .X_RFR_WIDTH(fpu_ss_pkg::X_RFR_WIDTH),
-    .X_RFW_WIDTH(fpu_ss_pkg::X_RFW_WIDTH),
-    .X_MISA(fpu_ss_pkg::X_MISA)
-  ) ext_if_core2 ();
-
-  if (COPROCESSOR == 1) begin
-  fpu_ss_wrapper #(
-    .PULP_ZFINX(ZFINX),
-    .INPUT_BUFFER_DEPTH(1),
-    .OUT_OF_ORDER(0),
-    .FORWARDING(1),
-    .FPU_FEATURES(fpu_ss_pkg::FPU_FEATURES),
-    .FPU_IMPLEMENTATION(fpu_ss_pkg::FPU_IMPLEMENTATION)
-  ) fpu_ss_wrapper_core2_i (
-    // Clock and reset
-    .clk_i,
-    .rst_ni,
     // eXtension Interface
-    .xif_compressed_if(ext_if_core2),
-    .xif_issue_if(ext_if_core2),
-    .xif_commit_if(ext_if_core2),
-    .xif_mem_if(ext_if_core2),
-    .xif_mem_result_if(ext_if_core2),
-    .xif_result_if(ext_if_core2)
-  );
-  end else begin
+    if_xif #(
+        .X_NUM_RS(fpu_ss_pkg::X_NUM_RS),
+        .X_ID_WIDTH(fpu_ss_pkg::X_ID_WIDTH),
+        .X_MEM_WIDTH(fpu_ss_pkg::X_MEM_WIDTH),
+        .X_RFR_WIDTH(fpu_ss_pkg::X_RFR_WIDTH),
+        .X_RFW_WIDTH(fpu_ss_pkg::X_RFW_WIDTH),
+        .X_MISA(fpu_ss_pkg::X_MISA)
+    ) ext_if_core2 ();
 
-        // CORE-V-XIF
-        // Compressed interface
-        assign ext_if_core2.compressed_ready = '0;
-        assign ext_if_core2.compressed_resp = '0;
+    if (COPROCESSOR == 1) begin
+      fpu_ss_wrapper #(
+          .PULP_ZFINX(ZFINX),
+          .INPUT_BUFFER_DEPTH(1),
+          .OUT_OF_ORDER(0),
+          .FORWARDING(1),
+          .FPU_FEATURES(fpu_ss_pkg::FPU_FEATURES),
+          .FPU_IMPLEMENTATION(fpu_ss_pkg::FPU_IMPLEMENTATION)
+      ) fpu_ss_wrapper_core2_i (
+          // Clock and reset
+          .clk_i,
+          .rst_ni,
+          // eXtension Interface
+          .xif_compressed_if(ext_if_core2),
+          .xif_issue_if(ext_if_core2),
+          .xif_commit_if(ext_if_core2),
+          .xif_mem_if(ext_if_core2),
+          .xif_mem_result_if(ext_if_core2),
+          .xif_result_if(ext_if_core2)
+      );
+    end else begin
 
-        // Issue Interface
-        assign ext_if_core2.issue_ready = '0;
-        assign ext_if_core2.issue_resp = '0;
+      // CORE-V-XIF
+      // Compressed interface
+      assign ext_if_core2.compressed_ready = '0;
+      assign ext_if_core2.compressed_resp = '0;
 
-        // Commit Interface
+      // Issue Interface
+      assign ext_if_core2.issue_ready = '0;
+      assign ext_if_core2.issue_resp = '0;
 
-        // Memory Request/Response Interface
-        assign ext_if_core2.mem_valid = '0;
-        assign ext_if_core2.mem_req = '0;
+      // Commit Interface
 
-        // Memory Result Interface
+      // Memory Request/Response Interface
+      assign ext_if_core2.mem_valid = '0;
+      assign ext_if_core2.mem_req = '0;
 
-        // Result Interface
-        assign ext_if_core2.result_valid = '0;
-        assign ext_if_core2.result = '0;
+      // Memory Result Interface
 
-  end
+      // Result Interface
+      assign ext_if_core2.result_valid = '0;
+      assign ext_if_core2.result = '0;
 
-end else begin : gen_eros_cv32e20
-  
-  // instantiate the core 0
+    end
+
+  end else begin : gen_eros_cv32e20
+
+    // instantiate the core 0
     cve2_top #(
-//        .DmHaltAddr(DM_HALTADDRESS),
-//        .DmExceptionAddr('0)
+    //        .DmHaltAddr(DM_HALTADDRESS),
+    //        .DmExceptionAddr('0)
     ) cv32e20_core0 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -657,21 +657,21 @@ end else begin : gen_eros_cv32e20
         .irq_fast_i    (intc_core0[31:16]),
         .irq_nm_i      (1'b0),
 
-        .debug_req_i (debug_req_i[0]),
+        .debug_req_i(debug_req_i[0]),
         .crash_dump_o(),
         .debug_halted_o(debug_mode_o[0]),
         .dm_halt_addr_i(DM_HALTADDRESS),
         .dm_exception_addr_i('0),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[0])
+        .core_sleep_o  (sleep_o[0])
     );
-  
-  
-  // instantiate the core 1
+
+
+    // instantiate the core 1
     cve2_top #(
-//        .DmHaltAddr(DM_HALTADDRESS),
-//        .DmExceptionAddr('0)
+    //        .DmHaltAddr(DM_HALTADDRESS),
+    //        .DmExceptionAddr('0)
     ) cv32e20_core1 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -705,20 +705,20 @@ end else begin : gen_eros_cv32e20
         .irq_fast_i    (intc_core1[31:16]),
         .irq_nm_i      (1'b0),
 
-        .debug_req_i (debug_req_i[1]),
+        .debug_req_i(debug_req_i[1]),
         .crash_dump_o(),
         .debug_halted_o(debug_mode_o[1]),
         .dm_halt_addr_i(DM_HALTADDRESS),
         .dm_exception_addr_i('0),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[1])
+        .core_sleep_o  (sleep_o[1])
     );
 
-  // instantiate the core 2
+    // instantiate the core 2
     cve2_top #(
-//        .DmHaltAddr(DM_HALTADDRESS),
-//        .DmExceptionAddr('0)
+    //        .DmHaltAddr(DM_HALTADDRESS),
+    //        .DmExceptionAddr('0)
     ) cv32e20_core2 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -752,14 +752,14 @@ end else begin : gen_eros_cv32e20
         .irq_fast_i    (intc_core2[31:16]),
         .irq_nm_i      (1'b0),
 
-        .debug_req_i (debug_req_i[2]),
+        .debug_req_i(debug_req_i[2]),
         .crash_dump_o(),
         .debug_halted_o(debug_mode_o[2]),
         .dm_halt_addr_i(DM_HALTADDRESS),
         .dm_exception_addr_i('0),
 
         .fetch_enable_i(fetch_enable),
-        .core_sleep_o(sleep_o[2])
+        .core_sleep_o  (sleep_o[2])
     );
-end
+  end
 endmodule

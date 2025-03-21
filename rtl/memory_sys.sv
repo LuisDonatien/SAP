@@ -6,13 +6,13 @@
 module memory_sys
   import obi_pkg::*;
 #(
-  parameter NUM_BANKS = 2
+    parameter NUM_BANKS = 2
 ) (
     input logic clk_i,
     input logic rst_ni,
 
-    input  obi_req_t   [NUM_BANKS-1:0]ram_req_i,
-    output obi_resp_t  [NUM_BANKS-1:0]ram_resp_o,
+    input  obi_req_t  [NUM_BANKS-1:0] ram_req_i,
+    output obi_resp_t [NUM_BANKS-1:0] ram_resp_o,
 
     // power manager signals that goes to the ASIC macros
     input  logic [NUM_BANKS-1:0] pwrgate_ni,
@@ -26,7 +26,7 @@ module memory_sys
   localparam int AddrWidth = $clog2(32 * 1024);
 
   for (genvar i = 0; i < NUM_BANKS; i++) begin : gen_sram
-  
+
     always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
         ram_valid_q[i] <= '0;
@@ -57,6 +57,6 @@ module memory_sys
         .set_retentive_ni(set_retentive_ni[i]),
         .rdata_o(ram_resp_o[i].rdata)
     );
-  end 
+  end
 
 endmodule

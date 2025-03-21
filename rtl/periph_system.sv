@@ -7,7 +7,7 @@ module periph_system
   import obi_pkg::*;
   import reg_pkg::*;
 #(
-  parameter NHARTS = 3
+    parameter NHARTS = 3
 ) (
     input logic clk_i,
     input logic rst_ni,
@@ -15,8 +15,8 @@ module periph_system
     input  obi_req_t  slave_req_i,
     output obi_resp_t slave_resp_o
 );
-  
-  
+
+
   import cei_mochila_pkg::*;
 
   reg_pkg::reg_req_t peripheral_req;

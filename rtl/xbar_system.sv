@@ -138,9 +138,9 @@ module xbar_system
     );
 
   end else begin : gen_xbar_1toM
-  // Neck crossbar
-  obi_req_t neck_req;
-  obi_resp_t neck_resp;
+    // Neck crossbar
+    obi_req_t  neck_req;
+    obi_resp_t neck_resp;
     // N-to-1 crossbar
     xbar_varlat_n_to_one #(
         .XBAR_NMASTER(XBAR_NMASTER)

@@ -23,8 +23,8 @@ module bus_system
   import reg_pkg::*;
   import addr_map_rule_pkg::*;
 #(
-  parameter NHARTS = 3,
-  parameter N_BANKS = 2
+    parameter NHARTS  = 3,
+    parameter N_BANKS = 2
 ) (
     input logic clk_i,
     input logic rst_ni,
@@ -41,38 +41,38 @@ module bus_system
     input  obi_resp_t peripheral_slave_resp_i,
 
     //External master
-    input  obi_req_t    ext_master_req_i,
-    output obi_resp_t   ext_master_resp_o,
+    input  obi_req_t  ext_master_req_i,
+    output obi_resp_t ext_master_resp_o,
 
     //CSR 
-    input  reg_req_t    ext_csr_reg_req_i,
-    output reg_rsp_t    ext_csr_reg_resp_o,    
+    input  reg_req_t ext_csr_reg_req_i,
+    output reg_rsp_t ext_csr_reg_resp_o,
 
     //External slave
-    output obi_req_t    ext_slave_req_o,
-    input  obi_resp_t   ext_slave_resp_i,
+    output obi_req_t  ext_slave_req_o,
+    input  obi_resp_t ext_slave_resp_i,
 
     //Ram memory
-    output obi_req_t   [N_BANKS-1:0]ram_req_o,
-    input  obi_resp_t  [N_BANKS-1:0]ram_resp_i,
+    output obi_req_t  [N_BANKS-1:0] ram_req_o,
+    input  obi_resp_t [N_BANKS-1:0] ram_resp_i,
 
     // Control Status Register Output 
-    output reg_req_t   wrapper_csr_req_o,
-    input  reg_rsp_t   wrapper_csr_rsp_i
+    output reg_req_t wrapper_csr_req_o,
+    input  reg_rsp_t wrapper_csr_rsp_i
 
 );
 
   import cei_mochila_pkg::*;
 
   // Safe CPU reg port
-  reg_pkg::reg_req_t  int_safe_cpu_wrapper_reg_req;
-  reg_pkg::reg_rsp_t  int_safe_cpu_wrapper_reg_rsp;   
+  reg_pkg::reg_req_t int_safe_cpu_wrapper_reg_req;
+  reg_pkg::reg_rsp_t int_safe_cpu_wrapper_reg_rsp;
 
-  reg_pkg::reg_req_t  [1:0] int_req;
-  reg_pkg::reg_rsp_t  [1:0] int_rsp;  
+  reg_pkg::reg_req_t [1:0] int_req;
+  reg_pkg::reg_rsp_t [1:0] int_rsp;
 
-  obi_req_t  int_wrapper_csr_req;
-  obi_resp_t int_wrapper_csr_resp;   
+  obi_req_t int_wrapper_csr_req;
+  obi_resp_t int_wrapper_csr_resp;
 
   // Internal master ports
   obi_req_t [cei_mochila_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_req;
@@ -89,7 +89,7 @@ module bus_system
   assign int_master_req[cei_mochila_pkg::CORE1_DATA_IDX] = core_data_req_i[1];
   assign int_master_req[cei_mochila_pkg::CORE2_INSTR_IDX] = core_instr_req_i[2];
   assign int_master_req[cei_mochila_pkg::CORE2_DATA_IDX] = core_data_req_i[2];
-  assign int_master_req[cei_mochila_pkg::EXTERNAL_MASTER_IDX] = ext_master_req_i; 
+  assign int_master_req[cei_mochila_pkg::EXTERNAL_MASTER_IDX] = ext_master_req_i;
 
   // Internal master responses
   assign core_instr_resp_o[0] = int_master_resp[cei_mochila_pkg::CORE0_INSTR_IDX];
@@ -103,9 +103,9 @@ module bus_system
 
   // Internal slave requests
   assign peripheral_slave_req_o = int_slave_req[cei_mochila_pkg::PERIPHERAL_IDX];
-  assign ram_req_o[0]           = int_slave_req[cei_mochila_pkg::MEMORY_RAM0_IDX];
-  assign ram_req_o[1]           = int_slave_req[cei_mochila_pkg::MEMORY_RAM1_IDX];
-  assign int_wrapper_csr_req      = int_slave_req[cei_mochila_pkg::SAFE_CPU_REGISTER_IDX]; 
+  assign ram_req_o[0] = int_slave_req[cei_mochila_pkg::MEMORY_RAM0_IDX];
+  assign ram_req_o[1] = int_slave_req[cei_mochila_pkg::MEMORY_RAM1_IDX];
+  assign int_wrapper_csr_req = int_slave_req[cei_mochila_pkg::SAFE_CPU_REGISTER_IDX];
 
   // External slave requests
   assign ext_slave_req_o = int_slave_req[cei_mochila_pkg::EXTERNAL_PERIPHERAL_IDX];
@@ -134,27 +134,27 @@ module bus_system
   );
 
 
-//***OBI Slave[1] -> Safe CPU Wrapper Register***//
-   periph_to_reg #(
-       .req_t(reg_pkg::reg_req_t),
-       .rsp_t(reg_pkg::reg_rsp_t),
-       .IW(1)
-   ) cpu_periph_to_reg_i (
-       .clk_i,
-       .rst_ni,
-       .req_i(int_wrapper_csr_req.req),
-       .add_i(int_wrapper_csr_req.addr),
-       .wen_i(~int_wrapper_csr_req.we),
-       .wdata_i(int_wrapper_csr_req.wdata),
-       .be_i(int_wrapper_csr_req.be),
-       .id_i('0),
-       .gnt_o(int_wrapper_csr_resp.gnt),
-       .r_rdata_o(int_wrapper_csr_resp.rdata),
-       .r_opc_o(),
-       .r_id_o(),
-       .r_valid_o(int_wrapper_csr_resp.rvalid),
-       .reg_req_o(int_safe_cpu_wrapper_reg_req),
-       .reg_rsp_i(int_safe_cpu_wrapper_reg_rsp)
+  //***OBI Slave[1] -> Safe CPU Wrapper Register***//
+  periph_to_reg #(
+      .req_t(reg_pkg::reg_req_t),
+      .rsp_t(reg_pkg::reg_rsp_t),
+      .IW(1)
+  ) cpu_periph_to_reg_i (
+      .clk_i,
+      .rst_ni,
+      .req_i(int_wrapper_csr_req.req),
+      .add_i(int_wrapper_csr_req.addr),
+      .wen_i(~int_wrapper_csr_req.we),
+      .wdata_i(int_wrapper_csr_req.wdata),
+      .be_i(int_wrapper_csr_req.be),
+      .id_i('0),
+      .gnt_o(int_wrapper_csr_resp.gnt),
+      .r_rdata_o(int_wrapper_csr_resp.rdata),
+      .r_opc_o(),
+      .r_id_o(),
+      .r_valid_o(int_wrapper_csr_resp.rvalid),
+      .reg_req_o(int_safe_cpu_wrapper_reg_req),
+      .reg_rsp_i(int_safe_cpu_wrapper_reg_rsp)
   );
 
   assign int_req[1] = int_safe_cpu_wrapper_reg_req;
@@ -164,17 +164,17 @@ module bus_system
 
 
   reg_mux #(
-    .NoPorts(2),
-    .AW(32),
-    .DW(32),
-    .req_t(reg_pkg::reg_req_t),
-    .rsp_t(reg_pkg::reg_rsp_t)
-  ) reg_mux_i(
-    .clk_i,
-    .rst_ni,
-    .in_req_i(int_req),
-    .in_rsp_o(int_rsp),
-    .out_req_o(wrapper_csr_req_o),
-    .out_rsp_i(wrapper_csr_rsp_i)
+      .NoPorts(2),
+      .AW(32),
+      .DW(32),
+      .req_t(reg_pkg::reg_req_t),
+      .rsp_t(reg_pkg::reg_rsp_t)
+  ) reg_mux_i (
+      .clk_i,
+      .rst_ni,
+      .in_req_i (int_req),
+      .in_rsp_o (int_rsp),
+      .out_req_o(wrapper_csr_req_o),
+      .out_rsp_i(wrapper_csr_rsp_i)
   );
 endmodule
