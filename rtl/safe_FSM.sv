@@ -135,6 +135,9 @@ module safe_FSM #(
   logic [NHARTS-1:0] dmr_delayed_s;
   logic [NHARTS-1:0] DMR_Rec_s;
 
+  logic [1:0] tmr_error_ff;
+  logic tmr_error_s;
+
 
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
@@ -782,8 +785,6 @@ module safe_FSM #(
 
   //###Critical Section###//
 
-  logic [1:0] tmr_error_ff;
-  logic tmr_error_s;
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (~rst_ni) begin
       tmr_error_ff <= '0;

@@ -38,13 +38,13 @@ _start:
 
 
 /* clear the bss segment */
-/*_init_bss:
+_init_bss:
     la     a0, __bss_start
     la     a2, __bss_end
     sub    a2, a2, a0
     li     a1, 0
     call   memset
-*/
+
 #ifdef FLASH_EXEC
 /* copy initialized data sections from flash to ram (to be verified, copied from picosoc)*/
     la a0, _sidata
