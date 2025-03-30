@@ -53,10 +53,10 @@ module lockstep_reg
 
   //Sub-mux_internal delay
   obi_req_t  [             NHARTS-1:0      ] sub_mux_core_instr_req;
-  obi_resp_t  [             NHARTS-1:0      ] sub_mux_core_instr_resp;
+  obi_resp_t [             NHARTS-1:0      ] sub_mux_core_instr_resp;
 
   obi_req_t  [             NHARTS-1:0      ] sub_mux_core_data_req;
-  obi_resp_t  [             NHARTS-1:0      ] sub_mux_core_data_resp;
+  obi_resp_t [             NHARTS-1:0      ] sub_mux_core_data_resp;
 
   logic        [NHARTS-1:0]          [31:0]  sub_mux_intr;
   logic        [NHARTS-1:0]                  sub_mux_debug_req;
@@ -274,64 +274,64 @@ module lockstep_reg
 
     //Sub-Mux Signal assignment
     if (i == 0) begin
-        assign  sub_mux_core_instr_req[0]         = core_instr_req_ff;
-        assign  sub_mux_core_instr_resp[0].rdata  = mux_core_instr_resp_i[0].rdata;
-        assign  sub_mux_core_instr_resp[0].rvalid = mux_core_instr_resp_i[0].rvalid;
-        assign  sub_mux_core_instr_resp[0].gnt    = pipe_instr_gnt;
-        assign  sub_mux_core_data_req[0]          = core_data_req_ff;
-        assign  sub_mux_core_data_resp[0].rdata   = mux_core_data_resp_i[0].rdata;
-        assign  sub_mux_core_data_resp[0].rvalid  = mux_core_data_resp_i[0].rvalid;
-        assign  sub_mux_core_data_resp[0].gnt     = pipe_data_gnt;
+      assign sub_mux_core_instr_req[0]         = core_instr_req_ff;
+      assign sub_mux_core_instr_resp[0].rdata  = mux_core_instr_resp_i[0].rdata;
+      assign sub_mux_core_instr_resp[0].rvalid = mux_core_instr_resp_i[0].rvalid;
+      assign sub_mux_core_instr_resp[0].gnt    = pipe_instr_gnt;
+      assign sub_mux_core_data_req[0]          = core_data_req_ff;
+      assign sub_mux_core_data_resp[0].rdata   = mux_core_data_resp_i[0].rdata;
+      assign sub_mux_core_data_resp[0].rvalid  = mux_core_data_resp_i[0].rvalid;
+      assign sub_mux_core_data_resp[0].gnt     = pipe_data_gnt;
 
-        assign  sub_mux_intr[0]                   = mux_intr_i[0];
-        assign  sub_mux_debug_req[0]              = mux_debug_req_i[0];
+      assign sub_mux_intr[0]                   = mux_intr_i[0];
+      assign sub_mux_debug_req[0]              = mux_debug_req_i[0];
     end else if (i == 1) begin
-        assign  sub_mux_core_instr_req[1]         = mux_core_instr_req_i[1];
-        assign  sub_mux_core_instr_resp[1].rdata  = core_instr_resp_ff_rdata[NCYCLES-1];
-        assign  sub_mux_core_instr_resp[1].rvalid = core_instr_resp_ff_rvalid[NCYCLES-1];
-        assign  sub_mux_core_instr_resp[1].gnt    = mux_core_instr_resp_i[1].gnt;
-        assign  sub_mux_core_data_req[1].addr     = mux_core_data_req_i[1].addr;
-        assign  sub_mux_core_data_req[1].req      = mux_core_data_req_i[1].req;
-        assign  sub_mux_core_data_req[1].be       = mux_core_data_req_i[1].be;
-        assign  sub_mux_core_data_req[1].wdata    = mux_core_data_req_i[1].wdata;
-          // when the buffered [0] req is granted the we is put to '0' in the output, while the output of [1] still one
-        assign  sub_mux_core_data_req[1].we       = mux_core_data_req_i[1].we & mux_core_data_req_i[1].req;
+      assign sub_mux_core_instr_req[1] = mux_core_instr_req_i[1];
+      assign sub_mux_core_instr_resp[1].rdata = core_instr_resp_ff_rdata[NCYCLES-1];
+      assign sub_mux_core_instr_resp[1].rvalid = core_instr_resp_ff_rvalid[NCYCLES-1];
+      assign sub_mux_core_instr_resp[1].gnt = mux_core_instr_resp_i[1].gnt;
+      assign sub_mux_core_data_req[1].addr = mux_core_data_req_i[1].addr;
+      assign sub_mux_core_data_req[1].req = mux_core_data_req_i[1].req;
+      assign sub_mux_core_data_req[1].be = mux_core_data_req_i[1].be;
+      assign sub_mux_core_data_req[1].wdata = mux_core_data_req_i[1].wdata;
+      // when the buffered [0] req is granted the we is put to '0' in the output, while the output of [1] still one
+      assign sub_mux_core_data_req[1].we = mux_core_data_req_i[1].we & mux_core_data_req_i[1].req;
 
-        assign  sub_mux_core_data_resp[1].rdata   = core_data_resp_ff_rdata[NCYCLES-1];
-        assign  sub_mux_core_data_resp[1].rvalid  = core_data_resp_ff_rvalid[NCYCLES-1];
-        assign  sub_mux_core_data_resp[1].gnt     = mux_core_data_resp_i[1].gnt;
-          /**/
-        assign  sub_mux_intr[1]                   = intr_ff[NCYCLES-1];
-        assign  sub_mux_debug_req[1]              = debug_req_ff[NCYCLES-1];
+      assign sub_mux_core_data_resp[1].rdata = core_data_resp_ff_rdata[NCYCLES-1];
+      assign sub_mux_core_data_resp[1].rvalid = core_data_resp_ff_rvalid[NCYCLES-1];
+      assign sub_mux_core_data_resp[1].gnt = mux_core_data_resp_i[1].gnt;
+      /**/
+      assign sub_mux_intr[1] = intr_ff[NCYCLES-1];
+      assign sub_mux_debug_req[1] = debug_req_ff[NCYCLES-1];
     end else begin
-        assign  sub_mux_core_instr_req[i]  = mux_core_instr_req_i[i];
-        assign  sub_mux_core_instr_resp[i] = mux_core_instr_resp_i[i];
-        assign  sub_mux_core_data_req[i]   = mux_core_data_req_i[i];
-        assign  sub_mux_core_data_resp[i]  = mux_core_data_resp_i[i];
+      assign sub_mux_core_instr_req[i]  = mux_core_instr_req_i[i];
+      assign sub_mux_core_instr_resp[i] = mux_core_instr_resp_i[i];
+      assign sub_mux_core_data_req[i]   = mux_core_data_req_i[i];
+      assign sub_mux_core_data_resp[i]  = mux_core_data_resp_i[i];
 
-        assign  sub_mux_intr[i]            = mux_intr_i[i];
-        assign  sub_mux_debug_req[i]       = mux_debug_req_i[i];
+      assign sub_mux_intr[i]            = mux_intr_i[i];
+      assign sub_mux_debug_req[i]       = mux_debug_req_i[i];
     end
     //Sub-Mux 
     always_comb begin
-        if (enable_i) begin
-            mux_core_instr_req_o[i]  = sub_mux_core_instr_req[i];
-            mux_core_instr_resp_o[i] = sub_mux_core_instr_resp[i];
-            mux_core_data_req_o[i]   = sub_mux_core_data_req[i];
-            mux_core_data_resp_o[i]  = sub_mux_core_data_resp[i];
+      if (enable_i) begin
+        mux_core_instr_req_o[i]  = sub_mux_core_instr_req[i];
+        mux_core_instr_resp_o[i] = sub_mux_core_instr_resp[i];
+        mux_core_data_req_o[i]   = sub_mux_core_data_req[i];
+        mux_core_data_resp_o[i]  = sub_mux_core_data_resp[i];
 
-            mux_intr_o[i]            = sub_mux_intr[i];
-            mux_debug_req_o[i]       = sub_mux_debug_req[i];            
-        end else begin
+        mux_intr_o[i]            = sub_mux_intr[i];
+        mux_debug_req_o[i]       = sub_mux_debug_req[i];
+      end else begin
         //bypass by default
-            mux_core_instr_req_o[i]  = mux_core_instr_req_i[i];
-            mux_core_instr_resp_o[i] = mux_core_instr_resp_i[i];
-            mux_core_data_req_o[i]   = mux_core_data_req_i[i];
-            mux_core_data_resp_o[i]  = mux_core_data_resp_i[i];
+        mux_core_instr_req_o[i]  = mux_core_instr_req_i[i];
+        mux_core_instr_resp_o[i] = mux_core_instr_resp_i[i];
+        mux_core_data_req_o[i]   = mux_core_data_req_i[i];
+        mux_core_data_resp_o[i]  = mux_core_data_resp_i[i];
 
-            mux_intr_o[i]            = mux_intr_i[i];
-            mux_debug_req_o[i]       = mux_debug_req_i[i];
-        end
+        mux_intr_o[i]            = mux_intr_i[i];
+        mux_debug_req_o[i]       = mux_debug_req_i[i];
+      end
     end
   end
 
