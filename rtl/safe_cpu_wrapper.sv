@@ -578,36 +578,42 @@ module safe_cpu_wrapper
   );
 
   /************************Isolate BUS***************************/
-
+    logic [NHARTS-1:0] instr_isolate_valid_q;
   for (genvar i = 0; i < NHARTS; i++) begin : isolate_obi_bus_instr
-    logic [NHARTS-1:0] isolate_valid_q;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
-        isolate_valid_q[i] <= '0;
+        instr_isolate_valid_q[i] <= '0;
       end else begin
-        isolate_valid_q[i] <= isolate_core_instr_resp[i].gnt;
+        if (dmr_wfi_s == 3'b000) //clear
+          instr_isolate_valid_q[i] <= '0;
+        else
+          instr_isolate_valid_q[i] <= isolate_core_instr_resp[i].gnt;
       end
     end
     assign isolate_core_instr_resp[i].gnt = mux_core_instr_req_o[i].req;
-    assign isolate_core_instr_resp[i].rvalid = isolate_valid_q[i];
+    assign isolate_core_instr_resp[i].rvalid = instr_isolate_valid_q[i];
     assign isolate_core_instr_resp[i].rdata = 32'h10500073;  //wfi instruction
   end
 
+    logic [NHARTS-1:0] data_isolate_valid_q;
   for (genvar i = 0; i < NHARTS; i++) begin : isolate_obi_bus_data
-    logic [NHARTS-1:0] isolate_valid_q;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
-        isolate_valid_q[i] <= '0;
+        data_isolate_valid_q[i] <= '0;
       end else begin
-        isolate_valid_q[i] <= isolate_core_data_resp[i].gnt;
+        if (dmr_wfi_s == 3'b000) //clear
+          data_isolate_valid_q[i] <= '0;        
+        else
+          data_isolate_valid_q[i] <= isolate_core_data_resp[i].gnt;
       end
     end
     assign isolate_core_data_resp[i].gnt = mux_core_data_req_o[i].req;
-    assign isolate_core_data_resp[i].rvalid = isolate_valid_q[i];
+    assign isolate_core_data_resp[i].rvalid = data_isolate_valid_q[i];
     assign isolate_core_data_resp[i].rdata = 32'h0;  //0 data val
   end
+
 
   /*********************************************************/
   //*********************Safety Voter***********************//
