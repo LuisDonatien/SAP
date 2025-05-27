@@ -115,6 +115,7 @@ module tmr_voter
 
 
   assign error_id_o = instr_error_s | data_error_s;
+  //Error is issued only under request
   assign error_o = ((error_s[0] | error_s[1] | error_s[2]) & voted_core_instr_req_s.req) | ((error_s[3] | error_s[4] | error_s[5]) & voted_core_data_req_s.req);
 
   assign voted_core_instr_req_o = voted_core_instr_req_s;

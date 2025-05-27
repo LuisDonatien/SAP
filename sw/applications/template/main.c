@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
         
         */
 
-        //Enter Safe mode (TMR_MODE DMR_MODE LOCKSTEP_MODE)
-        TMR_Safe_Activate(DMR_MODE);
+        //Enter Safe mode (TCLS_MODE DCLS_MODE LOCKSTEP_MODE)
+        Safe_Activate(DCLS_MODE);
 
         /*
         
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         
         */
 
-        //Checkpoint for DMR configuration
+        //Checkpoint for DCLS configuration
         Store_Checkpoint();
 
         /*
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         */
 
         //Exit Safe mode (MASTER_CORE0 MASTER_CORE1 MASTER_CORE2)
-        TMR_Safe_Stop(MASTER_CORE1); 
+        Safe_Stop(MASTER_CORE1); 
 
         /*
         

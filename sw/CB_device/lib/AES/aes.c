@@ -415,8 +415,8 @@ static void Cipher(state_t* state, const uint8_t* RoundKey)
   /*
   /*Modification to trigger
   /**/  
-  volatile unsigned int *Private_reg = PRIVATE_REG_BASEADDRESS | CPU_PRIVATE_BREAKPOINT_SIM_REG_OFFSET;
-  volatile unsigned int *P = 0x9000; 
+//  volatile unsigned int *Private_reg = PRIVATE_REG_BASEADDRESS | CPU_PRIVATE_BREAKPOINT_SIM_REG_OFFSET;
+//  volatile unsigned int *P = 0x9000; 
   /**/
   uint8_t round = 0;
 
@@ -431,10 +431,10 @@ static void Cipher(state_t* state, const uint8_t* RoundKey)
     SubBytes(state);
     ShiftRows(state);
     if (round == Nr) {
-        if((*(P))==0){
-        (*(P))=1;
-        CSR_READ(CSR_REG_MHARTID,P);
-        }
+//        if((*(P))==0){
+//        (*(P))=1;
+//        CSR_READ(CSR_REG_MHARTID,P);
+//        }
       break;
     }
     MixColumns(state);

@@ -27,7 +27,6 @@ module dmr_comparator
 
   logic [1:0] error_s;
 
-  //Classic Implementation Comparator
   //Checker 
 
   always_comb begin

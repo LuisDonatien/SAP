@@ -141,10 +141,18 @@ static int test_encrypt_ecb(void)
 
 
 //Store_Checkpoint();
-//    Store_Checkpoint();
+    *(P+1) = 0x0;
+
+    Store_Checkpoint();
 //    AES_init_ctx(&ctx, key);
     AES_init_ctx(&ctx, key);
-    Store_Checkpoint();
+//    Store_Checkpoint();
+
+/*    if (*(P+1) == 0x0){
+    *(P+1) = 0x1;
+    CSR_READ(CSR_REG_MHARTID,P);
+    
+    }*/
 
     AES_ECB_encrypt(&ctx, in);
 //    *Private_reg = 0x1;

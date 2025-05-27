@@ -477,10 +477,21 @@ module safe_FSM #(
 
         TMR_SH_HALT: begin
           Switch_SingletoTMR_s[i] = 1'b1;
+        //Temporal solution TMR lecture from both slaves: Todo solve irregular response from de OBI BUS
+        //when 2 different masters ask for gnt
+          single_bus_s[i] = 1'b1;
+          tmr_voter_enable_s[i] = 1'b1;
           if (Master_Core_i[i] == 1'b1) begin
             dbg_halt_req_s[i] = 1'b1;
             dbg_halt_req_general_s[i] = 1'b0;
           end else dbg_halt_req_general_s[i] = 1'b1;
+        end
+
+        //Temporal solution: Todo solve irregular response from de OBI BUS
+        //when 2 different masters ask for gnt
+        TMR_WAIT_SH: begin
+          single_bus_s[i] = 1'b1;
+          tmr_voter_enable_s[i] = 1'b1;
         end
 
         TMR_MS_INTRSYNC: begin
@@ -747,7 +758,7 @@ module safe_FSM #(
   assign set = dmr_delayed_s[0] | dmr_delayed_s[1] | dmr_delayed_s[2];
 
   logic clear;
-  assign clear = (Hart_wfi_i[0]&Hart_wfi_i[1]&Hart_wfi_i[2]) & (~Safe_configuration_i[0] & ~Safe_configuration_i[1]); //Locsktep == '11'
+  assign clear = (Hart_wfi_i[0] & Hart_wfi_i[1] & Hart_wfi_i[2]) & (~Safe_configuration_i[0] & ~Safe_configuration_i[1]); //Locsktep == '11'
 
   logic delay_ff;
   assign Delayed_o = delay_ff | dmr_delayed_s[0] | dmr_delayed_s[1] | dmr_delayed_s[2];

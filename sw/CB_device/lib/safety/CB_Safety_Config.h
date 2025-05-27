@@ -15,10 +15,10 @@ extern "C" {
 }
 #endif
 
-#define CRITICAL_SECTION 	0x1
-#define NONE_CRITICAL_SECTION	0x0
+#define CRITICAL_SECTION 	      0x1
+#define NONE_CRITICAL_SECTION	  0x0
 
-                                //HOT-BIT
+                            //HOT-BIT
 #define MASTER_CORE0	0x1	//0b001
 #define MASTER_CORE1	0x2	//0b010
 #define MASTER_CORE2	0x4	//0b100
@@ -27,10 +27,10 @@ extern "C" {
 #define CORE02_MASK     0x5 //0b101
 #define CORE12_MASK     0x6 //0b110
 
-#define SINGLE_MODE     0x0
-#define TMR_MODE        0x1
-#define DMR_MODE        0x2
-#define LOCKSTEP_MODE   0x3
+#define SINGLE_MODE         0x0
+#define TCLS_MODE           0x1
+#define DCLS_MODE           0x2
+#define LOCKSTEP_MODE       0x3
 
 #define START           0x1 
 

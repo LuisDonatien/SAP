@@ -28,9 +28,9 @@ extern "C" {
 //Functions
 #define INTERRUPT_HANDLER_ABI __attribute__((aligned(4), interrupt))
 
-__attribute__((aligned(4))) void TMR_Safe_Activate(unsigned int mode);
-__attribute__((aligned(4))) void TMR_Safe_Stop(unsigned int master);
-__attribute__((aligned(4),always_inline)) inline void TMR_Set_Critical_Section(unsigned int critical){
+__attribute__((aligned(4))) void Safe_Activate(unsigned int mode);
+__attribute__((aligned(4))) void Safe_Stop(unsigned int master);
+__attribute__((aligned(4),always_inline)) inline void Set_Critical_Section(unsigned int critical){
         volatile unsigned int *Priv_Reg = SAFE_WRAPPER_CTRL_BASEADDRESS | SAFE_WRAPPER_CTRL_CRITICAL_SECTION_REG_OFFSET;
         *Priv_Reg = critical;}
         
