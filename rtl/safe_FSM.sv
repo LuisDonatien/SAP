@@ -773,8 +773,8 @@ module safe_FSM #(
 
   always_comb begin
     dmr_error_s = '0;
-    if (DMR_Mask_i == 3'b011) dmr_error_s = dmr_error_i[0];
-    else if (DMR_Mask_i == 3'b110) dmr_error_s = dmr_error_i[1];
+    if (Master_Core_i == 3'b001) dmr_error_s = dmr_error_i[0];
+    else if (Master_Core_i == 3'b010) dmr_error_s = dmr_error_i[1];
     else dmr_error_s = dmr_error_i[2];
   end
 

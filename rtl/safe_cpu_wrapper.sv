@@ -221,9 +221,9 @@ module safe_cpu_wrapper
       .DMR_Rec_o(DMR_Rec_s),
       .en_ext_debug_req_o(en_ext_debug_s)
   );
-  assign intr[0] = {12'b0, 1'b0, 1'b0, intc_sync_s[0], 1'b0, 16'b0};
-  assign intr[1] = {12'b0, 1'b0, 1'b0, intc_sync_s[1], 1'b0, 16'b0};
-  assign intr[2] = {12'b0, 1'b0, 1'b0, intc_sync_s[2], 1'b0, 16'b0};
+  assign intr[0] = {12'b0, 1'b0, 1'b0, intc_sync_s[0], Interrupt_swResync_s[0], 16'b0};
+  assign intr[1] = {12'b0, 1'b0, 1'b0, intc_sync_s[1], Interrupt_swResync_s[1], 16'b0};
+  assign intr[2] = {12'b0, 1'b0, 1'b0, intc_sync_s[2], Interrupt_swResync_s[2], 16'b0};
 
   //Todo: future posibility to debug during TMR_SYNC or DMR_SYNC
   assign debug_req[0] = (debug_req_i && en_ext_debug_s && master_core_s[0]) || intc_halt_s[0];
@@ -391,38 +391,50 @@ module safe_cpu_wrapper
 
   /************************Isolate BUS***************************/
     logic [NHARTS-1:0] instr_isolate_valid_q;
+    logic [NHARTS-1:0] instr_expected_rvalid;
   for (genvar i = 0; i < NHARTS; i++) begin : isolate_obi_bus_instr
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
         instr_isolate_valid_q[i] <= '0;
+        instr_expected_rvalid[i] <= '0;
       end else begin
-        if (dmr_wfi_s == 3'b000) //clear
+        if (dmr_wfi_s[i] == 1'b0) begin //clear
           instr_isolate_valid_q[i] <= '0;
-        else
+        //if req & gnt before wfi halt, it needs a rvalid ack otherwise could stall waiting that read/write request.
+          instr_expected_rvalid[i] <= (core_instr_req[i].req & core_instr_resp[i].gnt) | (instr_expected_rvalid[i] & ~core_instr_resp[i].rvalid);
+        end else begin
           instr_isolate_valid_q[i] <= isolate_core_instr_resp[i].gnt;
+          instr_expected_rvalid[i] <= '0;
+        end
       end
     end
     assign isolate_core_instr_resp[i].gnt = core_instr_req[i].req;
-    assign isolate_core_instr_resp[i].rvalid = instr_isolate_valid_q[i];
+    assign isolate_core_instr_resp[i].rvalid = instr_isolate_valid_q[i] | instr_expected_rvalid[i];
     assign isolate_core_instr_resp[i].rdata = 32'h10500073;  //wfi instruction
   end
 
     logic [NHARTS-1:0] data_isolate_valid_q;
+    logic [NHARTS-1:0] data_expected_rvalid;
   for (genvar i = 0; i < NHARTS; i++) begin : isolate_obi_bus_data
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
         data_isolate_valid_q[i] <= '0;
+        data_expected_rvalid[i] <= '0;
       end else begin
-        if (dmr_wfi_s == 3'b000) //clear
-          data_isolate_valid_q[i] <= '0;        
-        else
+        if (dmr_wfi_s[i] == 1'b0) begin //clear
+          data_isolate_valid_q[i] <= '0;
+        //if req & gnt before wfi halt, it needs a rvalid ack otherwise could stall waiting that read/write request.
+          data_expected_rvalid[i] <= core_data_req[i].req & mux_core_data_resp_o[i].gnt | (data_expected_rvalid[i] & ~mux_core_data_resp_o[i].rvalid);
+        end else begin
           data_isolate_valid_q[i] <= isolate_core_data_resp[i].gnt;
+          data_expected_rvalid[i] <= '0;
+        end
       end
     end
     assign isolate_core_data_resp[i].gnt = core_data_req[i].req;
-    assign isolate_core_data_resp[i].rvalid = data_isolate_valid_q[i];
+    assign isolate_core_data_resp[i].rvalid = data_isolate_valid_q[i] | data_expected_rvalid[i];
     assign isolate_core_data_resp[i].rdata = 32'h0;  //0 data val
   end
 
@@ -595,7 +607,7 @@ module safe_cpu_wrapper
       delayed_intr_i = '0;
       delayed_debug_req_i = '0;
     end
-  end 
+  end
 
 
   for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_lockstep_
@@ -612,7 +624,7 @@ module safe_cpu_wrapper
       .core_data_req_o (lockstep_delayed_core_data_req_i[i]),
       .core_data_resp_i(lower_mux_core_data_resp_i[i][1]),
       .core_data_resp_o(upper_delayed_core_data_resp_i[i]),
-      .enable_i(delayed_s && dual_mode_s)
+      .enable_i(delayed_s && dual_mode_s && ~dmr_wfi_s[i])
     );
   end  
   
