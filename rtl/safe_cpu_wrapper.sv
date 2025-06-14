@@ -9,7 +9,7 @@ module safe_cpu_wrapper
   import cei_mochila_pkg::*;
 #(
     parameter NHARTS  = 3,
-    parameter NCYCLES = 1
+    parameter NCYCLES = cei_mochila_pkg::NCYCLES
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -636,25 +636,31 @@ module safe_cpu_wrapper
   assign delayed_debug_req_o = debug_req_ff[NCYCLES-1];
   assign enable_ff = delayed_s && dual_mode_s; 
 
-  for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
-    // Delayed Signals CPU ports
+for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
+  if (j == 0) begin : gen_first
+
     always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
       if (~rst_ni) begin
-        intr_ff[j]                   <= '0;
-        debug_req_ff[j]              <= '0;
-      end else begin
-        if (enable_ff) begin //enable for clock gate 
-          if (j == 0) begin
-            intr_ff[0]                   <= delayed_intr_i;
-            debug_req_ff[0]              <= delayed_debug_req_i;
-          end else begin
-            debug_req_ff[j]              <= debug_req_ff[j-1];
-            intr_ff[j]                   <= intr_ff[j-1];
-          end
-        end
+        intr_ff[0]       <= '0;
+        debug_req_ff[0]  <= '0;
+      end else if (enable_ff) begin
+        intr_ff[0]       <= delayed_intr_i;
+        debug_req_ff[0]  <= delayed_debug_req_i;
+      end
+    end
+  end else begin : gen_rest
+
+    always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
+      if (~rst_ni) begin
+        intr_ff[j]       <= '0;
+        debug_req_ff[j]  <= '0;
+      end else if (enable_ff) begin
+        intr_ff[j]       <= intr_ff[j-1];
+        debug_req_ff[j]  <= debug_req_ff[j-1];
       end
     end
   end
+end
 
   for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_comparator
 

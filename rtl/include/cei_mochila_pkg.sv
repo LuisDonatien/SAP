@@ -30,6 +30,7 @@ package cei_mochila_pkg;
   } cpu_type_e;
 
   localparam cpu_type_e CPU_type = CV32E20;
+  localparam NCYCLES = 1;
 
   //System Bus
   typedef enum logic {

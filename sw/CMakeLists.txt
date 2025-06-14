@@ -433,6 +433,10 @@ add_custom_command(TARGET ${MAINFILE}.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -O binary  ${MAINFILE}.elf  ${MAINFILE}.bin
         COMMENT "Invoking: Hexdump")
 
+add_custom_command(TARGET ${MAINFILE}.elf POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} --srec-forceS3 --srec-len 1 -O srec  ${MAINFILE}.elf  ${MAINFILE}.srec
+        COMMENT "Invoking: SREC")
+
 # Pre-processing command to create disassembly for each source file
 foreach (SRC_MODULE ${MAINFILE} )
   add_custom_command(TARGET ${MAINFILE}.elf

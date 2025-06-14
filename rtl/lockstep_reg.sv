@@ -121,29 +121,35 @@ module lockstep_reg
 
 assign enable_ff = enable_i;
 
-  for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
-    // Delayed Signals CPU ports
+for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
+  if (j == 0) begin : gen_first
+    always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
+      if (~rst_ni) begin
+        core_instr_resp_ff_rvalid[0] <= '0;
+        core_instr_resp_ff_rdata[0]  <= '0;
+        core_data_resp_ff_rvalid[0]  <= '0;
+        core_data_resp_ff_rdata[0]   <= '0;
+      end else if (enable_ff) begin
+        core_instr_resp_ff_rvalid[0] <= core_instr_resp_i.rvalid;
+        core_instr_resp_ff_rdata[0]  <= core_instr_resp_i.rdata;
+        core_data_resp_ff_rvalid[0]  <= core_data_resp_i.rvalid;
+        core_data_resp_ff_rdata[0]   <= core_data_resp_i.rdata;
+      end
+    end
+  end else begin : gen_rest
     always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
       if (~rst_ni) begin
         core_instr_resp_ff_rvalid[j] <= '0;
         core_instr_resp_ff_rdata[j]  <= '0;
         core_data_resp_ff_rvalid[j]  <= '0;
         core_data_resp_ff_rdata[j]   <= '0;
-      end else begin
-        if (enable_ff) begin //enable for clock gate 
-          if (j == 0) begin
-            core_instr_resp_ff_rvalid[0] <= core_instr_resp_i.rvalid;
-            core_instr_resp_ff_rdata[0]  <= core_instr_resp_i.rdata;
-            core_data_resp_ff_rvalid[0]  <= core_data_resp_i.rvalid;
-            core_data_resp_ff_rdata[0]   <= core_data_resp_i.rdata;
-          end else begin
-            core_instr_resp_ff_rvalid[j] <= core_instr_resp_ff_rvalid[j-1];
-            core_instr_resp_ff_rdata[j]  <= core_instr_resp_ff_rdata[j-1];
-            core_data_resp_ff_rvalid[j]  <= core_data_resp_ff_rvalid[j-1];
-            core_data_resp_ff_rdata[j]   <= core_data_resp_ff_rdata[j-1];
-          end
-        end
+      end else if (enable_ff) begin
+        core_instr_resp_ff_rvalid[j] <= core_instr_resp_ff_rvalid[j-1];
+        core_instr_resp_ff_rdata[j]  <= core_instr_resp_ff_rdata[j-1];
+        core_data_resp_ff_rvalid[j]  <= core_data_resp_ff_rvalid[j-1];
+        core_data_resp_ff_rdata[j]   <= core_data_resp_ff_rdata[j-1];
       end
     end
   end
+end
 endmodule  // lockstep_reg

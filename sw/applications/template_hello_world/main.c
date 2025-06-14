@@ -12,6 +12,8 @@
 
 int main(int argc, char *argv[]) 
 {
+unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFSET;
+
 
         /******START******/
 
@@ -20,7 +22,7 @@ int main(int argc, char *argv[])
         //Enter Safe mode (TCLS_MODE DCLS_MODE LOCKSTEP_MODE)
         Safe_Activate(TCLS_MODE);
 ///        Store_Checkpoint();
-                printf("[IP_CEI]: Hello world!\n");
+                printf("[TCLS]\n");
 
         //Checkpoint for DMR configuration
 //        Store_Checkpoint();
@@ -30,21 +32,56 @@ int main(int argc, char *argv[])
         Safe_Stop(MASTER_CORE2); 
 
 
-                printf("[IP_CEI]: Hello world!\n");
+                printf("[SINGLE]\n");
 
         Safe_Activate(LOCKSTEP_MODE);
 
-                printf("[IP_CEI]: Hello world!\n");
+                printf("[LOCKS]\n");
 
-        Safe_Stop(MASTER_CORE1);
+        Safe_Stop(MASTER_CORE0);
+
+
 
         Safe_Activate(DCLS_MODE);
-        Store_Checkpoint();
+//        Store_Checkpoint();
 
-                printf("[IP_CEI]: Hello world!\n");
+                printf("[DCLS]\n");
+
+        Safe_Stop(MASTER_CORE0);
+
+
+        *P = CORE12_MASK;
+
+        Safe_Activate(TCLS_MODE);
+///        Store_Checkpoint();
+                printf("[TCLS]\n");
+
+        //Checkpoint for DMR configuration
+//        Store_Checkpoint();
+
+
+        //Exit Safe mode (MASTER_CORE0 MASTER_CORE1 MASTER_CORE2)
+        Safe_Stop(MASTER_CORE1); 
+
+
+                printf("[SINGLE]\n");
+
+        Safe_Activate(LOCKSTEP_MODE);
+
+                printf("[LOCKS]\n");
 
         Safe_Stop(MASTER_CORE2);
 
+
+
+        Safe_Activate(DCLS_MODE);
+//        Store_Checkpoint();
+
+                printf("[DCLS]\n");
+
+        Safe_Stop(MASTER_CORE2);
+
+                printf("[SINGLE]\n");
 //                printf("[IP_CEI]: Hello world!\n");
 
         /******END PROGRAM******/
