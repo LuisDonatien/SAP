@@ -163,13 +163,13 @@ module safe_cpu_wrapper
   assign sleep_o = sleep_ff_s;
 
   //Added FF for output isolation
-    always_ff @(posedge clk_i or negedge rst_ni) begin
-      if (!rst_ni) begin
-        sleep_ff_s <= '0;
-      end else begin
-        sleep_ff_s <= sleep_s;
-      end
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      sleep_ff_s <= '0;
+    end else begin
+      sleep_ff_s <= sleep_s;
     end
+  end
 
   safe_wrapper_ctrl #(
       .reg_req_t(reg_pkg::reg_req_t),
@@ -253,57 +253,57 @@ module safe_cpu_wrapper
   obi_resp_t [NHARTS-1:0][1:0] lower_mux_core_data_resp_i;
 
   for (genvar i = 0; i < NHARTS; i++) begin : eros_upper_demux
-  always_comb begin
+    always_comb begin
       if (master_core_ff_s[2] && (dual_mode_s || tmr_voter_enable_s)) begin
-        upper_mux_core_instr_req_i[i][0] =  '0;
-        upper_mux_core_instr_req_i[i][1] =  '0;
-        upper_mux_core_instr_req_i[i][2] =  core_instr_req[i];
+        upper_mux_core_instr_req_i[i][0] = '0;
+        upper_mux_core_instr_req_i[i][1] = '0;
+        upper_mux_core_instr_req_i[i][2] = core_instr_req[i];
 
-        upper_mux_core_data_req_i[i][0] = '0;
-        upper_mux_core_data_req_i[i][1] = '0;
-        upper_mux_core_data_req_i[i][2] = mux_core_data_req_i[i];                   
+        upper_mux_core_data_req_i[i][0]  = '0;
+        upper_mux_core_data_req_i[i][1]  = '0;
+        upper_mux_core_data_req_i[i][2]  = mux_core_data_req_i[i];
       end else if (master_core_ff_s[1] && (dual_mode_s || tmr_voter_enable_s)) begin
-        upper_mux_core_instr_req_i[i][0] =  '0;
-        upper_mux_core_instr_req_i[i][1] =  core_instr_req[i];
-        upper_mux_core_instr_req_i[i][2] =  '0;
+        upper_mux_core_instr_req_i[i][0] = '0;
+        upper_mux_core_instr_req_i[i][1] = core_instr_req[i];
+        upper_mux_core_instr_req_i[i][2] = '0;
 
-        upper_mux_core_data_req_i[i][0] = '0;
-        upper_mux_core_data_req_i[i][1] = mux_core_data_req_i[i];
-        upper_mux_core_data_req_i[i][2] = '0;
+        upper_mux_core_data_req_i[i][0]  = '0;
+        upper_mux_core_data_req_i[i][1]  = mux_core_data_req_i[i];
+        upper_mux_core_data_req_i[i][2]  = '0;
       end else if (master_core_ff_s[0] && (dual_mode_s || tmr_voter_enable_s)) begin
-        upper_mux_core_instr_req_i[i][0] =  core_instr_req[i];
-        upper_mux_core_instr_req_i[i][1] =  '0;
-        upper_mux_core_instr_req_i[i][2] =  '0;
+        upper_mux_core_instr_req_i[i][0] = core_instr_req[i];
+        upper_mux_core_instr_req_i[i][1] = '0;
+        upper_mux_core_instr_req_i[i][2] = '0;
 
-        upper_mux_core_data_req_i[i][0] = mux_core_data_req_i[i];
-        upper_mux_core_data_req_i[i][1] = '0;
-        upper_mux_core_data_req_i[i][2] = '0;
-      end else begin // default case when not a master and the core has to use its bus
-        if (i==0) begin
-          upper_mux_core_instr_req_i[i][0] =  core_instr_req[i];
-          upper_mux_core_instr_req_i[i][1] =  '0;
-          upper_mux_core_instr_req_i[i][2] =  '0;
+        upper_mux_core_data_req_i[i][0]  = mux_core_data_req_i[i];
+        upper_mux_core_data_req_i[i][1]  = '0;
+        upper_mux_core_data_req_i[i][2]  = '0;
+      end else begin  // default case when not a master and the core has to use its bus
+        if (i == 0) begin
+          upper_mux_core_instr_req_i[i][0] = core_instr_req[i];
+          upper_mux_core_instr_req_i[i][1] = '0;
+          upper_mux_core_instr_req_i[i][2] = '0;
 
-          upper_mux_core_data_req_i[i][0] = mux_core_data_req_i[i];
-          upper_mux_core_data_req_i[i][1] = '0;
-          upper_mux_core_data_req_i[i][2] = '0; 
-        end else if (i==1) begin
-          upper_mux_core_instr_req_i[i][0] =  '0;
-          upper_mux_core_instr_req_i[i][1] =  core_instr_req[i];
-          upper_mux_core_instr_req_i[i][2] =  '0;
-        
-          upper_mux_core_data_req_i[i][0] = '0;
-          upper_mux_core_data_req_i[i][1] = mux_core_data_req_i[i];
-          upper_mux_core_data_req_i[i][2] = '0; 
+          upper_mux_core_data_req_i[i][0]  = mux_core_data_req_i[i];
+          upper_mux_core_data_req_i[i][1]  = '0;
+          upper_mux_core_data_req_i[i][2]  = '0;
+        end else if (i == 1) begin
+          upper_mux_core_instr_req_i[i][0] = '0;
+          upper_mux_core_instr_req_i[i][1] = core_instr_req[i];
+          upper_mux_core_instr_req_i[i][2] = '0;
+
+          upper_mux_core_data_req_i[i][0]  = '0;
+          upper_mux_core_data_req_i[i][1]  = mux_core_data_req_i[i];
+          upper_mux_core_data_req_i[i][2]  = '0;
         end else begin
-          upper_mux_core_instr_req_i[i][0] =  '0;
-          upper_mux_core_instr_req_i[i][1] =  '0;
-          upper_mux_core_instr_req_i[i][2] =  core_instr_req[i];
-        
-          upper_mux_core_data_req_i[i][0] = '0;
-          upper_mux_core_data_req_i[i][1] = '0;
-          upper_mux_core_data_req_i[i][2] = mux_core_data_req_i[i];
-        end         
+          upper_mux_core_instr_req_i[i][0] = '0;
+          upper_mux_core_instr_req_i[i][1] = '0;
+          upper_mux_core_instr_req_i[i][2] = core_instr_req[i];
+
+          upper_mux_core_data_req_i[i][0]  = '0;
+          upper_mux_core_data_req_i[i][1]  = '0;
+          upper_mux_core_data_req_i[i][2]  = mux_core_data_req_i[i];
+        end
       end
     end
   end
@@ -312,27 +312,27 @@ module safe_cpu_wrapper
 
   /**************************Lower-Mux-Req**********************************/
   for (genvar i = 0; i < NHARTS; i++) begin : eros_lower_mux_obi_req
-  
-  always_comb begin
-    //TODO: Reduce de mux configurations inputs ports, implies modification in the Safe_FSM
-    if (master_core_ff_s[i] && tmr_voter_enable_s && !dual_mode_s) begin
-        core_instr_req_o[i]  = voted_core_instr_req_o[i];
+
+    always_comb begin
+      //TODO: Reduce de mux configurations inputs ports, implies modification in the Safe_FSM
+      if (master_core_ff_s[i] && tmr_voter_enable_s && !dual_mode_s) begin
+        core_instr_req_o[i] = voted_core_instr_req_o[i];
         core_data_req_o[i]  = voted_core_data_req_o[i];
-    end else if (master_core_ff_s[i] && !tmr_voter_enable_s && dual_mode_s) begin
-         core_instr_req_o[i]  = compared_core_instr_req_o[i];
-         core_data_req_o[i]   = compared_core_data_req_o[i];
-    end else begin //Todo: Put here in the future the posibility to wake up the third core in case of a hang in DCLS mode.
-        core_instr_req_o[i]  = upper_mux_core_instr_req_i[i][i];
-        core_data_req_o[i]   = upper_mux_core_data_req_i[i][i]; 
+      end else if (master_core_ff_s[i] && !tmr_voter_enable_s && dual_mode_s) begin
+        core_instr_req_o[i] = compared_core_instr_req_o[i];
+        core_data_req_o[i]  = compared_core_data_req_o[i];
+      end else begin //Todo: Put here in the future the posibility to wake up the third core in case of a hang in DCLS mode.
+        core_instr_req_o[i] = upper_mux_core_instr_req_i[i][i];
+        core_data_req_o[i]  = upper_mux_core_data_req_i[i][i];
+      end
     end
   end
-  end
 
-  /**************************************************************************/  
+  /**************************************************************************/
   /**************************Lower-Demux-Resp********************************/
   for (genvar i = 0; i < NHARTS; i++) begin : eros_lower_mux_obi_resp
     always_comb begin
-      if (delayed_s & dual_mode_s) begin //TODO: should not be necesary use de dual_mode_s
+      if (delayed_s & dual_mode_s) begin  //TODO: should not be necesary use de dual_mode_s
         lower_mux_core_instr_resp_i[i][0] = '0;
         lower_mux_core_instr_resp_i[i][1] = core_instr_resp_i[i];
 
@@ -343,52 +343,52 @@ module safe_cpu_wrapper
         lower_mux_core_instr_resp_i[i][1] = '0;
 
         lower_mux_core_data_resp_i[i][0]  = core_data_resp_i[i];
-        lower_mux_core_data_resp_i[i][1]  = '0;     
+        lower_mux_core_data_resp_i[i][1]  = '0;
       end
     end
   end
 
   /*********************************************************************/
   /**************************Upper-Mux-Resp********************************/
-//upper_mux_core_instr_req_i;
-//upper_mux_core_data_req_i;
+  //upper_mux_core_instr_req_i;
+  //upper_mux_core_data_req_i;
   for (genvar i = 0; i < NHARTS; i++) begin : eros_upper_mux_obi_resp
     always_comb begin
       if (dmr_wfi_s[i] == '1) begin
-        core_instr_resp[i]  = isolate_core_instr_resp[i];
-        mux_core_data_resp_o[i]   = isolate_core_data_resp[i];
+        core_instr_resp[i] = isolate_core_instr_resp[i];
+        mux_core_data_resp_o[i] = isolate_core_data_resp[i];
       end else if (master_core_ff_s[0] && !delayed_s && (tmr_voter_enable_s || (dual_mode_s && dmr_config_s[i]))) begin
-        core_instr_resp[i]  = lower_mux_core_instr_resp_i[0][0];    
-        mux_core_data_resp_o[i]   = lower_mux_core_data_resp_i[0][0];
+        core_instr_resp[i] = lower_mux_core_instr_resp_i[0][0];
+        mux_core_data_resp_o[i] = lower_mux_core_data_resp_i[0][0];
       end else if (master_core_ff_s[1] && !delayed_s && (tmr_voter_enable_s || (dual_mode_s && dmr_config_s[i]))) begin
-        core_instr_resp[i]  = lower_mux_core_instr_resp_i[1][0];    
-        mux_core_data_resp_o[i]   = lower_mux_core_data_resp_i[1][0]; 
+        core_instr_resp[i] = lower_mux_core_instr_resp_i[1][0];
+        mux_core_data_resp_o[i] = lower_mux_core_data_resp_i[1][0];
       end else if (master_core_ff_s[2] && !delayed_s && (tmr_voter_enable_s || (dual_mode_s && dmr_config_s[i]))) begin
-        core_instr_resp[i]  = lower_mux_core_instr_resp_i[2][0];    
-        mux_core_data_resp_o[i]   = lower_mux_core_data_resp_i[2][0];
-      //delayed
+        core_instr_resp[i] = lower_mux_core_instr_resp_i[2][0];
+        mux_core_data_resp_o[i] = lower_mux_core_data_resp_i[2][0];
+        //delayed
       end else if (master_core_ff_s[i] && dual_mode_s && delayed_s) begin //if master of DCLS connect to the second core
-        core_instr_resp[i]  = upper_delayed_core_instr_resp_i[i][0];    
-        mux_core_data_resp_o[i]   = upper_delayed_core_data_resp_i[i][0]; 
+        core_instr_resp[i] = upper_delayed_core_instr_resp_i[i][0];
+        mux_core_data_resp_o[i] = upper_delayed_core_data_resp_i[i][0];
       end else if (!master_core_ff_s[i] && dual_mode_s && delayed_s && dmr_config_s[i])  begin //if not master of DCLS connect to the second core
         if (master_core_ff_s[0]) begin
-          core_instr_resp[i]  = upper_delayed_core_instr_resp_i[0][1];    
-          mux_core_data_resp_o[i]   = upper_delayed_core_data_resp_i[0][1]; 
+          core_instr_resp[i] = upper_delayed_core_instr_resp_i[0][1];
+          mux_core_data_resp_o[i] = upper_delayed_core_data_resp_i[0][1];
         end else if (master_core_ff_s[1]) begin
-          core_instr_resp[i]  = upper_delayed_core_instr_resp_i[1][1];    
-          mux_core_data_resp_o[i]   = upper_delayed_core_data_resp_i[1][1]; 
+          core_instr_resp[i] = upper_delayed_core_instr_resp_i[1][1];
+          mux_core_data_resp_o[i] = upper_delayed_core_data_resp_i[1][1];
         end else begin
-          core_instr_resp[i]  = upper_delayed_core_instr_resp_i[2][1];    
-          mux_core_data_resp_o[i]   = upper_delayed_core_data_resp_i[2][1];         
+          core_instr_resp[i] = upper_delayed_core_instr_resp_i[2][1];
+          mux_core_data_resp_o[i] = upper_delayed_core_data_resp_i[2][1];
         end
-      //default
+        //default
       end else begin
-        core_instr_resp[i]  = lower_mux_core_instr_resp_i[i][0];
-        mux_core_data_resp_o[i]   = lower_mux_core_data_resp_i[i][0];
+        core_instr_resp[i] = lower_mux_core_instr_resp_i[i][0];
+        mux_core_data_resp_o[i] = lower_mux_core_data_resp_i[i][0];
       end
     end
   end
-  /*********************************************************************/ 
+  /*********************************************************************/
   /*********************************************************************/
 
   assign mux_core_data_req_i[0] = xbar_core_data_req[0][0];
@@ -400,8 +400,8 @@ module safe_cpu_wrapper
 
 
   /************************Isolate BUS***************************/
-    logic [NHARTS-1:0] instr_isolate_valid_q;
-    logic [NHARTS-1:0] instr_expected_rvalid;
+  logic [NHARTS-1:0] instr_isolate_valid_q;
+  logic [NHARTS-1:0] instr_expected_rvalid;
   for (genvar i = 0; i < NHARTS; i++) begin : isolate_obi_bus_instr
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
@@ -409,9 +409,9 @@ module safe_cpu_wrapper
         instr_isolate_valid_q[i] <= '0;
         instr_expected_rvalid[i] <= '0;
       end else begin
-        if (dmr_wfi_s[i] == 1'b0) begin //clear
+        if (dmr_wfi_s[i] == 1'b0) begin  //clear
           instr_isolate_valid_q[i] <= '0;
-        //if req & gnt before wfi halt, it needs a rvalid ack otherwise could stall waiting that read/write request.
+          //if req & gnt before wfi halt, it needs a rvalid ack otherwise could stall waiting that read/write request.
           instr_expected_rvalid[i] <= (core_instr_req[i].req & core_instr_resp[i].gnt) | (instr_expected_rvalid[i] & ~core_instr_resp[i].rvalid);
         end else begin
           instr_isolate_valid_q[i] <= isolate_core_instr_resp[i].gnt;
@@ -424,8 +424,8 @@ module safe_cpu_wrapper
     assign isolate_core_instr_resp[i].rdata = 32'h10500073;  //wfi instruction
   end
 
-    logic [NHARTS-1:0] data_isolate_valid_q;
-    logic [NHARTS-1:0] data_expected_rvalid;
+  logic [NHARTS-1:0] data_isolate_valid_q;
+  logic [NHARTS-1:0] data_expected_rvalid;
   for (genvar i = 0; i < NHARTS; i++) begin : isolate_obi_bus_data
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
@@ -433,9 +433,9 @@ module safe_cpu_wrapper
         data_isolate_valid_q[i] <= '0;
         data_expected_rvalid[i] <= '0;
       end else begin
-        if (dmr_wfi_s[i] == 1'b0) begin //clear
+        if (dmr_wfi_s[i] == 1'b0) begin  //clear
           data_isolate_valid_q[i] <= '0;
-        //if req & gnt before wfi halt, it needs a rvalid ack otherwise could stall waiting that read/write request.
+          //if req & gnt before wfi halt, it needs a rvalid ack otherwise could stall waiting that read/write request.
           data_expected_rvalid[i] <= core_data_req[i].req & mux_core_data_resp_o[i].gnt | (data_expected_rvalid[i] & ~mux_core_data_resp_o[i].rvalid);
         end else begin
           data_isolate_valid_q[i] <= isolate_core_data_resp[i].gnt;
@@ -454,21 +454,45 @@ module safe_cpu_wrapper
   obi_req_t [NHARTS-1:0] tmr0_core_instr_req_i;
   obi_req_t [NHARTS-1:0] tmr1_core_instr_req_i;
   obi_req_t [NHARTS-1:0] tmr2_core_instr_req_i;
-  assign tmr0_core_instr_req_i = {upper_mux_core_instr_req_i[2][0],upper_mux_core_instr_req_i[1][0],upper_mux_core_instr_req_i[0][0]};
-  assign tmr1_core_instr_req_i = {upper_mux_core_instr_req_i[2][1],upper_mux_core_instr_req_i[1][1],upper_mux_core_instr_req_i[0][1]};
-  assign tmr2_core_instr_req_i = {upper_mux_core_instr_req_i[2][2],upper_mux_core_instr_req_i[1][2],upper_mux_core_instr_req_i[0][2]};
+  assign tmr0_core_instr_req_i = {
+    upper_mux_core_instr_req_i[2][0],
+    upper_mux_core_instr_req_i[1][0],
+    upper_mux_core_instr_req_i[0][0]
+  };
+  assign tmr1_core_instr_req_i = {
+    upper_mux_core_instr_req_i[2][1],
+    upper_mux_core_instr_req_i[1][1],
+    upper_mux_core_instr_req_i[0][1]
+  };
+  assign tmr2_core_instr_req_i = {
+    upper_mux_core_instr_req_i[2][2],
+    upper_mux_core_instr_req_i[1][2],
+    upper_mux_core_instr_req_i[0][2]
+  };
 
   obi_req_t [NHARTS-1:0] tmr0_core_data_req_i;
   obi_req_t [NHARTS-1:0] tmr1_core_data_req_i;
   obi_req_t [NHARTS-1:0] tmr2_core_data_req_i;
-  assign tmr0_core_data_req_i = {upper_mux_core_data_req_i[2][0],upper_mux_core_data_req_i[1][0],upper_mux_core_data_req_i[0][0]};
-  assign tmr1_core_data_req_i = {upper_mux_core_data_req_i[2][1],upper_mux_core_data_req_i[1][1],upper_mux_core_data_req_i[0][1]};
-  assign tmr2_core_data_req_i = {upper_mux_core_data_req_i[2][2],upper_mux_core_data_req_i[1][2],upper_mux_core_data_req_i[0][2]};
+  assign tmr0_core_data_req_i = {
+    upper_mux_core_data_req_i[2][0],
+    upper_mux_core_data_req_i[1][0],
+    upper_mux_core_data_req_i[0][0]
+  };
+  assign tmr1_core_data_req_i = {
+    upper_mux_core_data_req_i[2][1],
+    upper_mux_core_data_req_i[1][1],
+    upper_mux_core_data_req_i[0][1]
+  };
+  assign tmr2_core_data_req_i = {
+    upper_mux_core_data_req_i[2][2],
+    upper_mux_core_data_req_i[1][2],
+    upper_mux_core_data_req_i[0][2]
+  };
 
   //TODO: **Temporal** Gated outpout to avoid changing master until switch to single mode
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (~rst_ni) begin
-      master_core_ff_s <= 3'b001; //default master
+      master_core_ff_s <= 3'b001;  //default master
     end else begin
       if (sleep_s == 3'b111) master_core_ff_s <= master_core_s;
     end
@@ -521,23 +545,23 @@ module safe_cpu_wrapper
   obi_req_t [NHARTS-1:0][1:0] lockstep_delayed_core_instr_req_i;
   obi_req_t [NHARTS-1:0][1:0] lockstep_delayed_core_data_req_i;
 
-  always_comb begin 
-      //Masters
-      //Comparador 0
-      dmr_core_instr_req_i[0][0] = upper_mux_core_instr_req_i[0][0];
-      dmr_core_data_req_i[0][0] = upper_mux_core_data_req_i[0][0];
-      //Comparador 1
-      dmr_core_instr_req_i[1][0] = upper_mux_core_instr_req_i[1][1];
-      dmr_core_data_req_i[1][0] = upper_mux_core_data_req_i[1][1];
-      //Comparador 2
-      dmr_core_instr_req_i[2][0] = upper_mux_core_instr_req_i[2][2];
-      dmr_core_data_req_i[2][0] = upper_mux_core_data_req_i[2][2];
+  always_comb begin
+    //Masters
+    //Comparador 0
+    dmr_core_instr_req_i[0][0] = upper_mux_core_instr_req_i[0][0];
+    dmr_core_data_req_i[0][0]  = upper_mux_core_data_req_i[0][0];
+    //Comparador 1
+    dmr_core_instr_req_i[1][0] = upper_mux_core_instr_req_i[1][1];
+    dmr_core_data_req_i[1][0]  = upper_mux_core_data_req_i[1][1];
+    //Comparador 2
+    dmr_core_instr_req_i[2][0] = upper_mux_core_instr_req_i[2][2];
+    dmr_core_data_req_i[2][0]  = upper_mux_core_data_req_i[2][2];
 
     //Slaves Mux  
     if (dmr_config_s[1] == 1'b1) begin  //Mux Comparador 0 Mask 110
       dmr_core_instr_req_i[0][1] = upper_mux_core_instr_req_i[1][0];
       dmr_core_data_req_i[0][1]  = upper_mux_core_data_req_i[1][0];
-    end else begin //Mux Comparador 0 Mask 101
+    end else begin  //Mux Comparador 0 Mask 101
       dmr_core_instr_req_i[0][1] = upper_mux_core_instr_req_i[2][0];
       dmr_core_data_req_i[0][1]  = upper_mux_core_data_req_i[2][0];
     end
@@ -545,17 +569,17 @@ module safe_cpu_wrapper
     if (dmr_config_s[0] == 1'b1) begin  //Mux Comparador 1 Mask 110 
       dmr_core_instr_req_i[1][1] = upper_mux_core_instr_req_i[0][1];
       dmr_core_data_req_i[1][1]  = upper_mux_core_data_req_i[0][1];
-    end else begin //Mux Comparador 0 Mask 011 
+    end else begin  //Mux Comparador 0 Mask 011 
       dmr_core_instr_req_i[1][1] = upper_mux_core_instr_req_i[2][1];
-      dmr_core_data_req_i[1][1]  = upper_mux_core_data_req_i[2][1];    
+      dmr_core_data_req_i[1][1]  = upper_mux_core_data_req_i[2][1];
     end
 
     if (dmr_config_s[1] == 1'b1) begin  //Mux Comparador 2 Mask 011 
       dmr_core_instr_req_i[2][1] = upper_mux_core_instr_req_i[1][2];
-      dmr_core_data_req_i[2][1]  = upper_mux_core_data_req_i[1][2]; 
-    end else begin //Mux Comparador 0 Mask 101 
+      dmr_core_data_req_i[2][1]  = upper_mux_core_data_req_i[1][2];
+    end else begin  //Mux Comparador 0 Mask 101 
       dmr_core_instr_req_i[2][1] = upper_mux_core_instr_req_i[0][2];
-      dmr_core_data_req_i[2][1]  = upper_mux_core_data_req_i[0][2];     
+      dmr_core_data_req_i[2][1]  = upper_mux_core_data_req_i[0][2];
     end
   end
 
@@ -563,13 +587,13 @@ module safe_cpu_wrapper
     always_comb begin
       if (delayed_s && dual_mode_s) begin
         lockstep_mux_core_instr_req_i[i] = lockstep_delayed_core_instr_req_i[i];
-        lockstep_mux_core_data_req_i[i] = lockstep_delayed_core_data_req_i[i];
+        lockstep_mux_core_data_req_i[i]  = lockstep_delayed_core_data_req_i[i];
       end else if (dual_mode_s) begin
         lockstep_mux_core_instr_req_i[i] = dmr_core_instr_req_i[i];
-        lockstep_mux_core_data_req_i[i] = dmr_core_data_req_i[i];
+        lockstep_mux_core_data_req_i[i]  = dmr_core_data_req_i[i];
       end else begin
         lockstep_mux_core_instr_req_i[i] = '0;
-        lockstep_mux_core_data_req_i[i] = '0;
+        lockstep_mux_core_data_req_i[i]  = '0;
       end
     end
   end
@@ -577,7 +601,7 @@ module safe_cpu_wrapper
 
   for (genvar i = 0; i < NHARTS; i++) begin : eros_signals_mux_reg
     always_comb begin
-      if (delayed_s && dual_mode_s) begin // only if delayed mode
+      if (delayed_s && dual_mode_s) begin  // only if delayed mode
         if (master_core_ff_s[i]) begin
           core_intr_i[i] = intr[i];
           core_debug_req_i[i] = debug_req[i];
@@ -590,11 +614,11 @@ module safe_cpu_wrapper
         end else if (dmr_config_s[i] && master_core_ff_s[2]) begin
           core_intr_i[i] = delayed_intr_o;
           core_debug_req_i[i] = delayed_debug_req_o;
-        end else begin //default nothing
+        end else begin  //default nothing
           core_intr_i[i] = intr[i];
           core_debug_req_i[i] = debug_req[i];
         end
-      end else begin //Others modes
+      end else begin  //Others modes
         core_intr_i[i] = intr[i];
         core_debug_req_i[i] = debug_req[i];
       end
@@ -602,7 +626,7 @@ module safe_cpu_wrapper
   end
 
   always_comb begin : eros_lockstep_input_signals_mux_reg
-    if (delayed_s && dual_mode_s) begin // only if delayed mode
+    if (delayed_s && dual_mode_s) begin  // only if delayed mode
       if (!master_core_ff_s[0] && dmr_config_s[0]) begin
         delayed_intr_i = intr[0];
         delayed_debug_req_i = debug_req[0];
@@ -622,55 +646,55 @@ module safe_cpu_wrapper
 
   for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_lockstep_
     lockstep_reg #(
-      .NCYCLES(NCYCLES)
+        .NCYCLES(NCYCLES)
     ) lockstep_reg_i (
-      .clk_i,
-      .rst_ni,
-      .core_instr_req_i (dmr_core_instr_req_i[i]),
-      .core_instr_req_o (lockstep_delayed_core_instr_req_i[i]),
-      .core_instr_resp_i(lower_mux_core_instr_resp_i[i][1]),
-      .core_instr_resp_o(upper_delayed_core_instr_resp_i[i]),
-      .core_data_req_i (dmr_core_data_req_i[i]),
-      .core_data_req_o (lockstep_delayed_core_data_req_i[i]),
-      .core_data_resp_i(lower_mux_core_data_resp_i[i][1]),
-      .core_data_resp_o(upper_delayed_core_data_resp_i[i]),
-      .enable_i(delayed_s && dual_mode_s && ~dmr_wfi_s[i])
+        .clk_i,
+        .rst_ni,
+        .core_instr_req_i(dmr_core_instr_req_i[i]),
+        .core_instr_req_o(lockstep_delayed_core_instr_req_i[i]),
+        .core_instr_resp_i(lower_mux_core_instr_resp_i[i][1]),
+        .core_instr_resp_o(upper_delayed_core_instr_resp_i[i]),
+        .core_data_req_i(dmr_core_data_req_i[i]),
+        .core_data_req_o(lockstep_delayed_core_data_req_i[i]),
+        .core_data_resp_i(lower_mux_core_data_resp_i[i][1]),
+        .core_data_resp_o(upper_delayed_core_data_resp_i[i]),
+        .enable_i(delayed_s && dual_mode_s && ~dmr_wfi_s[i])
     );
-  end  
-  
-  logic     [NCYCLES-1:0]       debug_req_ff;
-  logic     [NCYCLES-1:0][31:0] intr_ff;
-  logic enable_ff;
+  end
 
-  assign delayed_intr_o = intr_ff[NCYCLES-1]; 
+  logic [NCYCLES-1:0]       debug_req_ff;
+  logic [NCYCLES-1:0][31:0] intr_ff;
+  logic                     enable_ff;
+
+  assign delayed_intr_o = intr_ff[NCYCLES-1];
   assign delayed_debug_req_o = debug_req_ff[NCYCLES-1];
-  assign enable_ff = delayed_s && dual_mode_s; 
+  assign enable_ff = delayed_s && dual_mode_s;
 
-for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
-  if (j == 0) begin : gen_first
+  for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
+    if (j == 0) begin : gen_first
 
-    always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
-      if (~rst_ni) begin
-        intr_ff[0]       <= '0;
-        debug_req_ff[0]  <= '0;
-      end else if (enable_ff) begin
-        intr_ff[0]       <= delayed_intr_i;
-        debug_req_ff[0]  <= delayed_debug_req_i;
+      always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
+        if (~rst_ni) begin
+          intr_ff[0]      <= '0;
+          debug_req_ff[0] <= '0;
+        end else if (enable_ff) begin
+          intr_ff[0]      <= delayed_intr_i;
+          debug_req_ff[0] <= delayed_debug_req_i;
+        end
       end
-    end
-  end else begin : gen_rest
+    end else begin : gen_rest
 
-    always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
-      if (~rst_ni) begin
-        intr_ff[j]       <= '0;
-        debug_req_ff[j]  <= '0;
-      end else if (enable_ff) begin
-        intr_ff[j]       <= intr_ff[j-1];
-        debug_req_ff[j]  <= debug_req_ff[j-1];
+      always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
+        if (~rst_ni) begin
+          intr_ff[j]      <= '0;
+          debug_req_ff[j] <= '0;
+        end else if (enable_ff) begin
+          intr_ff[j]      <= intr_ff[j-1];
+          debug_req_ff[j] <= debug_req_ff[j-1];
+        end
       end
     end
   end
-end
 
   for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_comparator
 

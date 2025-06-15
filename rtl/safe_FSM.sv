@@ -477,8 +477,8 @@ module safe_FSM #(
 
         TMR_SH_HALT: begin
           Switch_SingletoTMR_s[i] = 1'b1;
-        //Temporal solution TMR lecture from both slaves: Todo solve irregular response from de OBI BUS
-        //when 2 different masters ask for gnt
+          //Temporal solution TMR lecture from both slaves: Todo solve irregular response from de OBI BUS
+          //when 2 different masters ask for gnt
           single_bus_s[i] = 1'b1;
           tmr_voter_enable_s[i] = 1'b1;
           if (Master_Core_i[i] == 1'b1) begin

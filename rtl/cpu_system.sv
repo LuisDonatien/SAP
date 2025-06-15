@@ -301,7 +301,7 @@ module cpu_system
     ) ext_if_core0 ();
 
     if (COPROCESSOR == 1) begin
-    /*** Put here coprocessor ***/
+      /*** Put here coprocessor ***/
       fpu_ss_wrapper #(
           .PULP_ZFINX(ZFINX),
           .INPUT_BUFFER_DEPTH(1),
@@ -321,7 +321,7 @@ module cpu_system
           .xif_mem_result_if(ext_if_core0),
           .xif_result_if(ext_if_core0)
       );
-    /****************************/
+      /****************************/
     end else begin
 
       // CORE-V-XIF
@@ -440,7 +440,7 @@ module cpu_system
     ) ext_if_core1 ();
 
     if (COPROCESSOR == 1) begin
-    /*** Put here coprocessor ***/
+      /*** Put here coprocessor ***/
       fpu_ss_wrapper #(
           .PULP_ZFINX(ZFINX),
           .INPUT_BUFFER_DEPTH(1),
@@ -460,7 +460,7 @@ module cpu_system
           .xif_mem_result_if(ext_if_core1),
           .xif_result_if(ext_if_core1)
       );
-    /****************************/
+      /****************************/
     end else begin
 
       // CORE-V-XIF
@@ -578,7 +578,7 @@ module cpu_system
     ) ext_if_core2 ();
 
     if (COPROCESSOR == 1) begin
-    /*** Put here coprocessor ***/
+      /*** Put here coprocessor ***/
       fpu_ss_wrapper #(
           .PULP_ZFINX(ZFINX),
           .INPUT_BUFFER_DEPTH(1),
@@ -598,7 +598,7 @@ module cpu_system
           .xif_mem_result_if(ext_if_core2),
           .xif_result_if(ext_if_core2)
       );
-    /****************************/
+      /****************************/
     end else begin
 
       // CORE-V-XIF
@@ -626,8 +626,7 @@ module cpu_system
 
   end else begin : gen_eros_cv32e20
     // instantiate the core 0
-    cve2_top #(
-    ) cv32e20_core0 (
+    cve2_top #() cv32e20_core0 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
 
@@ -672,8 +671,7 @@ module cpu_system
 
 
     // instantiate the core 1
-    cve2_top #(
-    ) cv32e20_core1 (
+    cve2_top #() cv32e20_core1 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
 
@@ -717,8 +715,7 @@ module cpu_system
     );
 
     // instantiate the core 2
-    cve2_top #(
-    ) cv32e20_core2 (
+    cve2_top #() cv32e20_core2 (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
 

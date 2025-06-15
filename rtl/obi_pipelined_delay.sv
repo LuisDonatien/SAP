@@ -19,8 +19,8 @@ module obi_pipelined_delay
     output logic core_instr_resp_gnt_o
 );
 
-  obi_req_t [             NDELAY-2:0] core_instr_req_s;
-  logic       [NDELAY-2:0]            core_instr_resp_gnt_s;
+  obi_req_t [NDELAY-2:0] core_instr_req_s;
+  logic     [NDELAY-2:0] core_instr_resp_gnt_s;
 
   for (genvar i = 0; i < NDELAY; i++) begin
     if (i == 0) begin

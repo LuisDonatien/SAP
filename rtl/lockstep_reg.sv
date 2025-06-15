@@ -16,18 +16,18 @@ module lockstep_reg
     input  obi_req_t [1:0] core_instr_req_i,
     output obi_req_t [1:0] core_instr_req_o,
 
-    input  obi_resp_t  core_instr_resp_i,
+    input obi_resp_t core_instr_resp_i,
     output obi_resp_t [1:0] core_instr_resp_o,
 
     input  obi_req_t [1:0] core_data_req_i,
     output obi_req_t [1:0] core_data_req_o,
 
-    input  obi_resp_t core_data_resp_i,
+    input obi_resp_t core_data_resp_i,
     output obi_resp_t [1:0] core_data_resp_o
 );
 
   logic pipe_data_gnt, pipe_instr_gnt;
-  logic enable_ff;
+  logic                         enable_ff;
   //TODO: remove gnt that is not used for returned resp delayed
   obi_req_t                     core_instr_req_ff;
   logic     [NCYCLES-1:0]       core_instr_resp_ff_rvalid;
@@ -119,37 +119,37 @@ module lockstep_reg
     end
   end
 
-assign enable_ff = enable_i;
+  assign enable_ff = enable_i;
 
-for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
-  if (j == 0) begin : gen_first
-    always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
-      if (~rst_ni) begin
-        core_instr_resp_ff_rvalid[0] <= '0;
-        core_instr_resp_ff_rdata[0]  <= '0;
-        core_data_resp_ff_rvalid[0]  <= '0;
-        core_data_resp_ff_rdata[0]   <= '0;
-      end else if (enable_ff) begin
-        core_instr_resp_ff_rvalid[0] <= core_instr_resp_i.rvalid;
-        core_instr_resp_ff_rdata[0]  <= core_instr_resp_i.rdata;
-        core_data_resp_ff_rvalid[0]  <= core_data_resp_i.rvalid;
-        core_data_resp_ff_rdata[0]   <= core_data_resp_i.rdata;
+  for (genvar j = 0; j < NCYCLES; j++) begin : N_Cycles_ff
+    if (j == 0) begin : gen_first
+      always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
+        if (~rst_ni) begin
+          core_instr_resp_ff_rvalid[0] <= '0;
+          core_instr_resp_ff_rdata[0]  <= '0;
+          core_data_resp_ff_rvalid[0]  <= '0;
+          core_data_resp_ff_rdata[0]   <= '0;
+        end else if (enable_ff) begin
+          core_instr_resp_ff_rvalid[0] <= core_instr_resp_i.rvalid;
+          core_instr_resp_ff_rdata[0]  <= core_instr_resp_i.rdata;
+          core_data_resp_ff_rvalid[0]  <= core_data_resp_i.rvalid;
+          core_data_resp_ff_rdata[0]   <= core_data_resp_i.rdata;
+        end
       end
-    end
-  end else begin : gen_rest
-    always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
-      if (~rst_ni) begin
-        core_instr_resp_ff_rvalid[j] <= '0;
-        core_instr_resp_ff_rdata[j]  <= '0;
-        core_data_resp_ff_rvalid[j]  <= '0;
-        core_data_resp_ff_rdata[j]   <= '0;
-      end else if (enable_ff) begin
-        core_instr_resp_ff_rvalid[j] <= core_instr_resp_ff_rvalid[j-1];
-        core_instr_resp_ff_rdata[j]  <= core_instr_resp_ff_rdata[j-1];
-        core_data_resp_ff_rvalid[j]  <= core_data_resp_ff_rvalid[j-1];
-        core_data_resp_ff_rdata[j]   <= core_data_resp_ff_rdata[j-1];
+    end else begin : gen_rest
+      always_ff @(posedge clk_i or negedge rst_ni) begin : proc_ndelay
+        if (~rst_ni) begin
+          core_instr_resp_ff_rvalid[j] <= '0;
+          core_instr_resp_ff_rdata[j]  <= '0;
+          core_data_resp_ff_rvalid[j]  <= '0;
+          core_data_resp_ff_rdata[j]   <= '0;
+        end else if (enable_ff) begin
+          core_instr_resp_ff_rvalid[j] <= core_instr_resp_ff_rvalid[j-1];
+          core_instr_resp_ff_rdata[j]  <= core_instr_resp_ff_rdata[j-1];
+          core_data_resp_ff_rvalid[j]  <= core_data_resp_ff_rvalid[j-1];
+          core_data_resp_ff_rdata[j]   <= core_data_resp_ff_rdata[j-1];
+        end
       end
     end
   end
-end
 endmodule  // lockstep_reg
