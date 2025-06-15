@@ -66,6 +66,7 @@ module safe_cpu_wrapper
   logic [NHARTS-1:0] intc_sync_s;
   logic [NHARTS-1:0] intc_halt_s;
   logic [NHARTS-1:0] sleep_s;
+  logic [NHARTS-1:0] sleep_ff_s;
   logic [NHARTS-1:0] debug_mode_s;
   logic End_sw_routine_s;
   logic Start_s;
@@ -159,7 +160,16 @@ module safe_cpu_wrapper
       .debug_mode_o(debug_mode_s)
   );
 
-  assign sleep_o = sleep_s;
+  assign sleep_o = sleep_ff_s;
+
+  //Added FF for output isolation
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        sleep_ff_s <= '0;
+      end else begin
+        sleep_ff_s <= sleep_s;
+      end
+    end
 
   safe_wrapper_ctrl #(
       .reg_req_t(reg_pkg::reg_req_t),
