@@ -10,7 +10,7 @@
 
 module dmr_comparator
   import obi_pkg::*;
-  import cei_mochila_pkg::*;
+  import eros_pkg::*;
 #(
     parameter NHARTS = 2
 ) (
@@ -27,7 +27,7 @@ module dmr_comparator
 
   logic [1:0] error_s;
 
-  //Checker 
+  //Checker
 
   always_comb begin
     error_s = '0;

@@ -65,7 +65,7 @@ module bus_system
 
 );
 
-  import cei_mochila_pkg::*;
+  import eros_pkg::*;
 
   // Safe CPU reg port
   reg_pkg::reg_req_t int_safe_cpu_wrapper_reg_req;
@@ -84,58 +84,58 @@ module bus_system
   obi_resp_t    [NHARTS-1:0] int_obi_wrapper_csr_resp;
 
   // Internal master ports
-  obi_req_t [cei_mochila_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_req;
-  obi_resp_t [cei_mochila_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_resp;
+  obi_req_t [eros_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_req;
+  obi_resp_t [eros_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_resp;
 
   // Internal slave ports
-  obi_req_t [cei_mochila_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_req;
-  obi_resp_t [cei_mochila_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_resp;
+  obi_req_t [eros_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_req;
+  obi_resp_t [eros_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_resp;
 
   // Internal master requests
-  assign int_master_req[cei_mochila_pkg::CORE0_INSTR_IDX] = core_instr_req_i[0];
-  assign int_master_req[cei_mochila_pkg::CORE0_DATA_IDX] = demux_core_data_req[0][0];
-  assign int_master_req[cei_mochila_pkg::CORE1_INSTR_IDX] = core_instr_req_i[1];
-  assign int_master_req[cei_mochila_pkg::CORE1_DATA_IDX] = demux_core_data_req[1][0];
-  assign int_master_req[cei_mochila_pkg::CORE2_INSTR_IDX] = core_instr_req_i[2];
-  assign int_master_req[cei_mochila_pkg::CORE2_DATA_IDX] = demux_core_data_req[2][0];
-  assign int_master_req[cei_mochila_pkg::EXTERNAL_MASTER_IDX] = ext_master_req_i;
+  assign int_master_req[eros_pkg::CORE0_INSTR_IDX] = core_instr_req_i[0];
+  assign int_master_req[eros_pkg::CORE0_DATA_IDX] = demux_core_data_req[0][0];
+  assign int_master_req[eros_pkg::CORE1_INSTR_IDX] = core_instr_req_i[1];
+  assign int_master_req[eros_pkg::CORE1_DATA_IDX] = demux_core_data_req[1][0];
+  assign int_master_req[eros_pkg::CORE2_INSTR_IDX] = core_instr_req_i[2];
+  assign int_master_req[eros_pkg::CORE2_DATA_IDX] = demux_core_data_req[2][0];
+  assign int_master_req[eros_pkg::EXTERNAL_MASTER_IDX] = ext_master_req_i;
 
   // Internal master responses
-  assign core_instr_resp_o[0] = int_master_resp[cei_mochila_pkg::CORE0_INSTR_IDX];
-  assign demux_core_data_resp[0][0] = int_master_resp[cei_mochila_pkg::CORE0_DATA_IDX];
-  assign core_instr_resp_o[1] = int_master_resp[cei_mochila_pkg::CORE1_INSTR_IDX];
-  assign demux_core_data_resp[1][0] = int_master_resp[cei_mochila_pkg::CORE1_DATA_IDX];
-  assign core_instr_resp_o[2] = int_master_resp[cei_mochila_pkg::CORE2_INSTR_IDX];
-  assign demux_core_data_resp[2][0] = int_master_resp[cei_mochila_pkg::CORE2_DATA_IDX];
+  assign core_instr_resp_o[0] = int_master_resp[eros_pkg::CORE0_INSTR_IDX];
+  assign demux_core_data_resp[0][0] = int_master_resp[eros_pkg::CORE0_DATA_IDX];
+  assign core_instr_resp_o[1] = int_master_resp[eros_pkg::CORE1_INSTR_IDX];
+  assign demux_core_data_resp[1][0] = int_master_resp[eros_pkg::CORE1_DATA_IDX];
+  assign core_instr_resp_o[2] = int_master_resp[eros_pkg::CORE2_INSTR_IDX];
+  assign demux_core_data_resp[2][0] = int_master_resp[eros_pkg::CORE2_DATA_IDX];
   // External master responses
-  assign ext_master_resp_o = int_master_resp[cei_mochila_pkg::EXTERNAL_MASTER_IDX];
+  assign ext_master_resp_o = int_master_resp[eros_pkg::EXTERNAL_MASTER_IDX];
 
   // Internal slave requests
-  assign peripheral_slave_req_o = int_slave_req[cei_mochila_pkg::PERIPHERAL_IDX];
-  assign ram_req_o[0] = int_slave_req[cei_mochila_pkg::MEMORY_RAM0_IDX];
-  assign ram_req_o[1] = int_slave_req[cei_mochila_pkg::MEMORY_RAM1_IDX];
-//  assign int_wrapper_csr_req = int_slave_req[cei_mochila_pkg::SAFE_CPU_REGISTER_IDX];
+  assign peripheral_slave_req_o = int_slave_req[eros_pkg::PERIPHERAL_IDX];
+  assign ram_req_o[0] = int_slave_req[eros_pkg::MEMORY_RAM0_IDX];
+  assign ram_req_o[1] = int_slave_req[eros_pkg::MEMORY_RAM1_IDX];
+//  assign int_wrapper_csr_req = int_slave_req[eros_pkg::SAFE_CPU_REGISTER_IDX];
 
   // External slave requests
-  assign ext_slave_req_o = int_slave_req[cei_mochila_pkg::EXTERNAL_PERIPHERAL_IDX];
+  assign ext_slave_req_o = int_slave_req[eros_pkg::EXTERNAL_PERIPHERAL_IDX];
 
   // Internal slave responses
-  assign int_slave_resp[cei_mochila_pkg::PERIPHERAL_IDX] = peripheral_slave_resp_i;
-  assign int_slave_resp[cei_mochila_pkg::MEMORY_RAM0_IDX] = ram_resp_i[0];
-  assign int_slave_resp[cei_mochila_pkg::MEMORY_RAM1_IDX] = ram_resp_i[1];
-//  assign int_slave_resp[cei_mochila_pkg::SAFE_CPU_REGISTER_IDX] = int_wrapper_csr_resp;
+  assign int_slave_resp[eros_pkg::PERIPHERAL_IDX] = peripheral_slave_resp_i;
+  assign int_slave_resp[eros_pkg::MEMORY_RAM0_IDX] = ram_resp_i[0];
+  assign int_slave_resp[eros_pkg::MEMORY_RAM1_IDX] = ram_resp_i[1];
+//  assign int_slave_resp[eros_pkg::SAFE_CPU_REGISTER_IDX] = int_wrapper_csr_resp;
   // External slave responses
-  assign int_slave_resp[cei_mochila_pkg::EXTERNAL_PERIPHERAL_IDX] = ext_slave_resp_i;
+  assign int_slave_resp[eros_pkg::EXTERNAL_PERIPHERAL_IDX] = ext_slave_resp_i;
   // Internal system crossbar
   // ------------------------
   xbar_system #(
-      .XBAR_NMASTER(cei_mochila_pkg::SYSTEM_XBAR_NMASTER),
-      .XBAR_NSLAVE (cei_mochila_pkg::SYSTEM_XBAR_NSLAVE)
+      .XBAR_NMASTER(eros_pkg::SYSTEM_XBAR_NMASTER),
+      .XBAR_NSLAVE (eros_pkg::SYSTEM_XBAR_NSLAVE)
   ) xbar_system_i (
       .clk_i(clk_i),
       .rst_ni(rst_ni),
-      .addr_map_i(cei_mochila_pkg::XBAR_ADDR_RULES),
-      .default_idx_i(cei_mochila_pkg::ERROR_IDX[LOG_SYSTEM_XBAR_NSLAVE-1:0]),
+      .addr_map_i(eros_pkg::XBAR_ADDR_RULES),
+      .default_idx_i(eros_pkg::ERROR_IDX[LOG_SYSTEM_XBAR_NSLAVE-1:0]),
       .master_req_i(int_master_req),
       .master_resp_o(int_master_resp),
       .slave_req_o(int_slave_req),

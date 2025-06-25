@@ -31,7 +31,7 @@ module obi_sngreg
   assign core_instr_req_o = core_instr_req_ff;
 
   assign clear = (core_instr_req_i.req == 1'b0 & core_instr_resp_gnt_i == 1'b1)  |
-               (core_instr_req_i.req == 1'b0 & core_instr_req_ff.req == 1'b0)  | 
+               (core_instr_req_i.req == 1'b0 & core_instr_req_ff.req == 1'b0)  |
                clear_pipeline; //injects '0' //Todo remove core_instr_resp_rvalid
 
   always_comb begin

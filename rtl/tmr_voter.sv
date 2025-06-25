@@ -10,7 +10,7 @@
 
 module tmr_voter
   import obi_pkg::*;
-  import cei_mochila_pkg::*;
+  import eros_pkg::*;
 #(
     parameter NHARTS = 3
 ) (
@@ -80,7 +80,7 @@ module tmr_voter
 
 
 
-  // Checker 
+  // Checker
   always_comb begin
     instr_error_s = '0;
     data_error_s = '0;

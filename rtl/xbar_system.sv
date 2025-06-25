@@ -8,9 +8,9 @@
 module xbar_system
   import obi_pkg::*;
   import addr_map_rule_pkg::*;
-  import cei_mochila_pkg::*;
+  import eros_pkg::*;
 #(
-    parameter cei_mochila_pkg::bus_type_e BUS_TYPE = cei_mochila_pkg::BusType,
+    parameter eros_pkg::bus_type_e BUS_TYPE = eros_pkg::BusType,
     parameter XBAR_NMASTER = 3,
     parameter XBAR_NSLAVE = 6,
     localparam int unsigned IdxWidth = cf_math_pkg::idx_width(XBAR_NSLAVE)

@@ -7,7 +7,7 @@ module eros_top
   import obi_pkg::*;
   import reg_pkg::*;
   import core_v_mini_mcu_pkg::*;
-  import cei_mochila_pkg::*;
+  import eros_pkg::*;
 #(
     parameter NHARTS  = 3,
     parameter N_BANKS = 2
@@ -24,7 +24,7 @@ module eros_top
     output obi_req_t  ext_slave_req_o,
     input  obi_resp_t ext_slave_resp_i,
 
-    //CSR 
+    //CSR
     input  reg_req_t csr_reg_req_i,
     output reg_rsp_t csr_reg_resp_o,
 
@@ -138,7 +138,7 @@ module eros_top
       .ram_req_o (ram_req),
       .ram_resp_i(ram_resp),
 
-      // Control Status Register Output 
+      // Control Status Register Output
       .wrapper_csr_req_o(wrapper_csr_req),
       .wrapper_csr_rsp_i(wrapper_csr_resp)
   );

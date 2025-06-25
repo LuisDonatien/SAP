@@ -5,25 +5,25 @@
 
 module cpu_system
   import obi_pkg::*;
-  import cei_mochila_pkg::*;
+  import eros_pkg::*;
   import core_v_mini_mcu_pkg::*;
   import fpu_ss_pkg::*;
 #(
-    parameter BOOT_ADDR = cei_mochila_pkg::DEBUG_BOOTROM_START_ADDRESS,
+    parameter BOOT_ADDR = eros_pkg::DEBUG_BOOTROM_START_ADDRESS,
     parameter NHARTS = 3,
     parameter HARTID = 32'h01,
-    parameter cei_mochila_pkg::cpu_type_e CPU = cei_mochila_pkg::CPU_type,
+    parameter eros_pkg::cpu_type_e CPU = eros_pkg::CPU_type,
     parameter COPROCESSOR = 0,
-    parameter DM_HALTADDRESS = cei_mochila_pkg::DEBUG_BOOTROM_START_ADDRESS + 32'h50
+    parameter DM_HALTADDRESS = eros_pkg::DEBUG_BOOTROM_START_ADDRESS + 32'h50
 ) (
     // Clock and Reset
     input logic clk_i,
     input logic rst_ni,
-    // Instruction memory interface 
+    // Instruction memory interface
     output obi_req_t [NHARTS-1 : 0] core_instr_req_o,
     input obi_resp_t [NHARTS-1 : 0] core_instr_resp_i,
 
-    // Data memory interface 
+    // Data memory interface
     output obi_req_t  [NHARTS-1 : 0] core_data_req_o,
     input  obi_resp_t [NHARTS-1 : 0] core_data_resp_i,
 
@@ -48,7 +48,7 @@ module cpu_system
 
   assign fetch_enable = 1'b1;
 
-  //Core 0 
+  //Core 0
   assign core_instr_req_o[0].wdata = '0;
   assign core_instr_req_o[0].we    = '0;
   assign core_instr_req_o[0].be    = 4'b1111;

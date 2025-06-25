@@ -10,7 +10,7 @@
  *
  */
 
-package cei_mochila_pkg;
+package eros_pkg;
 
   import addr_map_rule_pkg::*;
 
