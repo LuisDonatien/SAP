@@ -7,7 +7,7 @@ module eros_top_wrapper
   import obi_pkg::*;
   import reg_pkg::*;
   import core_v_mini_mcu_pkg::*;
-  import cei_mochila_pkg::*;
+  import eros_pkg::*;
 #(
     parameter NHARTS  = 3,
     parameter N_BANKS = 2
@@ -28,7 +28,7 @@ module eros_top_wrapper
     output obi_req_t  ext_slave_req_o,
     input  obi_resp_t ext_slave_resp_i,
 
-    //CSR 
+    //CSR
     input  reg_req_t csr_reg_req_i,
     output reg_rsp_t csr_reg_resp_o,
 
