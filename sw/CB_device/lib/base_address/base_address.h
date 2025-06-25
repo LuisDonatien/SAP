@@ -13,17 +13,18 @@ extern "C" {
 #ifdef __cplusplus
 }  // extern "C"
 #endif
-#endif 
+#endif
 
 //Define
 #define GLOBAL_BASE_ADDRESS 0xF0000000	/*User defined*/
+#define SAFE_CSR_BASE_ADDRESS 0x20070000 /*User defined*/
 
 
 //Priv Reg
 #define PRIVATE_REG_BASEADDRESS 0x00000000 | GLOBAL_BASE_ADDRESS
 
 //Priv Reg
-#define SAFE_WRAPPER_CTRL_BASEADDRESS    (0x00012000 | GLOBAL_BASE_ADDRESS)
+#define SAFE_WRAPPER_CTRL_BASEADDRESS    (SAFE_CSR_BASE_ADDRESS)
 
 //Debug BOOT ADDRESS
 #define BOOT_DEBUG_ROM_BASEADDRESS (0x00010000 | GLOBAL_BASE_ADDRESS)

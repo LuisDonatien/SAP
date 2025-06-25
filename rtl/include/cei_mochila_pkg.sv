@@ -50,14 +50,39 @@ package cei_mochila_pkg;
   localparam logic [31:0] EXTERNAL_MASTER_IDX = 6;
 
   localparam SYSTEM_XBAR_NMASTER = 7;
-  localparam SYSTEM_XBAR_NSLAVE = 6;
+  localparam SYSTEM_XBAR_NSLAVE = 5; /*1 ERROR / 2 INTERNAL_PERIPH / 3 EXTERNAL_PERIPH* / 4 RAM0 / 5 RAM1 */
 
   localparam GLOBAL_BASE_ADDRESS = 32'hF0000000;
+  localparam SAFE_CSR_BASE_ADDRESS = core_v_mini_mcu_pkg::EXT_PERIPHERAL_START_ADDRESS;
 
 
   localparam int unsigned MEM_SIZE = 32'h00010000;
   localparam int unsigned NUM_BANKS = 2;
 
+
+  // Internal BUS-REGISTER slave address map
+  // ---------------------------------------
+  localparam logic [31:0] SAFE_CPU_REGISTER_START_ADDRESS = SAFE_CSR_BASE_ADDRESS + 32'h0;
+  localparam logic [31:0] SAFE_CPU_REGISTER_SIZE = 32'h0000100;
+  localparam logic [31:0] SAFE_CPU_REGISTER_END_ADDRESS = SAFE_CPU_REGISTER_START_ADDRESS + SAFE_CPU_REGISTER_SIZE;
+
+  // Forward crossbars address map and index
+  // ---------------------------------------
+  // These crossbar connect each muster to the internal crossbar and to the
+  // corresponding external master port.
+  localparam logic [31:0] DEMUX_INT_XBAR_IDX = 32'd0;
+  localparam logic [31:0] DEMUX_SAFE_CPU_REGISTER_IDX = 32'd1;
+
+  // Address map
+  // NOTE: the internal address space is chosen by default by the system bus,
+  // so it is not defined here.
+  localparam addr_map_rule_t [0:0] DEMUX_INT_SAFE_REG_ADDR_RULES = '{
+      '{
+          idx: DEMUX_SAFE_CPU_REGISTER_IDX,
+          start_addr: SAFE_CPU_REGISTER_START_ADDRESS,
+          end_addr: SAFE_CPU_REGISTER_END_ADDRESS
+      }
+  };
 
   //Internal Memory Map and Index
   //--------------------
@@ -93,10 +118,10 @@ package cei_mochila_pkg;
   localparam logic [31:0] MEMORY_RAM1_END_ADDRESS = MEMORY_RAM1_START_ADDRESS + MEMORY_RAM1_SIZE;
   localparam logic [31:0] MEMORY_RAM1_IDX = 32'd4;
 
-  localparam logic [31:0] SAFE_CPU_REGISTER_START_ADDRESS = GLOBAL_BASE_ADDRESS + 32'h00012000;
-  localparam logic [31:0] SAFE_CPU_REGISTER_SIZE = 32'h0000100;
-  localparam logic [31:0] SAFE_CPU_REGISTER_END_ADDRESS = SAFE_CPU_REGISTER_START_ADDRESS + SAFE_CPU_REGISTER_SIZE;
-  localparam logic [31:0] SAFE_CPU_REGISTER_IDX = 32'd5;
+//  localparam logic [31:0] SAFE_CPU_REGISTER_START_ADDRESS = GLOBAL_BASE_ADDRESS + 32'h00012000;
+//  localparam logic [31:0] SAFE_CPU_REGISTER_SIZE = 32'h0000100;
+//  localparam logic [31:0] SAFE_CPU_REGISTER_END_ADDRESS = SAFE_CPU_REGISTER_START_ADDRESS + SAFE_CPU_REGISTER_SIZE;
+//  localparam logic [31:0] SAFE_CPU_REGISTER_IDX = 32'd5;
 
 
 
@@ -121,12 +146,12 @@ package cei_mochila_pkg;
           idx: MEMORY_RAM1_IDX,
           start_addr: MEMORY_RAM1_START_ADDRESS,
           end_addr: MEMORY_RAM1_END_ADDRESS
-      },
-      '{
+      }//,
+/*      '{
           idx: SAFE_CPU_REGISTER_IDX,
           start_addr: SAFE_CPU_REGISTER_START_ADDRESS,
           end_addr: SAFE_CPU_REGISTER_END_ADDRESS
-      }
+      }*/
   };
 
   //Peripherals
