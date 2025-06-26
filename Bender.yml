@@ -10,9 +10,11 @@ dependencies:
   Pulpissimo:          { git: "https://github.com/pulp-platform/pulpissimo.git",            version:                                7.0.0}
   riscv:               { git: "https://github.com/openhwgroup/cv32e40p.git",                rev: a43277c0dc64c02be3f5d713438f315ecffde2b9}
   riscv:               { git: "https://github.com/esl-epfl/cv32e40px.git",                  rev: 10b08065c50d44b5355c1535cb8f740e68e4f106}
-  axi_obi:             { path: "vendor/axi_obi"                                                                                          }
+  axi_mem_if:          { git: "https://github.com/pulp-platform/axi_mem_if.git",            rev: master                                  }
+  register_interface:  { git: "https://github.com/pulp-platform/register_interface.git",    rev: master                                  }
+  axi2apb:             { git: "https://github.com/pulp-platform/axi2apb.git",               rev: master                                  }
+  axi_slice:           { git: "https://github.com/pulp-platform/axi_slice.git",             rev: master                                  }                                                                                         }
   esl_epfl_x_heep:     { path: "vendor/esl_epfl_x_heep"                                                                                  }
-  interfaces:          { path: "vendor/interfaces"                                                                                       }
 
 sources:
     include_dirs:
@@ -24,7 +26,9 @@ sources:
       - rtl/include/cei_mochila_pkg.sv
       - rtl/include/safe_wrapper_ctrl_reg_pkg.sv
       - rtl/include/cpu_private_reg_pkg.sv
-      - rtl/eros_top.sv
+      - rtl/include/reg_pkg.sv
+      - rtl/include/obi_pkg.sv
+      - rtl/addr_map_rule_pkg.sv
       - rtl/cpu_system.sv
       - rtl/bus_system.sv
       - rtl/xbar_system.sv
@@ -43,8 +47,10 @@ sources:
       - rtl/cpu_private_reg.sv
       - rtl/lockstep_reg.sv
       - ip/fpu_ss/fpu_ss_wrapper.sv
+      - rtl/eros_top.sv
       - wrapper/eros_top_wrapper.sv
       - wrapper/eros_top_wrapper_axi.sv
+
 
       - target: any(simulation,test)
         files:

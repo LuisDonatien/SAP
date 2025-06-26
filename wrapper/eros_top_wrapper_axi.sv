@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
+ `include "axi/assign.svh"
+ `include "axi/typedef.svh"
+
 module eros_top_wrapper_axi
   import obi_pkg::*;
   import reg_pkg::*;
@@ -11,10 +14,15 @@ module eros_top_wrapper_axi
 #(
     parameter NHARTS  = 3,
     parameter N_BANKS = 2,
-    parameter int C_S00_AXI_DATA_WIDTH = 32,
-    parameter int C_S00_AXI_ADDR_WIDTH = 32,
-    parameter int C_S01_AXI_DATA_WIDTH = 32,
-    parameter int C_S01_AXI_ADDR_WIDTH = 32
+    parameter S00_AXI_ADDR_WIDTH = 32,
+    parameter S00_AXI_DATA_WIDTH = 32,
+    parameter S00_AXI_ID_WIDTH_SLAVE = 16,
+    parameter S00_AXI_USER_WIDTH = 10,
+    parameter int unsigned S01_AXI_ID_WIDTH_MASTER  = -1,
+    parameter int unsigned S01_AXI_ID_WIDTH_SLAVE   = -1,
+    parameter int unsigned S01_AXI_ADDR_WIDTH       = -1,
+    parameter int unsigned S01_AXI_DATA_WIDTH       = -1,
+    parameter int unsigned S01_AXI_USER_WIDTH       = -1
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -28,72 +36,22 @@ module eros_top_wrapper_axi
     input  obi_resp_t ext_slave_resp_i,
 
     // ----------------------------------------------
-    // Ports of Axi Slave Bus Interface S00_AXI -> OBI -> REG
-    // ----------------------------------------------
-    // Read address channel signals
-    input  logic [C_S00_AXI_ADDR_WIDTH-1:0] s00_axi_araddr,
-    input  logic                         s00_axi_arvalid,
-    output logic                         s00_axi_arready,
-    input  logic [2:0]                   s00_axi_arprot, // not used
-
-    // Read data channel signals
-    output logic [C_S00_AXI_DATA_WIDTH-1:0] s00_axi_rdata,
-    output logic [1:0]                   s00_axi_rresp,
-    output logic                         s00_axi_rvalid,
-    input  logic                         s00_axi_rready,
-
-    // Write address channel signals
-    input  logic [C_S00_AXI_ADDR_WIDTH-1:0] s00_axi_awaddr,
-    input  logic                         s00_axi_awvalid,
-    output logic                         s00_axi_awready,
-    input  logic [2:0]                   s00_axi_awprot, // not used
-
-    // Write data channel signals
-    input  logic [C_S00_AXI_DATA_WIDTH-1:0] s00_axi_wdata,
-    input  logic                         s00_axi_wvalid,
-    output logic                         s00_axi_wready,
-    input  logic [(C_S00_AXI_DATA_WIDTH/8)-1:0] s00_axi_wstrb, // not used
-
-    // Write response channel signals
-    output logic [1:0]                   s00_axi_bresp,
-    output logic                         s00_axi_bvalid,
-    input  logic                         s00_axi_bready
-
-    // ----------------------------------------------
-    // ----------------------------------------------
-    // ----------------------------------------------
-
-    // ----------------------------------------------
     // Ports of Axi Slave Bus Interface S00_AXI -> OBI
     // ----------------------------------------------
-    // Read address channel signals
-    input  logic [C_S01_AXI_ADDR_WIDTH-1:0] s01_axi_araddr,
-    input  logic                         s01_axi_arvalid,
-    output logic                         s01_axi_arready,
-    input  logic [2:0]                   s01_axi_arprot, // not used
+    input  axi_slv_req_t    axi_S00_req_i,
+    output axi_slv_rsp_t    axi_S00_rsp_o,
 
-    // Read data channel signals
-    output logic [C_S01_AXI_DATA_WIDTH-1:0] s01_axi_rdata,
-    output logic [1:0]                   s01_axi_rresp,
-    output logic                         s01_axi_rvalid,
-    input  logic                         s01_axi_rready,
+    // ---------------------------------------------
 
-    // Write address channel signals
-    input  logic [C_S01_AXI_ADDR_WIDTH-1:0] s01_axi_awaddr,
-    input  logic                         s01_axi_awvalid,
-    output logic                         s01_axi_awready,
-    input  logic [2:0]                   s01_axi_awprot, // not used
+    // ----------------------------------------------
+    // Ports of Axi Slave Bus Interface S01_AXI -> REG
+    // ----------------------------------------------
+    input  axi_slv_req_t    axi_S01_req_i,
+    output axi_slv_rsp_t    axi_S01_rsp_o,
 
-    // Write data channel signals
-    input  logic [C_S01_AXI_DATA_WIDTH-1:0] s01_axi_wdata,
-    input  logic                         s01_axi_wvalid,
-    output logic                         s01_axi_wready,
-    input  logic [(C_S01_AXI_DATA_WIDTH/8)-1:0] s01_axi_wstrb, // not used
+    output logic            axi_S01_busy_o,
 
-    // Write response channel signals
-    output logic [1:0]                   s01_axi_bresp,
-    output logic                         s01_axi_bvalid,
-    input  logic                         s01_axi_bready
+    // ----------------------------------------------
 
     // Debug Interface
     input  logic              debug_req_i,
@@ -107,17 +65,177 @@ module eros_top_wrapper_axi
     // Interrupt Interface
     output logic interrupt_o
 );
+    // Slave AXI - Slave OBI
+    obi_req_t     axi_obi_master_req;
+    obi_resp_t    axi_obi_master_resp;
 
-  // Slave AXI - Slave OBI
-  obi_req_t     axi_obi_master_req;
-  obi_resp_t    axi_obi_master_resp;
+    // Slave AXI-LITE - Slave REG
+    reg_req_t axi_reg_master_req;
+    reg_rsp_t axi_reg_master_rsp;
 
-  // Slave AXI-LITE - Slave REG
-  obi_req_t     axi_obi_reg_master_req;
-  obi_resp_t    axi_obi_reg_master_resp;
+//////////////////////////////////////////////
+//              AXI -> REG                  //
+//////////////////////////////////////////////
 
-  reg_pkg::reg_req_t axi_reg_master_req;
-  reg_pkg::reg_rsp_t axi_reg_master_rsp;
+module axi_to_reg_v2 #(
+    /// The width of the address.
+    .AxiAddrWidth    (S01_AXI_ADDR_WIDTH),
+    /// The width of the data.
+    .AxiDataWidth    (S01_AXI_DATA_WIDTH),
+    /// The width of the id.
+    .AxiIdWidth      (S01_AXI_ID_WIDTH_SLAVE),
+    /// The width of the user signal.
+    .AxiUserWidth    (S01_AXI_USER_WIDTH),
+    .axi_req_t       (axi_slv_req_t),
+    .axi_rsp_t       (axi_slv_rsp_t),
+    /// Regbus request struct type.
+    .reg_req_t       (reg_req_t),
+    /// Regbus response struct type.
+    .reg_rsp_t       (reg_rsp_t)
+)(
+    .clk_i,
+    .rst_ni,
+    .axi_req_i(axi_S01_req_i),
+    .axi_rsp_o(axi_S01_rsp_o),
+    .reg_req_o(axi_reg_master_req),
+    .reg_rsp_i(axi_reg_master_rsp),
+    .reg_id_o(),
+    .busy_o(axi_S01_busy_o)
+);
+
+//////////////////////////////////////////////
+//      AXI -> AXI_LITE -> APB -> OBI       //
+//////////////////////////////////////////////
+
+    AXI_BUS #(
+    .AXI_ADDR_WIDTH(S00_AXI_ADDR_WIDTH),
+    .AXI_DATA_WIDTH(S00_AXI_DATA_WIDTH),
+    .AXI_ID_WIDTH(S00_AXI_ID_WIDTH_SLAVE),
+    .AXI_USER_WIDTH(S00_AXI_USER_WIDTH)
+    ) axi_slave();
+
+  AXI_LITE #(
+    .AXI_ADDR_WIDTH(S00_AXI_ADDR_WIDTH),
+    .AXI_DATA_WIDTH(S00_AXI_DATA_WIDTH)
+  ) axi_lite_slave();
+
+    // Connect buses using AXI macros
+    `AXI_ASSIGN_TO_REQ(axi_S01_req_i, axi_slave)
+    `AXI_ASSIGN_FROM_RESP(axi_slave, axi_S00_rsp_o)
+
+axi_to_axi_lite_intf #(
+    .AXI_ID_WIDTH       (S00_AXI_ID_WIDTH_SLAVE),
+    .AXI_ADDR_WIDTH     (S00_AXI_ADDR_WIDTH),
+    .AXI_DATA_WIDTH     (S00_AXI_DATA_WIDTH),
+    .AXI_USER_WIDTH     (S00_AXI_USER_WIDTH),
+    .AXI_MAX_WRITE_TXNS ( 32'd10  ),
+    .AXI_MAX_READ_TXNS  ( 32'd10  ),
+    .FALL_THROUGH       ( 1'b1    )
+) i_dut (
+    .clk_i,
+    .rst_ni,
+    .testmode_i ( 1'b0     ),
+    .slv        ( axi_slave),
+    .mst        ( axi_lite_slave )
+);
+    // Dut parameters
+    localparam int unsigned NoApbSlaves = 1;    // How many APB Slaves  there are
+    localparam int unsigned NoAddrRules = 1;    // How many address rules for the APB slaves
+    // Type widths
+    localparam int unsigned AxiAddrWidth = 32;
+    localparam int unsigned AxiDataWidth = 32;
+    localparam int unsigned AxiStrbWidth = AxiDataWidth/8;
+
+    typedef logic [AxiAddrWidth-1:0]      addr_t;
+    typedef axi_pkg::xbar_rule_32_t       rule_t; // Has to be the same width as axi addr
+    typedef logic [AxiDataWidth-1:0]      data_t;
+    typedef logic [AxiStrbWidth-1:0]      strb_t;
+
+    typedef struct packed {
+    addr_t          paddr;
+    axi_pkg::prot_t pprot;   // same as AXI, this is allowed
+    logic           psel;    // onehot
+    logic           penable;
+    logic           pwrite;
+    data_t          pwdata;
+    strb_t          pstrb;
+    } apb_req_t;
+
+    typedef struct packed {
+    logic  pready;
+    data_t prdata;
+    logic  pslverr;
+    } apb_resp_t;
+
+    //Single APB Slave -> All OBI Addr
+    localparam rule_t [0:0] AddrMap = '{
+        '{idx: 32'd0, start_addr: eros_pkg::GLOBAL_BASE_ADDRESS, end_addr: eros_pkg::GLOBAL_END_ADDRESS}};
+
+    // Define AXI-LITE
+    `AXI_LITE_TYPEDEF_AW_CHAN_T(aw_chan_t, addr_t)
+    `AXI_LITE_TYPEDEF_W_CHAN_T(w_chan_t, data_t, strb_t)
+    `AXI_LITE_TYPEDEF_B_CHAN_T(b_chan_t)
+
+    `AXI_LITE_TYPEDEF_AR_CHAN_T(ar_chan_t, addr_t)
+    `AXI_LITE_TYPEDEF_R_CHAN_T(r_chan_t, data_t)
+
+    `AXI_LITE_TYPEDEF_REQ_T(axi_req_t, aw_chan_t, w_chan_t, ar_chan_t)
+    `AXI_LITE_TYPEDEF_RESP_T(axi_resp_t, b_chan_t, r_chan_t)
+
+    // master axi-lite
+    axi_req_t  axi_lite_req;
+    axi_resp_t axi_lite_resp;
+
+    // slave
+    apb_req_t  apb_req;
+    apb_resp_t apb_resp;
+
+    `AXI_LITE_ASSIGN_TO_REQ(axi_lite_req, axi_lite_slave)
+    `AXI_LITE_ASSIGN_FROM_RESP(axi_lite_slave, axi_lite_resp)
+
+  axi_lite_to_apb #(
+    .NoApbSlaves      ( NoApbSlaves         ),
+    .NoRules          ( NoAddrRules         ),
+    .AddrWidth        ( S00_AXI_ADDR_WIDTH  ),
+    .DataWidth        ( S00_AXI_DATA_WIDTH  ),
+    .PipelineRequest  ( '0                  ), //TODO:check change to 0
+    .PipelineResponse ( '0                  ), //TODO:check change to 0
+    .axi_lite_req_t   ( axi_req_t           ),
+    .axi_lite_resp_t  ( axi_resp_t          ),
+    .apb_req_t        ( apb_req_t           ),
+    .apb_resp_t       ( apb_resp_t          ),
+    .rule_t           ( rule_t              )
+  ) i_axi_lite_to_apb_dut (
+    .clk_i ,
+    .rst_ni,
+    .axi_lite_req_i  ( axi_req      ),
+    .axi_lite_resp_o ( axi_resp     ),
+    .apb_req_o       ( apb_req      ),
+    .apb_resp_i      ( apb_resp    ),
+    .addr_map_i      ( AddrMap      )
+  );
+
+
+module apb_to_obi #(
+    apb_req_t (apb_req_t),
+    apb_rsp_t (apb_resp_t),
+    obi_req_t (obi_req_t),
+    obi_rsp_t (obi_resp_t)
+) (
+    .clk_i,
+    .rst_ni,
+  // Subordinate APB port.
+    .apb_req_i(apb_req),
+    .apb_rsp_o(apb_resp),
+  // Manager OBI port.
+    .obi_req_o(axi_obi_master_req),
+    .obi_rsp_i(axi_obi_master_resp)
+);
+
+//////////////////////////////////////////////
+//                  EROS                    //
+//////////////////////////////////////////////
+
 
 
 
@@ -129,7 +247,6 @@ module eros_top_wrapper_axi
       .en_i     (en_i),
       .clk_o    (clk_cg)
   );
-
 
 
   eros_top eros_top_i (
@@ -148,7 +265,7 @@ module eros_top_wrapper_axi
       .sleep_o,
       .interrupt_o
   );
-
+/*
   //AXI-> OBI MASTER
   axi2obi #(
       .C_S00_AXI_DATA_WIDTH,
@@ -191,7 +308,7 @@ module eros_top_wrapper_axi
     .s00_axi_bvalid,
     .s00_axi_bready
 );
-  //AXI -> OBI_REG MASTER
+/*  //AXI -> OBI_REG MASTER
   axi2obi #(
       .C_S01_AXI_DATA_WIDTH,
       .C_S01_AXI_ADDR_WIDTH
@@ -255,5 +372,21 @@ module eros_top_wrapper_axi
       .reg_req_o(axi_reg_master_req),
       .reg_rsp_i(axi_reg_master_rsp)
   );
-
+*/
+/*    axi_slave_to_reg_adapter #(
+        .AXI_ID_WIDTH_MASTER    ( S01_AXI_ID_WIDTH_MASTER   ),
+        .AXI_ID_WIDTH_SLAVE     ( S01_AXI_ID_WIDTH_SLAVE    ),
+        .AXI_ADDR_WIDTH         ( S01_AXI_ADDR_WIDTH        ),
+        .AXI_DATA_WIDTH         ( S01_AXI_DATA_WIDTH        ),
+        .AXI_USER_WIDTH         ( S01_AXI_USER_WIDTH        ),
+        .regbus_req_t           ( reg_pkg::reg_req_t        ),
+        .regbus_rsp_t           ( reg_pkg::reg_req_t        )
+    ) i_axi_slave_to_reg_adapter (
+        .clk_i                  ( clk_i                     ),
+        .rst_ni                 ( rst_ni                    ),
+        .axi_slave_port         ( axi_slave_port            ),
+        .regbus_req_o           ( axi_reg_master_req        ),
+        .regbus_rsp_i           ( axi_reg_master_rsp        )
+    );
+*/
 endmodule
