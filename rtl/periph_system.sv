@@ -4,7 +4,7 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module periph_system
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import reg_pkg::*;
 #(
     parameter NHARTS = 3

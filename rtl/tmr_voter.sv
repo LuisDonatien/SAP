@@ -9,7 +9,7 @@
  */
 
 module tmr_voter
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import eros_pkg::*;
 #(
     parameter NHARTS = 3

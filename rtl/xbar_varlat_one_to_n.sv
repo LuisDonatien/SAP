@@ -24,14 +24,14 @@ module xbar_varlat_one_to_n #(
     input logic [IdxWidth-1:0] default_idx_i,
 
     // Master port
-    input  obi_pkg::obi_req_t  master_req_i,
-    output obi_pkg::obi_resp_t master_resp_o,
+    input  eros_obi_pkg::obi_req_t  master_req_i,
+    output eros_obi_pkg::obi_resp_t master_resp_o,
 
     // slave ports
-    output obi_pkg::obi_req_t  [XBAR_NSLAVE-1:0] slave_req_o,
-    input  obi_pkg::obi_resp_t [XBAR_NSLAVE-1:0] slave_resp_i
+    output eros_obi_pkg::obi_req_t  [XBAR_NSLAVE-1:0] slave_req_o,
+    input  eros_obi_pkg::obi_resp_t [XBAR_NSLAVE-1:0] slave_resp_i
 );
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
 
   // ARCHITECTURE
   // ------------

@@ -7,7 +7,7 @@
  *
  */
 
-package obi_pkg;
+package eros_obi_pkg;
 
   typedef struct packed {
     logic        req;

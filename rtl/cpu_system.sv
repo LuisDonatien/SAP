@@ -4,10 +4,9 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module cpu_system
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import eros_pkg::*;
-  import core_v_mini_mcu_pkg::*;
-  import fpu_ss_pkg::*;
+//  import fpu_ss_pkg::*;
 #(
     parameter BOOT_ADDR = eros_pkg::DEBUG_BOOTROM_START_ADDRESS,
     parameter NHARTS = 3,
@@ -204,7 +203,7 @@ module cpu_system
         .fetch_enable_i(fetch_enable),
         .core_sleep_o  (sleep_o[2])
     );
-
+/*
   end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
 
     //    import cv32e40px_core_v_xif_pkg::*;
@@ -301,7 +300,7 @@ module cpu_system
     ) ext_if_core0 ();
 
     if (COPROCESSOR == 1) begin
-      /*** Put here coprocessor ***/
+      /*** Put here coprocessor ***/ /*
       fpu_ss_wrapper #(
           .PULP_ZFINX(ZFINX),
           .INPUT_BUFFER_DEPTH(1),
@@ -321,7 +320,7 @@ module cpu_system
           .xif_mem_result_if(ext_if_core0),
           .xif_result_if(ext_if_core0)
       );
-      /****************************/
+      /****************************/ /*
     end else begin
 
       // CORE-V-XIF
@@ -440,7 +439,7 @@ module cpu_system
     ) ext_if_core1 ();
 
     if (COPROCESSOR == 1) begin
-      /*** Put here coprocessor ***/
+      /*** Put here coprocessor ***/ /*
       fpu_ss_wrapper #(
           .PULP_ZFINX(ZFINX),
           .INPUT_BUFFER_DEPTH(1),
@@ -460,7 +459,7 @@ module cpu_system
           .xif_mem_result_if(ext_if_core1),
           .xif_result_if(ext_if_core1)
       );
-      /****************************/
+      /****************************/ /*
     end else begin
 
       // CORE-V-XIF
@@ -578,7 +577,7 @@ module cpu_system
     ) ext_if_core2 ();
 
     if (COPROCESSOR == 1) begin
-      /*** Put here coprocessor ***/
+      /*** Put here coprocessor ***/ /*
       fpu_ss_wrapper #(
           .PULP_ZFINX(ZFINX),
           .INPUT_BUFFER_DEPTH(1),
@@ -598,7 +597,7 @@ module cpu_system
           .xif_mem_result_if(ext_if_core2),
           .xif_result_if(ext_if_core2)
       );
-      /****************************/
+      /****************************/ /*
     end else begin
 
       // CORE-V-XIF
@@ -623,7 +622,7 @@ module cpu_system
       assign ext_if_core2.result = '0;
 
     end
-
+*/
   end else begin : gen_eros_cv32e20
     // instantiate the core 0
     cve2_top #() cv32e20_core0 (

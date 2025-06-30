@@ -7,22 +7,24 @@
  `include "axi/typedef.svh"
 
 module eros_top_wrapper_axi
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import reg_pkg::*;
-  import core_v_mini_mcu_pkg::*;
   import eros_pkg::*;
 #(
     parameter NHARTS  = 3,
     parameter N_BANKS = 2,
-    parameter S00_AXI_ADDR_WIDTH = 32,
-    parameter S00_AXI_DATA_WIDTH = 32,
-    parameter S00_AXI_ID_WIDTH_SLAVE = 16,
-    parameter S00_AXI_USER_WIDTH = 10,
-    parameter int unsigned S01_AXI_ID_WIDTH_MASTER  = -1,
-    parameter int unsigned S01_AXI_ID_WIDTH_SLAVE   = -1,
-    parameter int unsigned S01_AXI_ADDR_WIDTH       = -1,
-    parameter int unsigned S01_AXI_DATA_WIDTH       = -1,
-    parameter int unsigned S01_AXI_USER_WIDTH       = -1
+
+    parameter S00_AXI_ADDR_WIDTH        = 32,
+    parameter S00_AXI_DATA_WIDTH        = 32,
+    parameter S00_AXI_ID_WIDTH_SLAVE    = 32,
+    parameter S00_AXI_USER_WIDTH        = 32,
+
+    parameter S01_AXI_ADDR_WIDTH        = 32,
+    parameter S01_AXI_DATA_WIDTH        = 32,
+    parameter S01_AXI_ID_WIDTH_SLAVE    = 32,
+    parameter S01_AXI_USER_WIDTH        = 32,
+    parameter type axi_slv_req_t               = logic,
+    parameter type axi_slv_rsp_t               = logic
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -77,7 +79,7 @@ module eros_top_wrapper_axi
 //              AXI -> REG                  //
 //////////////////////////////////////////////
 
-module axi_to_reg_v2 #(
+axi_to_reg_v2 #(
     /// The width of the address.
     .AxiAddrWidth    (S01_AXI_ADDR_WIDTH),
     /// The width of the data.
@@ -86,13 +88,16 @@ module axi_to_reg_v2 #(
     .AxiIdWidth      (S01_AXI_ID_WIDTH_SLAVE),
     /// The width of the user signal.
     .AxiUserWidth    (S01_AXI_USER_WIDTH),
+    /// The data width of the Reg bus
+    .RegDataWidth    (32'd32),
+
     .axi_req_t       (axi_slv_req_t),
     .axi_rsp_t       (axi_slv_rsp_t),
     /// Regbus request struct type.
     .reg_req_t       (reg_req_t),
     /// Regbus response struct type.
     .reg_rsp_t       (reg_rsp_t)
-)(
+) axi_to_reg_v2_i(
     .clk_i,
     .rst_ni,
     .axi_req_i(axi_S01_req_i),
@@ -216,12 +221,12 @@ axi_to_axi_lite_intf #(
   );
 
 
-module apb_to_obi #(
-    apb_req_t (apb_req_t),
-    apb_rsp_t (apb_resp_t),
-    obi_req_t (obi_req_t),
-    obi_rsp_t (obi_resp_t)
-) (
+apb_to_obi #(
+    .apb_req_t (apb_req_t),
+    .apb_rsp_t (apb_resp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_resp_t)
+) apb_to_obi_i (
     .clk_i,
     .rst_ni,
   // Subordinate APB port.

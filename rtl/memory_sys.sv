@@ -4,7 +4,7 @@
 
 
 module memory_sys
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
 #(
     parameter NUM_BANKS = 2
 ) (

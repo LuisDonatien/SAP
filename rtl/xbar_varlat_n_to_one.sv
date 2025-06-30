@@ -14,12 +14,12 @@ module xbar_varlat_n_to_one #(
     input logic rst_ni,
 
     // Master ports
-    input  obi_pkg::obi_req_t  [XBAR_NMASTER-1:0] master_req_i,
-    output obi_pkg::obi_resp_t [XBAR_NMASTER-1:0] master_resp_o,
+    input  eros_obi_pkg::obi_req_t  [XBAR_NMASTER-1:0] master_req_i,
+    output eros_obi_pkg::obi_resp_t [XBAR_NMASTER-1:0] master_resp_o,
 
     // Slave port
-    output obi_pkg::obi_req_t  slave_req_o,
-    input  obi_pkg::obi_resp_t slave_resp_i
+    output eros_obi_pkg::obi_req_t  slave_req_o,
+    input  eros_obi_pkg::obi_resp_t slave_resp_i
 );
   // ARCHITECTURE
   // ------------

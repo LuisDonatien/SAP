@@ -4,9 +4,8 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module eros_top
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import reg_pkg::*;
-  import core_v_mini_mcu_pkg::*;
   import eros_pkg::*;
 #(
     parameter NHARTS  = 3,

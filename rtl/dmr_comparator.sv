@@ -9,7 +9,7 @@
  */
 
 module dmr_comparator
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import eros_pkg::*;
 #(
     parameter NHARTS = 2

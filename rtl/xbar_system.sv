@@ -6,7 +6,7 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module xbar_system
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import addr_map_rule_pkg::*;
   import eros_pkg::*;
 #(

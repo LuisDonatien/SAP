@@ -4,7 +4,7 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module obi_sngreg
-  import obi_pkg::*;
+  import eros_obi_pkg::*;
   import reg_pkg::*;
 #(
 ) (

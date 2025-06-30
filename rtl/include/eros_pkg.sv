@@ -53,8 +53,7 @@ package eros_pkg;
   localparam SYSTEM_XBAR_NSLAVE = 5; /*1 ERROR / 2 INTERNAL_PERIPH / 3 EXTERNAL_PERIPH* / 4 RAM0 / 5 RAM1 */
 
   localparam GLOBAL_BASE_ADDRESS = 32'hF0000000;
-  localparam GLOBAL_END_ADDRESS = GLOBAL_BASE_ADDRESS + MEMORY_RAM1_END_ADDRESS;
-  localparam SAFE_CSR_BASE_ADDRESS = core_v_mini_mcu_pkg::EXT_PERIPHERAL_START_ADDRESS;
+  localparam SAFE_CSR_BASE_ADDRESS = 32'h20070000; /*core_v_mini_mcu_pkg::EXT_PERIPHERAL_START_ADDRESS;*/
 
 
   localparam int unsigned MEM_SIZE = 32'h00010000;
@@ -124,7 +123,7 @@ package eros_pkg;
 //  localparam logic [31:0] SAFE_CPU_REGISTER_END_ADDRESS = SAFE_CPU_REGISTER_START_ADDRESS + SAFE_CPU_REGISTER_SIZE;
 //  localparam logic [31:0] SAFE_CPU_REGISTER_IDX = 32'd5;
 
-
+  localparam GLOBAL_END_ADDRESS = GLOBAL_BASE_ADDRESS + MEMORY_RAM1_END_ADDRESS;
 
   localparam addr_map_rule_t [SYSTEM_XBAR_NSLAVE-1:0] XBAR_ADDR_RULES = '{
       '{idx: ERROR_IDX, start_addr: ERROR_START_ADDRESS, end_addr: ERROR_END_ADDRESS},
