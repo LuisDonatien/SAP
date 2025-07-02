@@ -6,6 +6,7 @@ package:
 export_include_dirs:
   - hw/ip/prim/rtl/
 
+
 sources:
   - files: 
     - hw/ip/prim/rtl/prim_assert_dummy_macros.svh

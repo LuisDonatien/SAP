@@ -4,7 +4,7 @@ package:
   name: cv32e20
 
 dependencies:
-  lowrisc_opentitan: {path : ../lowrisc_opentitan} #primitive cells
+  lowrisc_opentitan: {path : ../lowrisc_opentitan}  #primitive cells
 
 export_include_dirs:
   - rtl
@@ -13,7 +13,7 @@ export_include_dirs:
 sources:
   - files:
     - rtl/cve2_pkg.sv
-    - rtl/cve2_pmp_reset_default.svh #: {is_include_file: true}
+    - rtl/cve2_pmp_reset_default.svh  #: {is_include_file: true}
     - rtl/cve2_branch_predict.sv
     - rtl/cve2_alu.sv
     - rtl/cve2_compressed_decoder.sv

@@ -6,6 +6,7 @@ package:
 export_include_dirs:
   - rtl/tcdm_variable_latency_interconnect
 
+
 sources:
   - files:
       - rtl/tcdm_variable_latency_interconnect/xbar_varlat.sv
