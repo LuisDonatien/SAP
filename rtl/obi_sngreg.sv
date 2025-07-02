@@ -4,9 +4,11 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module obi_sngreg
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import reg_pkg::*;
 #(
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic  
 ) (
     input logic clk_i,
     input logic rst_ni,

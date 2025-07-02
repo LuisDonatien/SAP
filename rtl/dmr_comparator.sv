@@ -9,9 +9,11 @@
  */
 
 module dmr_comparator
-  import eros_obi_pkg::*;
-  import eros_pkg::*;
+//  import eros_obi_pkg::*;
+//  import eros_pkg::*;
 #(
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic,
     parameter NHARTS = 2
 ) (
     // Instruction Bus

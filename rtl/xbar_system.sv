@@ -6,13 +6,15 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module xbar_system
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import addr_map_rule_pkg::*;
   import eros_pkg::*;
 #(
     parameter eros_pkg::bus_type_e BUS_TYPE = eros_pkg::BusType,
     parameter XBAR_NMASTER = 3,
     parameter XBAR_NSLAVE = 6,
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic,
     localparam int unsigned IdxWidth = cf_math_pkg::idx_width(XBAR_NSLAVE)
 ) (
     input logic clk_i,
@@ -143,6 +145,8 @@ module xbar_system
     obi_resp_t neck_resp;
     // N-to-1 crossbar
     xbar_varlat_n_to_one #(
+        .obi_req_t            (obi_req_t  ),
+        .obi_resp_t           (obi_resp_t ),
         .XBAR_NMASTER(XBAR_NMASTER)
     ) xbar_varlat_n_to_one_i (
         .clk_i        (clk_i),
@@ -154,6 +158,8 @@ module xbar_system
     );
 
     xbar_varlat_one_to_n #(
+        .obi_req_t            (obi_req_t  ),
+        .obi_resp_t           (obi_resp_t ),
         .XBAR_NSLAVE   (XBAR_NSLAVE),
         .AGGREGATE_GNT (32'd0) // the neck request is aggregating all the input masters
     ) xbar_varlat_one_to_n_i (

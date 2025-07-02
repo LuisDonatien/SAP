@@ -7,7 +7,7 @@
  `include "axi/typedef.svh"
 
 module eros_top_wrapper_axi
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import eros_pkg::*;
 #(
@@ -23,8 +23,10 @@ module eros_top_wrapper_axi
     parameter S01_AXI_DATA_WIDTH        = 32,
     parameter S01_AXI_ID_WIDTH_SLAVE    = 32,
     parameter S01_AXI_USER_WIDTH        = 32,
-    parameter type axi_slv_req_t               = logic,
-    parameter type axi_slv_rsp_t               = logic
+    parameter type axi_slv_req_t        = logic,
+    parameter type axi_slv_rsp_t        = logic,
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -221,12 +223,12 @@ axi_to_axi_lite_intf #(
   );
 
 
-apb_to_obi #(
+apb_to_obi_wrapper #(
     .apb_req_t (apb_req_t),
     .apb_rsp_t (apb_resp_t),
     .obi_req_t (obi_req_t),
     .obi_rsp_t (obi_resp_t)
-) apb_to_obi_i (
+) apb_to_obi_wrapper_i (
     .clk_i,
     .rst_ni,
   // Subordinate APB port.
@@ -254,7 +256,10 @@ apb_to_obi #(
   );
 
 
-  eros_top eros_top_i (
+  eros_top #(
+    .obi_req_t            (obi_req_t  ),
+    .obi_resp_t           (obi_resp_t )
+  ) eros_top_i (
       .clk_i(clk_cg),
       .rst_ni,
       .ext_master_req_i(axi_obi_master_req),
@@ -270,128 +275,5 @@ apb_to_obi #(
       .sleep_o,
       .interrupt_o
   );
-/*
-  //AXI-> OBI MASTER
-  axi2obi #(
-      .C_S00_AXI_DATA_WIDTH,
-      .C_S00_AXI_ADDR_WIDTH
-  )axi2_obi_i(
-
-    .clk_i,
-    .rst_ni,
-
-    .gnt_i(axi_obi_master_resp.gnt),
-    .rvalid_i(axi_obi_master_resp.rvalid),
-    .rdata_i(axi_obi_master_resp.rdata),
-    .we_o(axi_obi_master_req.we),
-    .be_o(axi_obi_master_req.be),
-    .addr_o(axi_obi_master_req.addr),
-    .wdata_o(axi_obi_master_req.wdata),
-    .req_o(axi_obi_master_req.req),
-
-    .s00_axi_araddr,
-    .s00_axi_arvalid,
-    .s00_axi_arready,
-    .s00_axi_arprot,
-
-    .s00_axi_rdata,
-    .s00_axi_rresp,
-    .s00_axi_rvalid,
-    .s00_axi_rready,
-
-    .s00_axi_awaddr,
-    .s00_axi_awvalid,
-    .s00_axi_awready,
-    .s00_axi_awprot,
-
-    .s00_axi_wdata,
-    .s00_axi_wvalid,
-    .s00_axi_wready,
-    .s00_axi_wstrb,
-
-    .s00_axi_bresp,
-    .s00_axi_bvalid,
-    .s00_axi_bready
-);
-/*  //AXI -> OBI_REG MASTER
-  axi2obi #(
-      .C_S01_AXI_DATA_WIDTH,
-      .C_S01_AXI_ADDR_WIDTH
-  )axi2_obi_i(
-
-    .clk_i,
-    .rst_ni,
-
-    .gnt_i(axi_obi_reg_master_resp.gnt),
-    .rvalid_i(axi_obi_reg_master_resp.rvalid),
-    .rdata_i(axi_obi_reg_master_resp.rdata),
-    .we_o(axi_obi_reg_master_req.we),
-    .be_o(axi_obi_reg_master_req.be),
-    .addr_o(axi_obi_reg_master_req.addr),
-    .wdata_o(axi_obi_reg_master_req.wdata),
-    .req_o(axi_obi_reg_master_req.req),
-
-    .s01_axi_araddr,
-    .s01_axi_arvalid,
-    .s01_axi_arready,
-    .s01_axi_arprot, // not used
-
-    .s01_axi_rdata,
-    .s01_axi_rresp,
-    .s01_axi_rvalid,
-    .s01_axi_rready,
-
-    .s01_axi_awaddr,
-    .s01_axi_awvalid,
-    .s01_axi_awready,
-    .s01_axi_awprot, // not used
-
-    .s01_axi_wdata,
-    .s01_axi_wvalid,
-    .s01_axi_wready,
-    .s01_axi_wstrb, // not used
-
-    .s01_axi_bresp,
-    .s01_axi_bvalid,
-    .s01_axi_bready
-);
-  //AXI OBI_REG MASTER -> REG MASTER
-  periph_to_reg #(
-      .req_t(reg_pkg::reg_req_t),
-      .rsp_t(reg_pkg::reg_rsp_t),
-      .IW(1)
-  ) cpu_periph_to_reg_i (
-      .clk_i,
-      .rst_ni,
-      .req_i(axi_obi_reg_master_req.req),
-      .add_i(axi_obi_reg_master_req.addr),
-      .wen_i(~axi_obi_reg_master_req.we),
-      .wdata_i(axi_obi_reg_master_req.wdata),
-      .be_i(axi_obi_reg_master_req.be),
-      .id_i('0),
-      .gnt_o(axi_obi_reg_master_resp.gnt),
-      .r_rdata_o(axi_obi_reg_master_resp.rdata),
-      .r_opc_o(),
-      .r_id_o(),
-      .r_valid_o(axi_obi_reg_master_resp.rvalid),
-      .reg_req_o(axi_reg_master_req),
-      .reg_rsp_i(axi_reg_master_rsp)
-  );
-*/
-/*    axi_slave_to_reg_adapter #(
-        .AXI_ID_WIDTH_MASTER    ( S01_AXI_ID_WIDTH_MASTER   ),
-        .AXI_ID_WIDTH_SLAVE     ( S01_AXI_ID_WIDTH_SLAVE    ),
-        .AXI_ADDR_WIDTH         ( S01_AXI_ADDR_WIDTH        ),
-        .AXI_DATA_WIDTH         ( S01_AXI_DATA_WIDTH        ),
-        .AXI_USER_WIDTH         ( S01_AXI_USER_WIDTH        ),
-        .regbus_req_t           ( reg_pkg::reg_req_t        ),
-        .regbus_rsp_t           ( reg_pkg::reg_req_t        )
-    ) i_axi_slave_to_reg_adapter (
-        .clk_i                  ( clk_i                     ),
-        .rst_ni                 ( rst_ni                    ),
-        .axi_slave_port         ( axi_slave_port            ),
-        .regbus_req_o           ( axi_reg_master_req        ),
-        .regbus_rsp_i           ( axi_reg_master_rsp        )
-    );
-*/
+  
 endmodule

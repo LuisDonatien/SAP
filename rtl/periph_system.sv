@@ -4,9 +4,11 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module periph_system
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import reg_pkg::*;
 #(
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic,
     parameter NHARTS = 3
 ) (
     input logic clk_i,

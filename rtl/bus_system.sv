@@ -22,10 +22,12 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module bus_system
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import addr_map_rule_pkg::*;
 #(
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic,
     parameter NHARTS  = 3,
     parameter N_BANKS = 2
 ) (
@@ -129,6 +131,8 @@ module bus_system
   // Internal system crossbar
   // ------------------------
   xbar_system #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t ),
       .XBAR_NMASTER(eros_pkg::SYSTEM_XBAR_NMASTER),
       .XBAR_NSLAVE (eros_pkg::SYSTEM_XBAR_NSLAVE)
   ) xbar_system_i (
@@ -161,6 +165,8 @@ module bus_system
 
     for (genvar i = 0; unsigned'(i) < NHARTS; i++) begin : gen_demux
       xbar_varlat_one_to_n #(
+          .obi_req_t            (obi_req_t  ),
+          .obi_resp_t           (obi_resp_t ),
           .XBAR_NSLAVE(32'd2),  // internal crossbar + external crossbar
           .NUM_RULES  (32'd1)   // only the external address space is defined
       ) demux_xbar_i (
@@ -178,6 +184,8 @@ module bus_system
 
     // N-to-1 crossbar Data
     xbar_varlat_n_to_one #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t ),
       .XBAR_NMASTER(NHARTS)
     ) xbar_varlat_n_to_one_data_i (
       .clk_i        (clk_i),

@@ -4,10 +4,12 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module safe_cpu_wrapper
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import eros_pkg::*;
 #(
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic,
     parameter NHARTS  = 3,
     parameter NCYCLES = eros_pkg::NCYCLES
 ) (
@@ -132,7 +134,10 @@ module safe_cpu_wrapper
 
   //***Cores System***//
 
-  cpu_system cpu_system_i (
+  cpu_system #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t )
+      ) cpu_system_i (
       .clk_i,
       .rst_ni,
       // Instruction memory interface
@@ -498,7 +503,10 @@ module safe_cpu_wrapper
     end
   end
 
-  tmr_voter #() tmr_voter0_i (
+  tmr_voter #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t )
+      ) tmr_voter0_i (
       // Instruction Bus
       .core_instr_req_i(tmr0_core_instr_req_i),
       .voted_core_instr_req_o(voted_core_instr_req_o[0]),
@@ -510,7 +518,10 @@ module safe_cpu_wrapper
       .error_o(tmr_error_s[0]),
       .error_id_o(tmr_errorid_s[0])
   );
-  tmr_voter #() tmr_voter1_i (
+  tmr_voter #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t )
+      ) tmr_voter1_i (
       // Instruction Bus
       .core_instr_req_i(tmr1_core_instr_req_i),
       .voted_core_instr_req_o(voted_core_instr_req_o[1]),
@@ -522,7 +533,10 @@ module safe_cpu_wrapper
       .error_o(tmr_error_s[1]),
       .error_id_o(tmr_errorid_s[1])
   );
-  tmr_voter #() tmr_voter2_i (
+  tmr_voter #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t )
+      ) tmr_voter2_i (
       // Instruction Bus
       .core_instr_req_i(tmr2_core_instr_req_i),
       .voted_core_instr_req_o(voted_core_instr_req_o[2]),
@@ -646,6 +660,8 @@ module safe_cpu_wrapper
 
   for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_lockstep_
     lockstep_reg #(
+        .obi_req_t            (obi_req_t  ),
+        .obi_resp_t           (obi_resp_t ),
         .NCYCLES(NCYCLES)
     ) lockstep_reg_i (
         .clk_i,
@@ -698,7 +714,10 @@ module safe_cpu_wrapper
 
   for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_comparator
 
-    dmr_comparator #() dmr_comparator_i (
+    dmr_comparator #(
+        .obi_req_t            (obi_req_t  ),
+        .obi_resp_t           (obi_resp_t )
+    ) dmr_comparator_i (
         .core_instr_req_i(lockstep_mux_core_instr_req_i[i]),
         .compared_core_instr_req_o(compared_core_instr_req_o[i]),
         .core_data_req_i(lockstep_mux_core_data_req_i[i]),
@@ -721,6 +740,8 @@ module safe_cpu_wrapper
 
     //***CPU xbar***//
     xbar_varlat_one_to_n #(
+        .obi_req_t            (obi_req_t  ),
+        .obi_resp_t           (obi_resp_t ),
         .XBAR_NSLAVE  (eros_pkg::CPU_XBAR_SLAVE),
         .NUM_RULES    (eros_pkg::CPU_XBAR_NRULES),
         .AGGREGATE_GNT(32'd1)                              // Not previous aggregate masters

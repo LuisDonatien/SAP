@@ -4,10 +4,12 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module eros_top
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import eros_pkg::*;
 #(
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic,
     parameter NHARTS  = 3,
     parameter N_BANKS = 2
 ) (
@@ -65,7 +67,10 @@ module eros_top
 
 
   //CPU_System
-  safe_cpu_wrapper safe_cpu_wrapper_i (
+  safe_cpu_wrapper #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t )
+      ) safe_cpu_wrapper_i (
       .clk_i,
       .rst_ni,
 
@@ -89,14 +94,20 @@ module eros_top
   );
 
   //Peripheral System
-  periph_system periph_system_i (
+  periph_system #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t )
+      )periph_system_i (
       .clk_i,
       .rst_ni,
       .slave_req_i (peripheral_slave_req),
       .slave_resp_o(peripheral_slave_resp)
   );
 
-  memory_sys memory_sys_i (
+  memory_sys #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t )
+    ) memory_sys_i (
       .clk_i,
       .rst_ni,
 
@@ -110,6 +121,8 @@ module eros_top
 
   //Bus System
   bus_system #(
+      .obi_req_t            (obi_req_t  ),
+      .obi_resp_t           (obi_resp_t ),
       .NHARTS(NHARTS)
   ) bus_system_i (
       .clk_i,

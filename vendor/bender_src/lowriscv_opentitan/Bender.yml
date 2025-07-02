@@ -1,12 +1,15 @@
 #Vendor source
 
 package:
-  name: lowriscv_opentitan
+  name: lowrisc_opentitan
 
-dependencies:
+export_include_dirs:
+  - hw/ip/prim/rtl/
 
 sources:
+  - files: 
     - hw/ip/prim/rtl/prim_assert_dummy_macros.svh
     - hw/ip/prim/rtl/prim_assert_standard_macros.svh
     - hw/ip/prim/rtl/prim_assert_yosys_macros.svh
     - hw/ip/prim/rtl/prim_assert.sv
+    - hw/ip/prim/rtl/prim_ram_1p_pkg.sv

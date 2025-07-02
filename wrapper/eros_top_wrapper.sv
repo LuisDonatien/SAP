@@ -4,12 +4,14 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module eros_top_wrapper
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import eros_pkg::*;
 #(
     parameter NHARTS  = 3,
-    parameter N_BANKS = 2
+    parameter N_BANKS = 2,
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -55,7 +57,10 @@ module eros_top_wrapper
 
 
 
-  eros_top eros_top_i (
+  eros_top #(
+    .obi_req_t            (obi_req_t  ),
+    .obi_resp_t           (obi_resp_t )
+  ) eros_top_i (
       .clk_i(clk_cg),
       .rst_ni,
       .ext_master_req_i,

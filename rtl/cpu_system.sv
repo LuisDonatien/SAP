@@ -4,10 +4,12 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module cpu_system
-  import eros_obi_pkg::*;
+//  import eros_obi_pkg::*;
   import eros_pkg::*;
 //  import fpu_ss_pkg::*;
 #(
+    parameter type obi_req_t            = logic,
+    parameter type obi_resp_t           = logic,
     parameter BOOT_ADDR = eros_pkg::DEBUG_BOOTROM_START_ADDRESS,
     parameter NHARTS = 3,
     parameter HARTID = 32'h01,
