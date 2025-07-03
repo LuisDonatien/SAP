@@ -127,8 +127,11 @@ axi_to_reg_v2 #(
   ) axi_lite_slave();
 
     // Connect buses using AXI macros
-    `AXI_ASSIGN_TO_REQ(axi_S01_req_i, axi_slave)
-    `AXI_ASSIGN_FROM_RESP(axi_slave, axi_S00_rsp_o)
+    `AXI_ASSIGN_FROM_REQ(axi_slave, axi_S00_req_i)
+    `AXI_ASSIGN_TO_RESP(axi_S00_rsp_o, axi_slave)
+  
+  //  `AXI_ASSIGN_TO_REQ(axi_S00_req_i, axi_slave)
+  //  `AXI_ASSIGN_FROM_RESP(axi_slave, axi_S00_rsp_o)
 
 axi_to_axi_lite_intf #(
     .AXI_ID_WIDTH       (S00_AXI_ID_WIDTH_SLAVE),
@@ -138,7 +141,7 @@ axi_to_axi_lite_intf #(
     .AXI_MAX_WRITE_TXNS ( 32'd10  ),
     .AXI_MAX_READ_TXNS  ( 32'd10  ),
     .FALL_THROUGH       ( 1'b1    )
-) i_dut (
+) axi_to_axi_lite_intf_i (
     .clk_i,
     .rst_ni,
     .testmode_i ( 1'b0     ),
@@ -197,8 +200,11 @@ axi_to_axi_lite_intf #(
     apb_req_t  apb_req;
     apb_resp_t apb_resp;
 
-    `AXI_LITE_ASSIGN_TO_REQ(axi_lite_req, axi_lite_slave)
-    `AXI_LITE_ASSIGN_FROM_RESP(axi_lite_slave, axi_lite_resp)
+  `AXI_LITE_ASSIGN_TO_REQ(axi_lite_req, axi_lite_slave)
+  `AXI_LITE_ASSIGN_FROM_RESP(axi_lite_slave, axi_lite_resp)
+
+//    `AXI_LITE_ASSIGN_FROM_REQ(axi_lite_slave, axi_lite_req)
+//    `AXI_LITE_ASSIGN_TO_RESP(axi_lite_resp, axi_lite_slave)
 
   axi_lite_to_apb #(
     .NoApbSlaves      ( NoApbSlaves         ),
@@ -215,8 +221,8 @@ axi_to_axi_lite_intf #(
   ) i_axi_lite_to_apb_dut (
     .clk_i ,
     .rst_ni,
-    .axi_lite_req_i  ( axi_req      ),
-    .axi_lite_resp_o ( axi_resp     ),
+    .axi_lite_req_i  ( axi_lite_req      ),
+    .axi_lite_resp_o ( axi_lite_resp     ),
     .apb_req_o       ( apb_req      ),
     .apb_resp_i      ( apb_resp    ),
     .addr_map_i      ( AddrMap      )

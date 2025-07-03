@@ -45,8 +45,8 @@ apb_to_obi #(
     .clk_i,
     .rst_ni,
   // Subordinate APB port.
-    .apb_req_i(apb_req),
-    .apb_rsp_o(apb_resp),
+    .apb_req_i(apb_req_i),
+    .apb_rsp_o(apb_rsp_o),
   // Manager OBI port.
     .obi_req_o(apb_obi_master_req),
     .obi_rsp_i(apb_obi_master_resp)
