@@ -52,8 +52,8 @@ package eros_pkg;
   localparam SYSTEM_XBAR_NMASTER = 7;
   localparam SYSTEM_XBAR_NSLAVE = 5; /*1 ERROR / 2 INTERNAL_PERIPH / 3 EXTERNAL_PERIPH* / 4 RAM0 / 5 RAM1 */
 
-  localparam GLOBAL_BASE_ADDRESS = 32'h19000000;
-  localparam SAFE_CSR_BASE_ADDRESS = 32'h20000000; /*core_v_mini_mcu_pkg::EXT_PERIPHERAL_START_ADDRESS;*/
+  localparam GLOBAL_BASE_ADDRESS = 32'h${SystemBus.BaseAddress};
+  localparam SAFE_CSR_BASE_ADDRESS = 32'h${CSR.BaseAddress}; /*core_v_mini_mcu_pkg::EXT_PERIPHERAL_START_ADDRESS;*/
 
 
   localparam int unsigned MEM_SIZE = 32'h00010000;
@@ -103,8 +103,8 @@ package eros_pkg;
   localparam logic [31:0] PERIPHERAL_END_ADDRESS = PERIPHERAL_START_ADDRESS + PERIPHERAL_SIZE;
   localparam logic [31:0] PERIPHERAL_IDX = 32'd1;
 
-  localparam logic [31:0] EXTERNAL_PERIPHERAL_START_ADDRESS = 32'h19002000;/*X-HEEP VERSION32'h00000000;*/
-  localparam logic [31:0] EXTERNAL_PERIPHERAL_SIZE = 32'h00001000;/*X-HEEP VERSION32'h41000000;*/
+  localparam logic [31:0] EXTERNAL_PERIPHERAL_START_ADDRESS = 32'h${MMAcceleratorOrExternalBus.BaseAddress};/*X-HEEP VERSION32'h00000000;*/
+  localparam logic [31:0] EXTERNAL_PERIPHERAL_SIZE = 32'h${MMAcceleratorOrExternalBus.Size};/*X-HEEP VERSION32'h41000000;*/
   localparam logic [31:0] EXTERNAL_PERIPHERAL_END_ADDRESS = EXTERNAL_PERIPHERAL_START_ADDRESS + EXTERNAL_PERIPHERAL_SIZE;
   localparam logic [31:0] EXTERNAL_PERIPHERAL_IDX = 32'd2;
 

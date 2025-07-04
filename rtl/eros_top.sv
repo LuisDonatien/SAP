@@ -4,7 +4,6 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module eros_top
-//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import eros_pkg::*;
 #(

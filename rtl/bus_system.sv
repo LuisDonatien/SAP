@@ -22,7 +22,6 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module bus_system
-//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import addr_map_rule_pkg::*;
 #(
@@ -164,7 +163,7 @@ module bus_system
     assign int_obi_wrapper_csr_req[2] = demux_core_data_req[2][1];
 
     for (genvar i = 0; unsigned'(i) < NHARTS; i++) begin : gen_demux
-      xbar_varlat_one_to_n #(
+      eros_xbar_varlat_one_to_n #(
           .obi_req_t            (obi_req_t  ),
           .obi_resp_t           (obi_resp_t ),
           .XBAR_NSLAVE(32'd2),  // internal crossbar + external crossbar
@@ -183,11 +182,11 @@ module bus_system
 
 
     // N-to-1 crossbar Data
-    xbar_varlat_n_to_one #(
+    eros_xbar_varlat_n_to_one #(
       .obi_req_t            (obi_req_t  ),
       .obi_resp_t           (obi_resp_t ),
       .XBAR_NMASTER(NHARTS)
-    ) xbar_varlat_n_to_one_data_i (
+    ) eros_xbar_varlat_n_to_one_data_i (
       .clk_i        (clk_i),
       .rst_ni       (rst_ni),
       .master_req_i (int_obi_wrapper_csr_req),

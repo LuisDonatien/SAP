@@ -6,7 +6,6 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module xbar_system
-//  import eros_obi_pkg::*;
   import addr_map_rule_pkg::*;
   import eros_pkg::*;
 #(
@@ -144,11 +143,11 @@ module xbar_system
     obi_req_t  neck_req;
     obi_resp_t neck_resp;
     // N-to-1 crossbar
-    xbar_varlat_n_to_one #(
+    eros_xbar_varlat_n_to_one #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
         .XBAR_NMASTER(XBAR_NMASTER)
-    ) xbar_varlat_n_to_one_i (
+    ) eros_xbar_varlat_n_to_one_i (
         .clk_i        (clk_i),
         .rst_ni       (rst_ni),
         .master_req_i (master_req),
@@ -157,12 +156,12 @@ module xbar_system
         .slave_resp_i (neck_resp)
     );
 
-    xbar_varlat_one_to_n #(
+    eros_xbar_varlat_one_to_n #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
         .XBAR_NSLAVE   (XBAR_NSLAVE),
         .AGGREGATE_GNT (32'd0) // the neck request is aggregating all the input masters
-    ) xbar_varlat_one_to_n_i (
+    ) eros_xbar_varlat_one_to_n_i (
         .clk_i        (clk_i),
         .rst_ni       (rst_ni),
         .addr_map_i,

@@ -3,9 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 
-module memory_sys
-//  import eros_obi_pkg::*;
-#(
+module memory_sys #(
     parameter type obi_req_t            = logic,
     parameter type obi_resp_t           = logic,
     parameter NUM_BANKS = 2

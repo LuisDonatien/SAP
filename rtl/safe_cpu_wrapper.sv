@@ -4,7 +4,6 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module safe_cpu_wrapper
-//  import eros_obi_pkg::*;
   import reg_pkg::*;
   import eros_pkg::*;
 #(
@@ -739,13 +738,13 @@ module safe_cpu_wrapper
     //
 
     //***CPU xbar***//
-    xbar_varlat_one_to_n #(
+    eros_xbar_varlat_one_to_n #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
         .XBAR_NSLAVE  (eros_pkg::CPU_XBAR_SLAVE),
         .NUM_RULES    (eros_pkg::CPU_XBAR_NRULES),
         .AGGREGATE_GNT(32'd1)                              // Not previous aggregate masters
-    ) xbar_varlat_one_to_n_i (
+    ) eros_xbar_varlat_one_to_n_i (
         .clk_i(clk_i),
         .rst_ni(rst_ni),
         .addr_map_i(eros_pkg::CPU_XBAR_ADDR_RULES),

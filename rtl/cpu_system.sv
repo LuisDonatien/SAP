@@ -4,7 +4,6 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module cpu_system
-//  import eros_obi_pkg::*;
   import eros_pkg::*;
 //  import fpu_ss_pkg::*;
 #(

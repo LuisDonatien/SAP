@@ -3,10 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
-module lockstep_reg
-//  import eros_obi_pkg::*;
-//  import reg_pkg::*;
-#(
+module lockstep_reg #(
     parameter type obi_req_t            = logic,
     parameter type obi_resp_t           = logic,
     parameter NCYCLES = 2
