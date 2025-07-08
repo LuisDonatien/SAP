@@ -5,8 +5,8 @@
   
 #include <stdio.h>
 #include <stdlib.h>
-#include "csr.h"
-#include "csr_registers.h"
+//#include "csr.h"
+//#include "csr_registers.h"
 #include "CB_Safety.h"
 
 
@@ -22,7 +22,7 @@ unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFS
         //Enter Safe mode (TCLS_MODE DCLS_MODE LOCKSTEP_MODE)
         Safe_Activate(TCLS_MODE);
 ///        Store_Checkpoint();
-                printf("[TCLS]\n");
+//                printf("[TCLS]\n");
 
         //Checkpoint for DMR configuration
 //        Store_Checkpoint();
@@ -32,11 +32,11 @@ unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFS
         Safe_Stop(MASTER_CORE2); 
 
 
-                printf("[SINGLE]\n");
+///                printf("[SINGLE]\n");
 
         Safe_Activate(LOCKSTEP_MODE);
 
-                printf("[LOCKS]\n");
+//                printf("[LOCKS]\n");
 
         Safe_Stop(MASTER_CORE0);
 
@@ -45,7 +45,7 @@ unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFS
         Safe_Activate(DCLS_MODE);
 //        Store_Checkpoint();
 
-                printf("[DCLS]\n");
+//                printf("[DCLS]\n");
 
         Safe_Stop(MASTER_CORE0);
 
@@ -54,7 +54,7 @@ unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFS
 
         Safe_Activate(TCLS_MODE);
 ///        Store_Checkpoint();
-                printf("[TCLS]\n");
+//                printf("[TCLS]\n");
 
         //Checkpoint for DMR configuration
 //        Store_Checkpoint();
@@ -64,11 +64,11 @@ unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFS
         Safe_Stop(MASTER_CORE1); 
 
 
-                printf("[SINGLE]\n");
+//               printf("[SINGLE]\n");
 
         Safe_Activate(LOCKSTEP_MODE);
 
-                printf("[LOCKS]\n");
+//                printf("[LOCKS]\n");
 
         Safe_Stop(MASTER_CORE2);
 
@@ -77,11 +77,11 @@ unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFS
         Safe_Activate(DCLS_MODE);
 //        Store_Checkpoint();
 
-                printf("[DCLS]\n");
+//                printf("[DCLS]\n");
 
         Safe_Stop(MASTER_CORE2);
 
-                printf("[SINGLE]\n");
+//                printf("[SINGLE]\n");
 //                printf("[IP_CEI]: Hello world!\n");
 
         /******END PROGRAM******/

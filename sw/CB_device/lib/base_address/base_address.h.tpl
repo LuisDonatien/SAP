@@ -13,11 +13,10 @@ extern "C" {
 #ifdef __cplusplus
 }  // extern "C"
 #endif
-#endif
 
 //Define
-#define GLOBAL_BASE_ADDRESS 0x19000000	/*User defined*/
-#define SAFE_CSR_BASE_ADDRESS 0x20000000 /*User defined*/
+#define GLOBAL_BASE_ADDRESS ${SystemBus.BaseAddress}	/*User defined*/
+#define SAFE_CSR_BASE_ADDRESS ${CSR.BaseAddress} /*User defined*/
 
 
 //Priv Reg
@@ -31,3 +30,5 @@ extern "C" {
 
 #define BOOT_OFFSET     (BOOT_DEBUG_ROM_BASEADDRESS | 0x0)
 #define DEBUG_OFFSET    (BOOT_DEBUG_ROM_BASEADDRESS | 0x50)
+
+#endif

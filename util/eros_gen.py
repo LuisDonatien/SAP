@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 """
-Script to generate eros_pkg.sv from a HJSON config and a SystemVerilog template,
-by replacing placeholders `${section.subsection}` with uppercase hex values
-(assuming the template already includes the `32'h` prefix).
+Script to generate:
+  - rtl/include/eros_pkg.sv from configs/addr.hjson and eros_pkg.sv.tpl
+  - sw/linker/link.ld from configs/addr.hjson and link.ld.tpl
+  - sw/CB_device/lib/base_address/base_address.h from configs/addr.hjson and base_address.h.tpl
+by replacing placeholders `${section.subsection}` with hex values
+(SV templates assume `32'h` prefix in file; all others receive `0x` prefix).
 
 Usage:
-    $ python generate_eros_pkg.py
+    $ python generate_files.py
 
 Assumes:
   - config file at: configs/addr.hjson
-  - template file at: rtl/include/eros_pkg.sv.tpl
-  - output file will be written to: rtl/include/eros_pkg.sv
+  - templates at:
+      - rtl/include/eros_pkg.sv.tpl
+      - sw/linker/link.ld.tpl
+      - sw/CB_device/lib/base_address/base_address.h.tpl
+  - outputs alongside templates, removing `.tpl` suffix.
 
 Dependencies:
   pip install hjson
@@ -22,9 +28,6 @@ import sys
 
 
 def get_config_value(cfg, path):
-    """
-    Traverse nested dict `cfg` by keys in `path` list.
-    """
     val = cfg
     for key in path:
         if isinstance(val, dict) and key in val:
@@ -35,48 +38,23 @@ def get_config_value(cfg, path):
 
 
 def to_hex_string(val):
-    """
-    Convert a value to uppercase hex string without '0x' prefix.
-    """
     if isinstance(val, int):
-        return format(val, 'X')
-    s = str(val).strip().strip('"').strip("'")
-    if s.lower().startswith('0x'):
-        s = s[2:]
+        s = format(val, 'X')
+    else:
+        s = str(val).strip().strip('"').strip("'")
+        if s.lower().startswith('0x'):
+            s = s[2:]
     return s.upper()
 
 
-def main():
-    # Paths relative to project root
-    config_path = Path('configs/addr.hjson')
-    template_path = Path('rtl/include/eros_pkg.sv.tpl')
-    output_path = template_path.with_suffix('')  # remove .tpl to .sv
-
-    # Validate files
-    if not config_path.is_file():
-        print(f"Error: config file not found at {config_path}", file=sys.stderr)
-        sys.exit(1)
-    if not template_path.is_file():
-        print(f"Error: template file not found at {template_path}", file=sys.stderr)
-        sys.exit(1)
-
-    # Load config text and strip HJSON comments (lines or inline #)
-    raw = config_path.read_text()
-    # Remove any '#' comments (everything after # on a line)
-    clean = re.sub(r"#.*", "", raw)
-    try:
-        cfg = hjson.loads(clean)
-    except Exception as e:
-        print(f"Error parsing HJSON config: {e}", file=sys.stderr)
-        sys.exit(1)
-
-    # Read template
+def process_template(template_path: Path, cfg: dict):
     content = template_path.read_text()
+    # Choose prefix: no 0x for SV templates (SV file includes 32'h), 0x for others
+    is_sv = template_path.name.endswith('.sv.tpl')
+    prefix = '' if is_sv else '0x'
 
-    # Regex to match ${section.subsection}
     pattern = re.compile(r"\$\{([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*)\}")
 
-    # Replacement function
     def repl(match):
         keypath = match.group(1).split('.')
         try:
@@ -85,16 +63,42 @@ def main():
             print(f"Warning: {e}", file=sys.stderr)
             return match.group(0)
         hexstr = to_hex_string(val)
-        return hexstr
+        return f"{prefix}{hexstr}"
 
-    # Perform substitution
     new_content, count = pattern.subn(repl, content)
-    print(f"Total replacements: {count}")
+    print(f"[{template_path.name}] Replacements: {count}")
+    return new_content
 
-    # Write output
-    output_path.write_text(new_content)
-    print(f"Generated {output_path}")
 
+def main():
+    config_path = Path('configs/addr.hjson')
+    if not config_path.is_file():
+        print(f"Error: config file not found at {config_path}", file=sys.stderr)
+        sys.exit(1)
+
+    raw = config_path.read_text()
+    # strip comments (# ...)
+    clean = re.sub(r"#.*", "", raw)
+    try:
+        cfg = hjson.loads(clean)
+    except Exception as e:
+        print(f"Error parsing HJSON: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    templates = [
+        Path('rtl/include/eros_pkg.sv.tpl'),
+        Path('sw/linker/link.ld.tpl'),
+        Path('sw/CB_device/lib/base_address/base_address.h.tpl'),
+    ]
+
+    for tpl_path in templates:
+        if not tpl_path.is_file():
+            print(f"Error: template not found at {tpl_path}", file=sys.stderr)
+            continue
+        out_path = tpl_path.with_suffix('')
+        result = process_template(tpl_path, cfg)
+        out_path.write_text(result)
+        print(f"Generated {out_path}")
 
 if __name__ == '__main__':
     main()
