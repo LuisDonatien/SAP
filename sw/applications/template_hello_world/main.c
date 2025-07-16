@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) 
 {
 unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFSET;
-
+volatile unsigned int *P1 = GLOBAL_BASE_ADDRESS + 0x0002A000;
 
         /******START******/
 
@@ -35,7 +35,9 @@ unsigned int *P = SAFE_WRAPPER_CTRL_BASEADDRESS + CB_HEEP_CTRL_DMR_MASK_REG_OFFS
 ///                printf("[SINGLE]\n");
 
         Safe_Activate(LOCKSTEP_MODE);
-
+        
+        for (int i=0; i<1000000;i++)
+                *P1 = i;
 //                printf("[LOCKS]\n");
 
         Safe_Stop(MASTER_CORE0);

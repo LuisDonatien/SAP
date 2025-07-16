@@ -741,8 +741,8 @@ module safe_cpu_wrapper
     eros_xbar_varlat_one_to_n #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
-        .XBAR_NSLAVE  (eros_pkg::CPU_XBAR_SLAVE),
-        .NUM_RULES    (eros_pkg::CPU_XBAR_NRULES),
+        .XBAR_NSLAVE  (32'd2),
+        .NUM_RULES    (32'd1),
         .AGGREGATE_GNT(32'd1)                              // Not previous aggregate masters
     ) eros_xbar_varlat_one_to_n_i (
         .clk_i(clk_i),

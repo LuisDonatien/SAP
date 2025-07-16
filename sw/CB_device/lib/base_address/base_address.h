@@ -13,7 +13,6 @@ extern "C" {
 #ifdef __cplusplus
 }  // extern "C"
 #endif
-#endif
 
 //Define
 #define GLOBAL_BASE_ADDRESS 0x19000000	/*User defined*/
@@ -31,3 +30,5 @@ extern "C" {
 
 #define BOOT_OFFSET     (BOOT_DEBUG_ROM_BASEADDRESS | 0x0)
 #define DEBUG_OFFSET    (BOOT_DEBUG_ROM_BASEADDRESS | 0x50)
+
+#endif

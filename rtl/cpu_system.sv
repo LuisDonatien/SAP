@@ -62,7 +62,7 @@ module cpu_system
   assign core_instr_req_o[2].wdata = '0;
   assign core_instr_req_o[2].we    = '0;
   assign core_instr_req_o[2].be    = 4'b1111;
-
+/*
   if (CPU == CV32E40P) begin : gen_eros_cv32e40p
     cv32e40p_top #(
         .COREV_PULP      (0),
@@ -624,7 +624,9 @@ module cpu_system
 
     end
 */
+/*
   end else begin : gen_eros_cv32e20
+*/
     // instantiate the core 0
     cve2_top #() cv32e20_core0 (
         .clk_i (clk_i),
@@ -757,5 +759,5 @@ module cpu_system
         .fetch_enable_i(fetch_enable),
         .core_sleep_o  (sleep_o[2])
     );
-  end
+//  end
 endmodule

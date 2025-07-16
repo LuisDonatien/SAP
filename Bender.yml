@@ -70,8 +70,8 @@ sources:
 
       - target: all(vivado,fpga,xilinx)
         files:
-        - fgpa/xilinx_sram.sv
-        - fpga/fpga/cv32e40p_xilinx_clock_gate.sv
-        - fpga/fpga/cv32e40px_xilinx_clock_gate.sv
-        - fpga/fpga/cve2_xilinx_clock_gate.sv
-        - fpga/fpga/prim_xilinx_clk.sv
+        - fpga/xilinx_sram.sv
+        - fpga/cv32e40p_xilinx_clock_gate.sv
+        - fpga/cv32e40px_xilinx_clock_gate.sv
+        - fpga/cve2_xilinx_clock_gate.sv
+        - fpga/prim_xilinx_clk.sv

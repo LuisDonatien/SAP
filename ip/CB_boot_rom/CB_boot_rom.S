@@ -23,7 +23,6 @@
 #include "Safe_wrapper_ctrl_regs.h"
 
 
-
 #################################
 // Region of memory where each hart has 1
 // byte to read.

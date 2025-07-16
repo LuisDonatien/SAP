@@ -111,15 +111,22 @@ axi_to_reg_v2 #(
 );
 
 //////////////////////////////////////////////
-//      AXI -> AXI_LITE -> APB -> OBI       //
+// AXI64 -> AXI32 -> AXI_LITE -> APB -> OBI //
 //////////////////////////////////////////////
 
+    AXI_BUS #(
+    .AXI_ADDR_WIDTH(S00_AXI_ADDR_WIDTH),
+    .AXI_DATA_WIDTH(32'd32),
+    .AXI_ID_WIDTH(S00_AXI_ID_WIDTH_SLAVE),
+    .AXI_USER_WIDTH(S00_AXI_USER_WIDTH)
+    ) axi_32master();
+  
     AXI_BUS #(
     .AXI_ADDR_WIDTH(S00_AXI_ADDR_WIDTH),
     .AXI_DATA_WIDTH(S00_AXI_DATA_WIDTH),
     .AXI_ID_WIDTH(S00_AXI_ID_WIDTH_SLAVE),
     .AXI_USER_WIDTH(S00_AXI_USER_WIDTH)
-    ) axi_slave();
+    ) axi_xxmaster();
 
   AXI_LITE #(
     .AXI_ADDR_WIDTH(S00_AXI_ADDR_WIDTH),
@@ -127,16 +134,30 @@ axi_to_reg_v2 #(
   ) axi_lite_slave();
 
     // Connect buses using AXI macros
-    `AXI_ASSIGN_FROM_REQ(axi_slave, axi_S00_req_i)
-    `AXI_ASSIGN_TO_RESP(axi_S00_rsp_o, axi_slave)
+    `AXI_ASSIGN_FROM_REQ(axi_xxmaster, axi_S00_req_i)
+    `AXI_ASSIGN_TO_RESP(axi_S00_rsp_o, axi_xxmaster)
   
   //  `AXI_ASSIGN_TO_REQ(axi_S00_req_i, axi_slave)
   //  `AXI_ASSIGN_FROM_RESP(axi_slave, axi_S00_rsp_o)
 
-axi_to_axi_lite_intf #(
+  axi_dw_converter_intf #(
+    .AXI_MAX_READS          (4                    ),
+    .AXI_ADDR_WIDTH         (S00_AXI_ADDR_WIDTH   ),
+    .AXI_ID_WIDTH           (S00_AXI_ID_WIDTH_SLAVE),
+    .AXI_SLV_PORT_DATA_WIDTH(S00_AXI_DATA_WIDTH   ),
+    .AXI_MST_PORT_DATA_WIDTH(32'd32               ),
+    .AXI_USER_WIDTH         (S00_AXI_USER_WIDTH   )
+  ) i_dw_converter (
+    .clk_i,
+    .rst_ni,
+    .slv      (axi_xxmaster),
+    .mst      (axi_32master)
+  );
+
+  axi_to_axi_lite_intf #(
     .AXI_ID_WIDTH       (S00_AXI_ID_WIDTH_SLAVE),
-    .AXI_ADDR_WIDTH     (S00_AXI_ADDR_WIDTH),
-    .AXI_DATA_WIDTH     (S00_AXI_DATA_WIDTH),
+    .AXI_ADDR_WIDTH     (S00_AXI_ADDR_WIDTH    ),
+    .AXI_DATA_WIDTH     ( 32'd32               ),
     .AXI_USER_WIDTH     (S00_AXI_USER_WIDTH),
     .AXI_MAX_WRITE_TXNS ( 32'd10  ),
     .AXI_MAX_READ_TXNS  ( 32'd10  ),
@@ -145,7 +166,7 @@ axi_to_axi_lite_intf #(
     .clk_i,
     .rst_ni,
     .testmode_i ( 1'b0     ),
-    .slv        ( axi_slave),
+    .slv        ( axi_32master),
     .mst        ( axi_lite_slave )
 );
     // Dut parameters
@@ -210,7 +231,7 @@ axi_to_axi_lite_intf #(
     .NoApbSlaves      ( NoApbSlaves         ),
     .NoRules          ( NoAddrRules         ),
     .AddrWidth        ( S00_AXI_ADDR_WIDTH  ),
-    .DataWidth        ( S00_AXI_DATA_WIDTH  ),
+    .DataWidth        ( 32'd32              ),
     .PipelineRequest  ( '0                  ), //TODO:check change to 0
     .PipelineResponse ( '0                  ), //TODO:check change to 0
     .axi_lite_req_t   ( axi_req_t           ),

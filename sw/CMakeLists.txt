@@ -79,7 +79,7 @@ FOREACH(file_path ${new_list})
     SET(add 1)
   elseif( ${file_path} MATCHES "/CB_device/" )
     if(${file_path} MATCHES "/lib/") # Add it if its in Safety
-          SET(add 1)
+      SET(add 1)
     endif()
   endif()
 
@@ -170,6 +170,8 @@ if( app_found EQUAL 0 )
   FOREACH(file_path IN LISTS new_list)
     SET(add 0) # This variable is set to 1 if the file_pth needs to be added to the list
     if(${file_path} MATCHES "/device/")
+      SET(add 1)
+    elseif(${file_path} MATCHES "/CB_device/")
       SET(add 1)
     elseif( ( ${file_path} MATCHES "/${PROJECT}/" ) AND ( NOT ${file_path} MATCHES ${MAINFILE} ) )
       SET(add 1)
