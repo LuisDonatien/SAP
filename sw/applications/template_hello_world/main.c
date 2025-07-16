@@ -5,8 +5,6 @@
   
 #include <stdio.h>
 #include <stdlib.h>
-//#include "csr.h"
-//#include "csr_registers.h"
 #include "CB_Safety.h"
 
 
@@ -17,12 +15,8 @@ volatile unsigned int *P1 = GLOBAL_BASE_ADDRESS + 0x0002A000;
 
         /******START******/
 
-//                printf("[IP_CEI]: Hello world!\n");
-
         //Enter Safe mode (TCLS_MODE DCLS_MODE LOCKSTEP_MODE)
         Safe_Activate(TCLS_MODE);
-///        Store_Checkpoint();
-//                printf("[TCLS]\n");
 
         //Checkpoint for DMR configuration
 //        Store_Checkpoint();
@@ -31,8 +25,6 @@ volatile unsigned int *P1 = GLOBAL_BASE_ADDRESS + 0x0002A000;
         //Exit Safe mode (MASTER_CORE0 MASTER_CORE1 MASTER_CORE2)
         Safe_Stop(MASTER_CORE2); 
 
-
-///                printf("[SINGLE]\n");
 
         Safe_Activate(LOCKSTEP_MODE);
         
@@ -52,11 +44,9 @@ volatile unsigned int *P1 = GLOBAL_BASE_ADDRESS + 0x0002A000;
         Safe_Stop(MASTER_CORE0);
 
 
-        *P = CORE12_MASK;
+        *P = CORE12_MASK; //SWITCH MASTER
 
         Safe_Activate(TCLS_MODE);
-///        Store_Checkpoint();
-//                printf("[TCLS]\n");
 
         //Checkpoint for DMR configuration
 //        Store_Checkpoint();
@@ -66,11 +56,8 @@ volatile unsigned int *P1 = GLOBAL_BASE_ADDRESS + 0x0002A000;
         Safe_Stop(MASTER_CORE1); 
 
 
-//               printf("[SINGLE]\n");
-
         Safe_Activate(LOCKSTEP_MODE);
 
-//                printf("[LOCKS]\n");
 
         Safe_Stop(MASTER_CORE2);
 
@@ -79,12 +66,8 @@ volatile unsigned int *P1 = GLOBAL_BASE_ADDRESS + 0x0002A000;
         Safe_Activate(DCLS_MODE);
 //        Store_Checkpoint();
 
-//                printf("[DCLS]\n");
-
         Safe_Stop(MASTER_CORE2);
 
-//                printf("[SINGLE]\n");
-//                printf("[IP_CEI]: Hello world!\n");
 
         /******END PROGRAM******/
     

@@ -6,10 +6,10 @@
  `include "axi/assign.svh"
  `include "axi/typedef.svh"
 
-module eros_top_wrapper_axi
-//  import eros_obi_pkg::*;
+module sap_top_wrapper_axi
+//  import sap_obi_pkg::*;
   import reg_pkg::*;
-  import eros_pkg::*;
+  import sap_pkg::*;
 #(
     parameter NHARTS  = 3,
     parameter N_BANKS = 2,
@@ -200,7 +200,7 @@ axi_to_reg_v2 #(
 
     //Single APB Slave -> All OBI Addr
     localparam rule_t [0:0] AddrMap = '{
-        '{idx: 32'd0, start_addr: eros_pkg::GLOBAL_BASE_ADDRESS, end_addr: eros_pkg::GLOBAL_END_ADDRESS}};
+        '{idx: 32'd0, start_addr: sap_pkg::GLOBAL_BASE_ADDRESS, end_addr: sap_pkg::GLOBAL_END_ADDRESS}};
 
     // Define AXI-LITE
     `AXI_LITE_TYPEDEF_AW_CHAN_T(aw_chan_t, addr_t)
@@ -267,7 +267,7 @@ apb_to_obi_wrapper #(
 );
 
 //////////////////////////////////////////////
-//                  EROS                    //
+//                  SAP                     //
 //////////////////////////////////////////////
 
 
