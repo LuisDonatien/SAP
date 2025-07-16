@@ -4,17 +4,17 @@
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
 module cpu_system
-  import eros_pkg::*;
+  import sap_pkg::*;
 //  import fpu_ss_pkg::*;
 #(
     parameter type obi_req_t            = logic,
     parameter type obi_resp_t           = logic,
-    parameter BOOT_ADDR = eros_pkg::DEBUG_BOOTROM_START_ADDRESS,
+    parameter BOOT_ADDR = sap_pkg::DEBUG_BOOTROM_START_ADDRESS,
     parameter NHARTS = 3,
     parameter HARTID = 32'h01,
-    parameter eros_pkg::cpu_type_e CPU = eros_pkg::CPU_type,
+    parameter sap_pkg::cpu_type_e CPU = sap_pkg::CPU_type,
     parameter COPROCESSOR = 0,
-    parameter DM_HALTADDRESS = eros_pkg::DEBUG_BOOTROM_START_ADDRESS + 32'h50
+    parameter DM_HALTADDRESS = sap_pkg::DEBUG_BOOTROM_START_ADDRESS + 32'h50
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -63,7 +63,7 @@ module cpu_system
   assign core_instr_req_o[2].we    = '0;
   assign core_instr_req_o[2].be    = 4'b1111;
 /*
-  if (CPU == CV32E40P) begin : gen_eros_cv32e40p
+  if (CPU == CV32E40P) begin : gen_sap_cv32e40p
     cv32e40p_top #(
         .COREV_PULP      (0),
         .COREV_CLUSTER   (0),
@@ -205,7 +205,7 @@ module cpu_system
         .core_sleep_o  (sleep_o[2])
     );
 /*
-  end else if (CPU == CV32E40PX) begin : gen_eros_cv32e40px
+  end else if (CPU == CV32E40PX) begin : gen_sap_cv32e40px
 
     //    import cv32e40px_core_v_xif_pkg::*;
     localparam ZFINX = 0;
@@ -625,7 +625,7 @@ module cpu_system
     end
 */
 /*
-  end else begin : gen_eros_cv32e20
+  end else begin : gen_sap_cv32e20
 */
     // instantiate the core 0
     cve2_top #() cv32e20_core0 (

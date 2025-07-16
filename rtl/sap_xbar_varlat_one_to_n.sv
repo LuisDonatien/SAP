@@ -10,7 +10,7 @@
 // Modification of the original file interface from the x-heep project to allow parameter req/resp obi and avoid conflict with obi.pkg 
 // from the online repo.
 
-module eros_xbar_varlat_one_to_n #(
+module sap_xbar_varlat_one_to_n #(
     parameter int unsigned XBAR_NSLAVE = 2,
     parameter int unsigned NUM_RULES = XBAR_NSLAVE,  // number of ranges in the address map
     parameter int unsigned AGGREGATE_GNT = 32'd1, // the master port is not aggregating multiple masters
@@ -36,7 +36,7 @@ module eros_xbar_varlat_one_to_n #(
     output obi_req_t  [XBAR_NSLAVE-1:0] slave_req_o,
     input  obi_resp_t [XBAR_NSLAVE-1:0] slave_resp_i
 );
-//  import eros_obi_pkg::*;
+//  import sap_obi_pkg::*;
 
   // ARCHITECTURE
   // ------------

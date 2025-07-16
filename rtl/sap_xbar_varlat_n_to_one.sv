@@ -10,7 +10,7 @@
 // Modification of the original file interface from the x-heep project to allow parameter req/resp obi and avoid conflict with obi.pkg 
 // from the online repo.
 
-module eros_xbar_varlat_n_to_one #(
+module sap_xbar_varlat_n_to_one #(
     parameter type obi_req_t            = logic,
     parameter type obi_resp_t           = logic,
     parameter int unsigned XBAR_NMASTER = 2

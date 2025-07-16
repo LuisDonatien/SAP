@@ -10,7 +10,7 @@
  *
  */
 
-package eros_pkg;
+package sap_pkg;
 
   import addr_map_rule_pkg::*;
 

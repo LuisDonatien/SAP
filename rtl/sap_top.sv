@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
-module eros_top
+module sap_top
   import reg_pkg::*;
-  import eros_pkg::*;
+  import sap_pkg::*;
 #(
     parameter type obi_req_t            = logic,
     parameter type obi_resp_t           = logic,

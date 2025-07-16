@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Script to generate:
-  - rtl/include/eros_pkg.sv from configs/addr.hjson and eros_pkg.sv.tpl
+  - rtl/include/sap_pkg.sv from configs/addr.hjson and sap_pkg.sv.tpl
   - sw/linker/link.ld from configs/addr.hjson and link.ld.tpl
   - sw/CB_device/lib/base_address/base_address.h from configs/addr.hjson and base_address.h.tpl
 by replacing placeholders `${section.subsection}` with hex values
@@ -13,7 +13,7 @@ Usage:
 Assumes:
   - config file at: configs/addr.hjson
   - templates at:
-      - rtl/include/eros_pkg.sv.tpl
+      - rtl/include/sap_pkg.sv.tpl
       - sw/linker/link.ld.tpl
       - sw/CB_device/lib/base_address/base_address.h.tpl
   - outputs alongside templates, removing `.tpl` suffix.
@@ -86,7 +86,7 @@ def main():
         sys.exit(1)
 
     templates = [
-        Path('rtl/include/eros_pkg.sv.tpl'),
+        Path('rtl/include/sap_pkg.sv.tpl'),
         Path('sw/linker/link.ld.tpl'),
         Path('sw/CB_device/lib/base_address/base_address.h.tpl'),
     ]

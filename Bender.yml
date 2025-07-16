@@ -1,5 +1,5 @@
 package:
-  name: eros
+  name: sap
 
 
 # Dependencies based on vendor folder
@@ -29,16 +29,16 @@ sources:
     include_dirs:
       - rtl/include
       #
-      # eros
+      # sap
       #
     files:
       - rtl/include/safe_wrapper_ctrl_reg_pkg.sv
       - rtl/include/cpu_private_reg_pkg.sv
       - rtl/include/reg_pkg.sv
       - rtl/include/addr_map_rule_pkg.sv
-      - rtl/include/eros_pkg.sv
-      - rtl/eros_xbar_varlat_n_to_one.sv
-      - rtl/eros_xbar_varlat_one_to_n.sv
+      - rtl/include/sap_pkg.sv
+      - rtl/sap_xbar_varlat_n_to_one.sv
+      - rtl/sap_xbar_varlat_one_to_n.sv
       - rtl/cpu_system.sv
       - rtl/bus_system.sv
       - rtl/xbar_system.sv
@@ -57,16 +57,16 @@ sources:
       - rtl/cpu_private_reg.sv
       - rtl/lockstep_reg.sv
 #      - ip/fpu_ss/fpu_ss_wrapper.sv
-      - rtl/eros_top.sv
+      - rtl/sap_top.sv
       - wrapper/apb_to_obi_wrapper.sv
-      - wrapper/eros_top_wrapper.sv
-      - wrapper/eros_top_wrapper_axi.sv
+      - wrapper/sap_top_wrapper.sv
+      - wrapper/sap_top_wrapper_axi.sv
 
 
       - target: any(simulation,test)
         files:
         - sim/sram_wrapper.sv
-        - sim/eros_clock_gate.sv
+        - sim/sap_clock_gate.sv
 
       - target: all(vivado,fpga,xilinx)
         files:

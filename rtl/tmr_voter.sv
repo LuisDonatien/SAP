@@ -9,7 +9,7 @@
  */
 
 module tmr_voter
-  import eros_pkg::*;
+  import sap_pkg::*;
 #(
     parameter type obi_req_t            = logic,
     parameter type obi_resp_t           = logic,

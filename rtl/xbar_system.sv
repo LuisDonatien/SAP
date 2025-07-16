@@ -7,9 +7,9 @@
 
 module xbar_system
   import addr_map_rule_pkg::*;
-  import eros_pkg::*;
+  import sap_pkg::*;
 #(
-    parameter eros_pkg::bus_type_e BUS_TYPE = eros_pkg::BusType,
+    parameter sap_pkg::bus_type_e BUS_TYPE = sap_pkg::BusType,
     parameter XBAR_NMASTER = 3,
     parameter XBAR_NSLAVE = 6,
     parameter type obi_req_t            = logic,
@@ -143,11 +143,11 @@ module xbar_system
     obi_req_t  neck_req;
     obi_resp_t neck_resp;
     // N-to-1 crossbar
-    eros_xbar_varlat_n_to_one #(
+    sap_xbar_varlat_n_to_one #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
         .XBAR_NMASTER(XBAR_NMASTER)
-    ) eros_xbar_varlat_n_to_one_i (
+    ) sap_xbar_varlat_n_to_one_i (
         .clk_i        (clk_i),
         .rst_ni       (rst_ni),
         .master_req_i (master_req),
@@ -156,12 +156,12 @@ module xbar_system
         .slave_resp_i (neck_resp)
     );
 
-    eros_xbar_varlat_one_to_n #(
+    sap_xbar_varlat_one_to_n #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
         .XBAR_NSLAVE   (XBAR_NSLAVE),
         .AGGREGATE_GNT (32'd0) // the neck request is aggregating all the input masters
-    ) eros_xbar_varlat_one_to_n_i (
+    ) sap_xbar_varlat_one_to_n_i (
         .clk_i        (clk_i),
         .rst_ni       (rst_ni),
         .addr_map_i,

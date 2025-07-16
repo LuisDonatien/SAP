@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
-module eros_top_wrapper
-//  import eros_obi_pkg::*;
+module sap_top_wrapper
+//  import sap_obi_pkg::*;
   import reg_pkg::*;
-  import eros_pkg::*;
+  import sap_pkg::*;
 #(
     parameter NHARTS  = 3,
     parameter N_BANKS = 2,
@@ -48,7 +48,7 @@ module eros_top_wrapper
 
   logic clk_cg;
 
-  eros_clock_gate eros_clock_gate_i (
+  sap_clock_gate sap_clock_gate_i (
       .clk_i    (clk_i),
       .test_en_i(1'b0),
       .en_i     (en_i),
@@ -57,10 +57,10 @@ module eros_top_wrapper
 
 
 
-  eros_top #(
+  sap_top #(
     .obi_req_t            (obi_req_t  ),
     .obi_resp_t           (obi_resp_t )
-  ) eros_top_i (
+  ) sap_top_i (
       .clk_i(clk_cg),
       .rst_ni,
       .ext_master_req_i,

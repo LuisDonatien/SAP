@@ -5,12 +5,12 @@
 
 module safe_cpu_wrapper
   import reg_pkg::*;
-  import eros_pkg::*;
+  import sap_pkg::*;
 #(
     parameter type obi_req_t            = logic,
     parameter type obi_resp_t           = logic,
     parameter NHARTS  = 3,
-    parameter NCYCLES = eros_pkg::NCYCLES
+    parameter NCYCLES = sap_pkg::NCYCLES
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -256,7 +256,7 @@ module safe_cpu_wrapper
   obi_resp_t [NHARTS-1:0][1:0] lower_mux_core_instr_resp_i;
   obi_resp_t [NHARTS-1:0][1:0] lower_mux_core_data_resp_i;
 
-  for (genvar i = 0; i < NHARTS; i++) begin : eros_upper_demux
+  for (genvar i = 0; i < NHARTS; i++) begin : sap_upper_demux
     always_comb begin
       if (master_core_ff_s[2] && (dual_mode_s || tmr_voter_enable_s)) begin
         upper_mux_core_instr_req_i[i][0] = '0;
@@ -315,7 +315,7 @@ module safe_cpu_wrapper
   /**************************************************************************/
 
   /**************************Lower-Mux-Req**********************************/
-  for (genvar i = 0; i < NHARTS; i++) begin : eros_lower_mux_obi_req
+  for (genvar i = 0; i < NHARTS; i++) begin : sap_lower_mux_obi_req
 
     always_comb begin
       //TODO: Reduce de mux configurations inputs ports, implies modification in the Safe_FSM
@@ -334,7 +334,7 @@ module safe_cpu_wrapper
 
   /**************************************************************************/
   /**************************Lower-Demux-Resp********************************/
-  for (genvar i = 0; i < NHARTS; i++) begin : eros_lower_mux_obi_resp
+  for (genvar i = 0; i < NHARTS; i++) begin : sap_lower_mux_obi_resp
     always_comb begin
       if (delayed_s & dual_mode_s) begin  //TODO: should not be necesary use de dual_mode_s
         lower_mux_core_instr_resp_i[i][0] = '0;
@@ -356,7 +356,7 @@ module safe_cpu_wrapper
   /**************************Upper-Mux-Resp********************************/
   //upper_mux_core_instr_req_i;
   //upper_mux_core_data_req_i;
-  for (genvar i = 0; i < NHARTS; i++) begin : eros_upper_mux_obi_resp
+  for (genvar i = 0; i < NHARTS; i++) begin : sap_upper_mux_obi_resp
     always_comb begin
       if (dmr_wfi_s[i] == '1) begin
         core_instr_resp[i] = isolate_core_instr_resp[i];
@@ -596,7 +596,7 @@ module safe_cpu_wrapper
     end
   end
 
-  for (genvar i = 0; i < NHARTS; i++) begin : eros_lockstep_mux_reg
+  for (genvar i = 0; i < NHARTS; i++) begin : sap_lockstep_mux_reg
     always_comb begin
       if (delayed_s && dual_mode_s) begin
         lockstep_mux_core_instr_req_i[i] = lockstep_delayed_core_instr_req_i[i];
@@ -612,7 +612,7 @@ module safe_cpu_wrapper
   end
 
 
-  for (genvar i = 0; i < NHARTS; i++) begin : eros_signals_mux_reg
+  for (genvar i = 0; i < NHARTS; i++) begin : sap_signals_mux_reg
     always_comb begin
       if (delayed_s && dual_mode_s) begin  // only if delayed mode
         if (master_core_ff_s[i]) begin
@@ -638,7 +638,7 @@ module safe_cpu_wrapper
     end
   end
 
-  always_comb begin : eros_lockstep_input_signals_mux_reg
+  always_comb begin : sap_lockstep_input_signals_mux_reg
     if (delayed_s && dual_mode_s) begin  // only if delayed mode
       if (!master_core_ff_s[0] && dmr_config_s[0]) begin
         delayed_intr_i = intr[0];
@@ -657,7 +657,7 @@ module safe_cpu_wrapper
   end
 
 
-  for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_lockstep_
+  for (genvar i = 0; i < NRCOMPARATORS; i++) begin : sap_dmr_lockstep_
     lockstep_reg #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
@@ -711,7 +711,7 @@ module safe_cpu_wrapper
     end
   end
 
-  for (genvar i = 0; i < NRCOMPARATORS; i++) begin : eros_dmr_comparator
+  for (genvar i = 0; i < NRCOMPARATORS; i++) begin : sap_dmr_comparator
 
     dmr_comparator #(
         .obi_req_t            (obi_req_t  ),
@@ -738,16 +738,16 @@ module safe_cpu_wrapper
     //
 
     //***CPU xbar***//
-    eros_xbar_varlat_one_to_n #(
+    sap_xbar_varlat_one_to_n #(
         .obi_req_t            (obi_req_t  ),
         .obi_resp_t           (obi_resp_t ),
         .XBAR_NSLAVE  (32'd2),
         .NUM_RULES    (32'd1),
         .AGGREGATE_GNT(32'd1)                              // Not previous aggregate masters
-    ) eros_xbar_varlat_one_to_n_i (
+    ) sap_xbar_varlat_one_to_n_i (
         .clk_i(clk_i),
         .rst_ni(rst_ni),
-        .addr_map_i(eros_pkg::CPU_XBAR_ADDR_RULES),
+        .addr_map_i(sap_pkg::CPU_XBAR_ADDR_RULES),
         .default_idx_i(1'b0),                   //in case of not known decoded address it's forwarded down to system bus
         .master_req_i(core_data_req[i]),
         .master_resp_o(core_data_resp[i]),

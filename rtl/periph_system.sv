@@ -18,13 +18,13 @@ module periph_system
 );
 
 
-  import eros_pkg::*;
+  import sap_pkg::*;
 
   reg_pkg::reg_req_t peripheral_req;
   reg_pkg::reg_rsp_t peripheral_rsp;
 
-  reg_pkg::reg_req_t [eros_pkg::PERIPHERALS-1:0] peripheral_slv_req;
-  reg_pkg::reg_rsp_t [eros_pkg::PERIPHERALS-1:0] peripheral_slv_rsp;
+  reg_pkg::reg_req_t [sap_pkg::PERIPHERALS-1:0] peripheral_slv_req;
+  reg_pkg::reg_rsp_t [sap_pkg::PERIPHERALS-1:0] peripheral_slv_rsp;
 
   logic [PERIPHERALS_PORT_SEL_WIDTH-1:0] peripheral_select;
 
@@ -51,13 +51,13 @@ module periph_system
   );
 
   addr_decode #(
-      .NoIndices(eros_pkg::PERIPHERALS),
-      .NoRules(eros_pkg::PERIPHERALS),
+      .NoIndices(sap_pkg::PERIPHERALS),
+      .NoRules(sap_pkg::PERIPHERALS),
       .addr_t(logic [31:0]),
       .rule_t(addr_map_rule_pkg::addr_map_rule_t)
   ) i_addr_decode_soc_regbus_periph_xbar (
       .addr_i(peripheral_req.addr),
-      .addr_map_i(eros_pkg::PERIPHERALS_ADDR_RULES),
+      .addr_map_i(sap_pkg::PERIPHERALS_ADDR_RULES),
       .idx_o(peripheral_select),
       .dec_valid_o(),
       .dec_error_o(),
@@ -66,7 +66,7 @@ module periph_system
   );
 
   reg_demux #(
-      .NoPorts(eros_pkg::PERIPHERALS),
+      .NoPorts(sap_pkg::PERIPHERALS),
       .req_t  (reg_pkg::reg_req_t),
       .rsp_t  (reg_pkg::reg_rsp_t)
   ) reg_demux_i (
@@ -80,7 +80,7 @@ module periph_system
   );
 
   CB_boot_rom CB_boot_rom_i (
-      .reg_req_i(peripheral_slv_req[eros_pkg::DEBUG_BOOTROM_IDX]),
-      .reg_rsp_o(peripheral_slv_rsp[eros_pkg::DEBUG_BOOTROM_IDX])
+      .reg_req_i(peripheral_slv_req[sap_pkg::DEBUG_BOOTROM_IDX]),
+      .reg_rsp_o(peripheral_slv_rsp[sap_pkg::DEBUG_BOOTROM_IDX])
   );
 endmodule

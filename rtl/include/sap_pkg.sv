@@ -10,7 +10,7 @@
  *
  */
 
-package eros_pkg;
+package sap_pkg;
 
   import addr_map_rule_pkg::*;
 
@@ -182,7 +182,7 @@ package eros_pkg;
   localparam logic [31:0] CPU_REG_SIZE = 32'h00010000;
   localparam logic [31:0] CPU_REG_END_ADDRESS = CPU_REG_START_ADDRESS + CPU_REG_SIZE;
 
-  localparam logic [31:0] EROS_SYSTEM_IDX = 32'd0;
+  localparam logic [31:0] SAP_SYSTEM_IDX = 32'd0;
   localparam logic [31:0] CPU_REG_IDX = 32'd1;
 
 

@@ -4,7 +4,7 @@
 
 
 //TODO: If define for others FPGA versions
-module eros_clock_gate (
+module sap_clock_gate (
     input  logic clk_i,
     input  logic en_i,
     input  logic test_en_i,

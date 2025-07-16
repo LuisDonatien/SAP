@@ -66,7 +66,7 @@ module bus_system
 
 );
 
-  import eros_pkg::*;
+  import sap_pkg::*;
 
   // Safe CPU reg port
   reg_pkg::reg_req_t int_safe_cpu_wrapper_reg_req;
@@ -85,60 +85,60 @@ module bus_system
   obi_resp_t    [NHARTS-1:0] int_obi_wrapper_csr_resp;
 
   // Internal master ports
-  obi_req_t [eros_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_req;
-  obi_resp_t [eros_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_resp;
+  obi_req_t [sap_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_req;
+  obi_resp_t [sap_pkg::SYSTEM_XBAR_NMASTER-1:0] int_master_resp;
 
   // Internal slave ports
-  obi_req_t [eros_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_req;
-  obi_resp_t [eros_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_resp;
+  obi_req_t [sap_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_req;
+  obi_resp_t [sap_pkg::SYSTEM_XBAR_NSLAVE-1:0] int_slave_resp;
 
   // Internal master requests
-  assign int_master_req[eros_pkg::CORE0_INSTR_IDX] = core_instr_req_i[0];
-  assign int_master_req[eros_pkg::CORE0_DATA_IDX] = demux_core_data_req[0][0];
-  assign int_master_req[eros_pkg::CORE1_INSTR_IDX] = core_instr_req_i[1];
-  assign int_master_req[eros_pkg::CORE1_DATA_IDX] = demux_core_data_req[1][0];
-  assign int_master_req[eros_pkg::CORE2_INSTR_IDX] = core_instr_req_i[2];
-  assign int_master_req[eros_pkg::CORE2_DATA_IDX] = demux_core_data_req[2][0];
-  assign int_master_req[eros_pkg::EXTERNAL_MASTER_IDX] = ext_master_req_i;
+  assign int_master_req[sap_pkg::CORE0_INSTR_IDX] = core_instr_req_i[0];
+  assign int_master_req[sap_pkg::CORE0_DATA_IDX] = demux_core_data_req[0][0];
+  assign int_master_req[sap_pkg::CORE1_INSTR_IDX] = core_instr_req_i[1];
+  assign int_master_req[sap_pkg::CORE1_DATA_IDX] = demux_core_data_req[1][0];
+  assign int_master_req[sap_pkg::CORE2_INSTR_IDX] = core_instr_req_i[2];
+  assign int_master_req[sap_pkg::CORE2_DATA_IDX] = demux_core_data_req[2][0];
+  assign int_master_req[sap_pkg::EXTERNAL_MASTER_IDX] = ext_master_req_i;
 
   // Internal master responses
-  assign core_instr_resp_o[0] = int_master_resp[eros_pkg::CORE0_INSTR_IDX];
-  assign demux_core_data_resp[0][0] = int_master_resp[eros_pkg::CORE0_DATA_IDX];
-  assign core_instr_resp_o[1] = int_master_resp[eros_pkg::CORE1_INSTR_IDX];
-  assign demux_core_data_resp[1][0] = int_master_resp[eros_pkg::CORE1_DATA_IDX];
-  assign core_instr_resp_o[2] = int_master_resp[eros_pkg::CORE2_INSTR_IDX];
-  assign demux_core_data_resp[2][0] = int_master_resp[eros_pkg::CORE2_DATA_IDX];
+  assign core_instr_resp_o[0] = int_master_resp[sap_pkg::CORE0_INSTR_IDX];
+  assign demux_core_data_resp[0][0] = int_master_resp[sap_pkg::CORE0_DATA_IDX];
+  assign core_instr_resp_o[1] = int_master_resp[sap_pkg::CORE1_INSTR_IDX];
+  assign demux_core_data_resp[1][0] = int_master_resp[sap_pkg::CORE1_DATA_IDX];
+  assign core_instr_resp_o[2] = int_master_resp[sap_pkg::CORE2_INSTR_IDX];
+  assign demux_core_data_resp[2][0] = int_master_resp[sap_pkg::CORE2_DATA_IDX];
   // External master responses
-  assign ext_master_resp_o = int_master_resp[eros_pkg::EXTERNAL_MASTER_IDX];
+  assign ext_master_resp_o = int_master_resp[sap_pkg::EXTERNAL_MASTER_IDX];
 
   // Internal slave requests
-  assign peripheral_slave_req_o = int_slave_req[eros_pkg::PERIPHERAL_IDX];
-  assign ram_req_o[0] = int_slave_req[eros_pkg::MEMORY_RAM0_IDX];
-  assign ram_req_o[1] = int_slave_req[eros_pkg::MEMORY_RAM1_IDX];
-//  assign int_wrapper_csr_req = int_slave_req[eros_pkg::SAFE_CPU_REGISTER_IDX];
+  assign peripheral_slave_req_o = int_slave_req[sap_pkg::PERIPHERAL_IDX];
+  assign ram_req_o[0] = int_slave_req[sap_pkg::MEMORY_RAM0_IDX];
+  assign ram_req_o[1] = int_slave_req[sap_pkg::MEMORY_RAM1_IDX];
+//  assign int_wrapper_csr_req = int_slave_req[sap_pkg::SAFE_CPU_REGISTER_IDX];
 
   // External slave requests
-  assign ext_slave_req_o = int_slave_req[eros_pkg::EXTERNAL_PERIPHERAL_IDX];
+  assign ext_slave_req_o = int_slave_req[sap_pkg::EXTERNAL_PERIPHERAL_IDX];
 
   // Internal slave responses
-  assign int_slave_resp[eros_pkg::PERIPHERAL_IDX] = peripheral_slave_resp_i;
-  assign int_slave_resp[eros_pkg::MEMORY_RAM0_IDX] = ram_resp_i[0];
-  assign int_slave_resp[eros_pkg::MEMORY_RAM1_IDX] = ram_resp_i[1];
-//  assign int_slave_resp[eros_pkg::SAFE_CPU_REGISTER_IDX] = int_wrapper_csr_resp;
+  assign int_slave_resp[sap_pkg::PERIPHERAL_IDX] = peripheral_slave_resp_i;
+  assign int_slave_resp[sap_pkg::MEMORY_RAM0_IDX] = ram_resp_i[0];
+  assign int_slave_resp[sap_pkg::MEMORY_RAM1_IDX] = ram_resp_i[1];
+//  assign int_slave_resp[sap_pkg::SAFE_CPU_REGISTER_IDX] = int_wrapper_csr_resp;
   // External slave responses
-  assign int_slave_resp[eros_pkg::EXTERNAL_PERIPHERAL_IDX] = ext_slave_resp_i;
+  assign int_slave_resp[sap_pkg::EXTERNAL_PERIPHERAL_IDX] = ext_slave_resp_i;
   // Internal system crossbar
   // ------------------------
   xbar_system #(
       .obi_req_t            (obi_req_t  ),
       .obi_resp_t           (obi_resp_t ),
-      .XBAR_NMASTER(eros_pkg::SYSTEM_XBAR_NMASTER),
-      .XBAR_NSLAVE (eros_pkg::SYSTEM_XBAR_NSLAVE)
+      .XBAR_NMASTER(sap_pkg::SYSTEM_XBAR_NMASTER),
+      .XBAR_NSLAVE (sap_pkg::SYSTEM_XBAR_NSLAVE)
   ) xbar_system_i (
       .clk_i(clk_i),
       .rst_ni(rst_ni),
-      .addr_map_i(eros_pkg::XBAR_ADDR_RULES),
-      .default_idx_i(eros_pkg::ERROR_IDX[LOG_SYSTEM_XBAR_NSLAVE-1:0]),
+      .addr_map_i(sap_pkg::XBAR_ADDR_RULES),
+      .default_idx_i(sap_pkg::ERROR_IDX[LOG_SYSTEM_XBAR_NSLAVE-1:0]),
       .master_req_i(int_master_req),
       .master_resp_o(int_master_resp),
       .slave_req_o(int_slave_req),
@@ -163,7 +163,7 @@ module bus_system
     assign int_obi_wrapper_csr_req[2] = demux_core_data_req[2][1];
 
     for (genvar i = 0; unsigned'(i) < NHARTS; i++) begin : gen_demux
-      eros_xbar_varlat_one_to_n #(
+      sap_xbar_varlat_one_to_n #(
           .obi_req_t            (obi_req_t  ),
           .obi_resp_t           (obi_resp_t ),
           .XBAR_NSLAVE(32'd2),  // internal crossbar + external crossbar
@@ -182,11 +182,11 @@ module bus_system
 
 
     // N-to-1 crossbar Data
-    eros_xbar_varlat_n_to_one #(
+    sap_xbar_varlat_n_to_one #(
       .obi_req_t            (obi_req_t  ),
       .obi_resp_t           (obi_resp_t ),
       .XBAR_NMASTER(NHARTS)
-    ) eros_xbar_varlat_n_to_one_data_i (
+    ) sap_xbar_varlat_n_to_one_data_i (
       .clk_i        (clk_i),
       .rst_ni       (rst_ni),
       .master_req_i (int_obi_wrapper_csr_req),

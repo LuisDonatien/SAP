@@ -275,7 +275,7 @@ apb_to_obi_wrapper #(
 
   logic clk_cg;
 
-  eros_clock_gate eros_clock_gate_i (
+  sap_clock_gate sap_clock_gate_i (
       .clk_i    (clk_i),
       .test_en_i(1'b0),
       .en_i     (en_i),
@@ -283,10 +283,10 @@ apb_to_obi_wrapper #(
   );
 
 
-  eros_top #(
+  sap_top #(
     .obi_req_t            (obi_req_t  ),
     .obi_resp_t           (obi_resp_t )
-  ) eros_top_i (
+  ) sap_top_i (
       .clk_i(clk_cg),
       .rst_ni,
       .ext_master_req_i(axi_obi_master_req),

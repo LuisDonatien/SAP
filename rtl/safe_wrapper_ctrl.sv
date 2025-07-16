@@ -9,7 +9,7 @@ module safe_wrapper_ctrl #(
     parameter type reg_req_t = logic,
     parameter type reg_rsp_t = logic,
     parameter NHARTS = 3
-    //    parameter eros_pkg::interrupt_type_e INTC_TYPE = eros_pkg::Intc_Iype
+    //    parameter sap_pkg::interrupt_type_e INTC_TYPE = sap_pkg::Intc_Iype
 ) (
     input logic clk_i,
     input logic rst_ni,

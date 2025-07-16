@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Luis Waucquez (luis.waucquez.jimenez@upm.es)
 
-module eros_clock_gate (
+module sap_clock_gate (
     input  logic clk_i,
     input  logic test_en_i,
     input  logic en_i,
