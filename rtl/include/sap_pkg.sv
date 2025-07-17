@@ -103,8 +103,8 @@ package sap_pkg;
   localparam logic [31:0] PERIPHERAL_END_ADDRESS = PERIPHERAL_START_ADDRESS + PERIPHERAL_SIZE;
   localparam logic [31:0] PERIPHERAL_IDX = 32'd1;
 
-  localparam logic [31:0] EXTERNAL_PERIPHERAL_START_ADDRESS = 32'h19002000;/*X-HEEP VERSION32'h00000000;*/
-  localparam logic [31:0] EXTERNAL_PERIPHERAL_SIZE = 32'h00001000;/*X-HEEP VERSION32'h41000000;*/
+  localparam logic [31:0] EXTERNAL_PERIPHERAL_START_ADDRESS = 32'h19030000;/*X-HEEP VERSION32'h00000000;*/
+  localparam logic [31:0] EXTERNAL_PERIPHERAL_SIZE = 32'h00000000;/*X-HEEP VERSION32'h41000000;*/
   localparam logic [31:0] EXTERNAL_PERIPHERAL_END_ADDRESS = EXTERNAL_PERIPHERAL_START_ADDRESS + EXTERNAL_PERIPHERAL_SIZE;
   localparam logic [31:0] EXTERNAL_PERIPHERAL_IDX = 32'd2;
 
@@ -123,7 +123,7 @@ package sap_pkg;
 //  localparam logic [31:0] SAFE_CPU_REGISTER_END_ADDRESS = SAFE_CPU_REGISTER_START_ADDRESS + SAFE_CPU_REGISTER_SIZE;
 //  localparam logic [31:0] SAFE_CPU_REGISTER_IDX = 32'd5;
 
-  localparam GLOBAL_END_ADDRESS = MEMORY_RAM1_END_ADDRESS;
+  localparam GLOBAL_END_ADDRESS = GLOBAL_BASE_ADDRESS + MEMORY_RAM1_END_ADDRESS;
 
   localparam addr_map_rule_t [SYSTEM_XBAR_NSLAVE-1:0] XBAR_ADDR_RULES = '{
       '{idx: ERROR_IDX, start_addr: ERROR_START_ADDRESS, end_addr: ERROR_END_ADDRESS},
@@ -181,18 +181,25 @@ package sap_pkg;
   localparam logic [31:0] CPU_REG_START_ADDRESS = GLOBAL_BASE_ADDRESS; //Todo modificar la reg privada
   localparam logic [31:0] CPU_REG_SIZE = 32'h00010000;
   localparam logic [31:0] CPU_REG_END_ADDRESS = CPU_REG_START_ADDRESS + CPU_REG_SIZE;
-
-  localparam logic [31:0] SAP_SYSTEM_IDX = 32'd0;
   localparam logic [31:0] CPU_REG_IDX = 32'd1;
 
 
-  localparam addr_map_rule_t [0:0] CPU_XBAR_ADDR_RULES = '{
-            '{  
-                idx: CPU_REG_IDX, 
-                start_addr: CPU_REG_START_ADDRESS, 
-                end_addr: CPU_REG_END_ADDRESS
-            }
+
+  localparam addr_map_rule_t [CPU_XBAR_NRULES-1:0] CPU_XBAR_ADDR_RULES = '{
+      '{
+          idx: BUS_SYSTEM_IDX,
+          start_addr: BUS_SYSTEM_START_ADDRESS,
+          end_addr: BUS_SYSTEM_END_ADDRESS
+      },
+      '{
+          idx: EXT_BUS_SYSTEM_IDX,
+          start_addr: EXT_BUS_SYSTEM_START_ADDRESS,
+          end_addr: EXT_BUS_SYSTEM_END_ADDRESS
+      },
+      '{idx: CPU_REG_IDX, start_addr: CPU_REG_START_ADDRESS, end_addr: CPU_REG_END_ADDRESS}
   };
+
+  //External Peripherals MM Base Address
 
   //DEBUG SYSTEM
   localparam int unsigned DEBUG_SYSTEM_START_START_ADDRESS = 32'h10000000;

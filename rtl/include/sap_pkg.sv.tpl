@@ -178,19 +178,6 @@ package sap_pkg;
 
 
   //Private Memory CPU
-  localparam CPU_XBAR_SLAVE = 2;
-  localparam CPU_XBAR_NRULES = 3;  //Depending on the external address.
-
-  localparam logic [31:0] BUS_SYSTEM_START_ADDRESS = PERIPHERAL_START_ADDRESS;
-  localparam logic [31:0] BUS_SYSTEM_SIZE = 32'h00FEFFFF;
-  localparam logic [31:0] BUS_SYSTEM_END_ADDRESS = BUS_SYSTEM_START_ADDRESS + BUS_SYSTEM_SIZE;
-  localparam logic [31:0] BUS_SYSTEM_IDX = 32'd0;
-
-  localparam logic [31:0] EXT_BUS_SYSTEM_START_ADDRESS = 32'h00000000;
-  localparam logic [31:0] EXT_BUS_SYSTEM_SIZE = 32'h41000000;
-  localparam logic [31:0] EXT_BUS_SYSTEM_END_ADDRESS = EXT_BUS_SYSTEM_START_ADDRESS + EXT_BUS_SYSTEM_SIZE;
-  localparam logic [31:0] EXT_BUS_SYSTEM_IDX = 32'd0;
-
   localparam logic [31:0] CPU_REG_START_ADDRESS = GLOBAL_BASE_ADDRESS; //Todo modificar la reg privada
   localparam logic [31:0] CPU_REG_SIZE = 32'h00010000;
   localparam logic [31:0] CPU_REG_END_ADDRESS = CPU_REG_START_ADDRESS + CPU_REG_SIZE;
